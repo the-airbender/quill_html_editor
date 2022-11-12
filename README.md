@@ -4,15 +4,14 @@
 HTML rich text editor for Android, iOS, and Web, using the QuillJS library. QuillJS is a free, open source WYSIWYG editor built for the modern web.
 
 
-##📸 Screenshots
+## 📸 Screenshots
 <img src="https://github.com/the-airbender/quill_html_editor/blob/main/screenshots/editor.png" width="400">
 
-##Usage
+## Usage
 ```dart
 
-/// define editorKey
+/// define editorKey to access the editor functions
 final  htmlKey =  GlobalKey<QuillHtmlEditorState>();
-
 
 QuillHtmlEditor(
  editorKey: htmlKey,
@@ -31,11 +30,17 @@ String? htmlText = await htmlKey.currentState?.getText();
 ```
 
 
-##Todo
+#### To clear the editor
+```dart
+  htmlKey.currentState?.clear();
+
+```
+
+## Todo
 - Customization of toolbar
 - Support for Windows and Mac
 
-##License
+## License
 
 
 Copyright (c) 2022 Pavan Kumar
