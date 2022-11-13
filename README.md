@@ -5,8 +5,7 @@ HTML rich text editor for Android, iOS, and Web, using the QuillJS library. Quil
 
 
 ## 📸 Screenshots
-<img src="https://github.com/the-airbender/quill_html_editor/blob/main/screenshots/editor.png" width="400">
-
+![Example Output of Quill HTML Editor](https://github.com/the-airbender/quill_html_editor/blob/main/screenshots/editor.png?raw=true)
 ## Usage
 ```dart
 /// define editorKey to access the editor functions
