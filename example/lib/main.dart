@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:quill_html_editor/quill_html_editor.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(MaterialApp(home: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -14,16 +14,21 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Quill Html Editor'),
-        ),
-        body: QuillHtmlEditor(
-          editorKey: htmlKey,
-          height: 400,
-          isEnabled: true, // to disable the editor set it to false (default value is true)
-        ),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Quill Html Editor'),
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          QuillHtmlEditor(
+            editorKey: htmlKey,
+            height: MediaQuery.of(context).size.height * 0.7,
+            isEnabled:
+                true, // to disable the editor set it to false (default value is true)
+          ),
+        ],
       ),
     );
   }

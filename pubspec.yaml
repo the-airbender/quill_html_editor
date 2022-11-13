@@ -1,6 +1,6 @@
 name: quill_html_editor
 description: HTML rich text editor for Android, iOS and Web, using the QuilJS library.
-version: 0.1.2
+version: 0.1.4
 homepage: https://github.com/the-airbender/quill_html_editor
 repository: https://github.com/the-airbender/quill_html_editor
 maintainer: Pavan Kumar
