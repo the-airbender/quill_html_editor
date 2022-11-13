@@ -9,38 +9,33 @@ HTML rich text editor for Android, iOS, and Web, using the QuillJS library. Quil
 
 ## Usage
 ```dart
-
 /// define editorKey to access the editor functions
 final  htmlKey =  GlobalKey<QuillHtmlEditorState>();
 
 QuillHtmlEditor(
-editorKey: htmlKey,
-height: 600
+  editorKey: htmlKey,
+  height: 600
 )
 ```
 #### To get the html string from editor
 ```dart
 String? htmlText = await htmlKey.currentState?.getText();
-
 ```
 #### To set the html string to editor
 ```dart
  await htmlKey.currentState?.setText(text);
-
 ```
 
 
 #### To clear the editor
 ```dart
   htmlKey.currentState?.clear();
-
 ```
 
 
 #### To enable editor
 ```dart
   htmlKey.currentState?.enableEditor();
-
 ```
 
 #### To disable editor
