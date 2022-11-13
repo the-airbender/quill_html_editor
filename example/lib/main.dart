@@ -27,6 +27,7 @@ class MyApp extends StatelessWidget {
               child: QuillHtmlEditor(
                 editorKey: htmlKey,
                 height: 400,
+                isEnabled: false,
               ),
             ),
             MaterialButton(
@@ -50,6 +51,7 @@ class MyApp extends StatelessWidget {
   /// to get the html text from editor
   void getHtmlText() async {
     String? htmlText = await htmlKey.currentState?.getText();
+    debugPrint(htmlText.toString());
   }
 
   /// to set the html text to editor
@@ -59,4 +61,7 @@ class MyApp extends StatelessWidget {
 
   /// to clear the editor
   void clearEditor() => htmlKey.currentState?.clear();
+
+  /// to enable the editor
+  void enableEditor() => htmlKey.currentState?.enableEditor();
 }

@@ -15,7 +15,6 @@ dependencies:
   flutter_web_plugins:
     sdk: flutter
   webviewx: ^0.2.1
-  flutter_widget_from_html_core: ^0.8.1
 
 dev_dependencies:
   flutter_test:

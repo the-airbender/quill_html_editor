@@ -6,11 +6,14 @@ class QuillHtmlEditor extends StatefulWidget {
       {this.text,
       required Key editorKey,
       required this.height,
+      this.isEnabled = true,
       this.hintText = 'Description'})
       : super(key: editorKey);
   final String? text;
   final double height;
   final String? hintText;
+  final bool isEnabled;
+
   @override
   QuillHtmlEditorState createState() => QuillHtmlEditorState();
 }
@@ -18,11 +21,6 @@ class QuillHtmlEditor extends StatefulWidget {
 class QuillHtmlEditorState extends State<QuillHtmlEditor> {
   late WebViewXController _webviewController;
   var _initialContent = "";
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   void dispose() {
@@ -294,6 +292,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
         }
       });
       
+      quilleditor.enable(${widget.isEnabled});
       
       quilleditor.root.addEventListener("blur",function (){
       
