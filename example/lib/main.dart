@@ -19,30 +19,10 @@ class MyApp extends StatelessWidget {
         appBar: AppBar(
           title: const Text('Quill Html Editor'),
         ),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Expanded(
-              child: QuillHtmlEditor(
-                editorKey: htmlKey,
-                height: 400,
-                isEnabled: false,
-              ),
-            ),
-            MaterialButton(
-              onPressed: () {
-                htmlKey.currentState!.enableEditor();
-              },
-              child: const Text('Enable Editor'),
-            ),
-            MaterialButton(
-              onPressed: () {
-                htmlKey.currentState!.clear();
-              },
-              child: const Text('Clear Editor'),
-            )
-          ],
+        body: QuillHtmlEditor(
+          editorKey: htmlKey,
+          height: 400,
+          isEnabled: true, // to disable the editor set it to false (default value is true)
         ),
       ),
     );
