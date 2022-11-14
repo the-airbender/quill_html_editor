@@ -1,3 +1,4 @@
-## 0.1.4
+## 0.1.5
 
-Fixed Readme
+- Updated the documentation
+- Improved the method to enable/disable editor

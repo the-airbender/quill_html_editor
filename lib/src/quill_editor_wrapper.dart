@@ -9,9 +9,20 @@ class QuillHtmlEditor extends StatefulWidget {
       this.isEnabled = true,
       this.hintText = 'Description'})
       : super(key: editorKey);
+
+  /// to set initial text to the editor, please use text
+  /// We can also use the setText method for the same
   final String? text;
+
+  /// to define the height of the editor
   final double height;
+
+  /// hintText is a placeholder, by default, the hint will be 'Description'
+  /// We can override the placeholder text by passing hintText to the editor
   final String? hintText;
+
+  /// isEnabled as the name suggests, is used to enable or disable the editor
+  /// When it is set to false, the user cannot edit or type in the editor
   final bool isEnabled;
 
   @override
@@ -19,8 +30,21 @@ class QuillHtmlEditor extends StatefulWidget {
 }
 
 class QuillHtmlEditorState extends State<QuillHtmlEditor> {
+  /// it is the controller used to access the functions of quill js library
   late WebViewXController _webviewController;
-  var _initialContent = "";
+
+  /// this variable is used to set the html code that renders the quill js library
+  String _initialContent = "";
+
+  /// isEnabled as the name suggests, is used to enable or disable the editor
+  /// When it is set to false, the user cannot edit or type in the editor
+  bool isEnabled = true;
+
+  @override
+  void initState() {
+    isEnabled = widget.isEnabled;
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -28,9 +52,11 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
     super.dispose();
   }
 
+  /// getText method is used to get the html string from the editor
+  /// To avoid getting empty html tags, we are validating the html string
+  /// if it doesn't contain any text, the method will return empty string instead of empty html tag
   Future<String> getText() async {
     String? text = await _getHtmlFromEditor();
-
     String parsedText = _stripHtmlIfNeeded(text);
     try {
       if (parsedText.trim() == "") {
@@ -43,22 +69,27 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
     }
   }
 
+  /// setText method is used to set the html text to the editor
+  /// it will override the existing text in the editor with the new one
   Future setText(String text) async {
     return await _setHtmlTextToEditor(htmlText: text);
   }
 
+  /// it is a regex method to remove the tags and replace them with empty space
   static String _stripHtmlIfNeeded(String text) {
     return text.replaceAll(RegExp(r'<[^>]*>|&[^;]+;'), ' ');
   }
 
-  void enableEditor() async {
-    await _enableTextEditor(isEnabled: true);
+  /// This method is used to enable/ disable the editor,
+  /// while, we can enable or disable the editor directly by passing isEnabled to the widget,
+  /// this is an additional function that can be used to do the same with the state key
+  /// We can choose either of these ways to enable/disable
+  void enableEditor(bool enable) async {
+    isEnabled = enable;
+    await _enableTextEditor(isEnabled: isEnabled);
   }
 
-  void disableEditor() async {
-    await _enableTextEditor(isEnabled: false);
-  }
-
+  /// This method is used to clear the editor
   void clear() async {
     await _setHtmlTextToEditor(htmlText: '');
   }
@@ -111,18 +142,23 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
     );
   }
 
+  /// a private method to get the Html text from the editor
   Future<String> _getHtmlFromEditor() async {
     return await _webviewController.callJsMethod("getHtmlText", []);
   }
 
+  /// a private method to set the Html text to the editor
   Future _setHtmlTextToEditor({required String htmlText}) async {
     await _webviewController.callJsMethod("setHtmlText", [htmlText]);
   }
 
+  /// a private method to enable/disable the editor
   Future _enableTextEditor({required bool isEnabled}) async {
     await _webviewController.callJsMethod("enableEditor", [isEnabled]);
   }
 
+  /// This method generated the html code that is required to render the quill js editor
+  /// We are rendering this html page with the help of webviewx and using the callbacks to call the quill js apis
   String _getQuillPage({required double height, required double width}) {
     double finalHeight = width < 350
         ? height - 110
@@ -292,7 +328,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
         }
       });
       
-      quilleditor.enable(${widget.isEnabled});
+      quilleditor.enable($isEnabled);
       
       quilleditor.root.addEventListener("blur",function (){
       

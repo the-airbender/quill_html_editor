@@ -34,12 +34,12 @@ String? htmlText = await htmlKey.currentState?.getText();
 
 #### To enable editor
 ```dart
-  htmlKey.currentState?.enableEditor();
+  htmlKey.currentState?.enableEditor(true);
 ```
 
 #### To disable editor
 ```dart
-  htmlKey.currentState?.disableEditor();
+  htmlKey.currentState?.enableEditor(false);
 
 ```
 

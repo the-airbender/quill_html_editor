@@ -47,6 +47,6 @@ class MyApp extends StatelessWidget {
   /// to clear the editor
   void clearEditor() => htmlKey.currentState?.clear();
 
-  /// to enable the editor
-  void enableEditor() => htmlKey.currentState?.enableEditor();
+  /// to enable/disable the editor
+  void enableEditor(bool enable) => htmlKey.currentState?.enableEditor(enable);
 }
