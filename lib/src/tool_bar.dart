@@ -331,7 +331,7 @@ class ToolBarState extends State<ToolBar> {
     required String type,
   }) {
     return SizedBox(
-      width: 50,
+      width: 55,
       child: Text(type,
           style: TextStyle(
               fontSize: 14,

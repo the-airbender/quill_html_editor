@@ -1,4 +1,4 @@
-## 1.0.0-dev.2
+## 1.0.0-dev.3
 
 - Updated Readme 
 - Added Customisable Toolbar

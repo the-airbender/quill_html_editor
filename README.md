@@ -7,10 +7,11 @@ HTML rich text editor for Android, iOS, and Web, using the QuillJS library. Quil
 ### 📸 Screenshots
 
 <p float="left">
-  <img width="400" alt="1" src="https://github.com/the-airbender/quill_html_editor/blob/beta-0.1/screenshots/screenshot1.png">
+  <img width="400" alt="1" src="https://imgur.com/MN3Dppf.png">
 </p>
+
 <p float="left">
-  <img width="400" alt="1" src="https://github.com/the-airbender/quill_html_editor/blob/beta-0.1/screenshots/screenshot2.png">
+  <img width="400" alt="1" src="https://imgur.com/cw5wEhV.png">
 </p>
 
 
