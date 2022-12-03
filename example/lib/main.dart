@@ -2,51 +2,77 @@ import 'package:flutter/material.dart';
 import 'package:quill_html_editor/quill_html_editor.dart';
 
 void main() {
-  runApp(MaterialApp(home: MyApp()));
+  runApp(MaterialApp(debugShowCheckedModeBanner: false, home: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
   MyApp({super.key});
 
-  ///  create a key to access the the editor methods
-  final GlobalKey<QuillHtmlEditorState> htmlKey =
-      GlobalKey<QuillHtmlEditorState>();
-
+  ///[controller] create a QuillEditorController to access the editor methods
+  final QuillEditorController controller = QuillEditorController();
+  final customToolBarList = [
+    ToolBarStyle.bold,
+    ToolBarStyle.italic,
+    ToolBarStyle.align,
+    ToolBarStyle.color,
+  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      /*appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(250), // Set this height
+          child: Container(
+            height: 140,
+          //  padding: const EdgeInsets.all(8),
+            color: Colors.cyan.shade50,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Expanded(
+                  child: ToolBar(
+                    controller: controller,
+                  ),
+                ),
+              ],
+            ),
+          )),*/
       appBar: AppBar(
-        title: const Text('Quill Html Editor'),
+        title: Text('Quill Html Editor'),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          QuillHtmlEditor(
-            editorKey: htmlKey,
-            height: MediaQuery.of(context).size.height * 0.7,
-            isEnabled:
-                true, // to disable the editor set it to false (default value is true)
-          ),
-        ],
+      body: SafeArea(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            SizedBox(width: 40, child: ToolBar(controller: controller)),
+            Expanded(
+              child: QuillHtmlEditor(
+                controller: controller,
+                height: MediaQuery.of(context).size.height,
+                isEnabled: true,
+                // to disable the editor set isEnabled to false (default value is true)
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   /// to get the html text from editor
   void getHtmlText() async {
-    String? htmlText = await htmlKey.currentState?.getText();
+    String? htmlText = await controller.getText();
     debugPrint(htmlText.toString());
   }
 
   /// to set the html text to editor
   void setHtmlText(String text) async {
-    await htmlKey.currentState?.setText(text);
+    await controller.setText(text);
   }
 
   /// to clear the editor
-  void clearEditor() => htmlKey.currentState?.clear();
+  void clearEditor() => controller.clear();
 
   /// to enable/disable the editor
-  void enableEditor(bool enable) => htmlKey.currentState?.enableEditor(enable);
+  void enableEditor(bool enable) => controller.enableEditor(enable);
 }

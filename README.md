@@ -1,53 +1,85 @@
 
-# Quill Html Editor
+## Quill Html Editor
 
 HTML rich text editor for Android, iOS, and Web, using the QuillJS library. QuillJS is a free, open source WYSIWYG editor built for the modern web.
 
+------------
+### 📸 Screenshots
 
-## 📸 Screenshots
-![Example Output of Quill HTML Editor](https://github.com/the-airbender/quill_html_editor/blob/main/screenshots/editor.png?raw=true)
-## Usage
+![Example Output of Quill HTML Editor](https://github.com/the-airbender/quill_html_editor/blob/main/screenshots/screenshot1.png?raw=true)
+Toolbar detached from editor
+![Example Output of Quill HTML Editor](https://github.com/the-airbender/quill_html_editor/blob/main/screenshots/screenshot2.png?raw=true)
+
+------------
+
+
+### Usage
+
+Define a **QuillEditorController** to access the editor methods, pass the controller to **QuillHtmlEditor** Widget
 ```dart
-/// define editorKey to access the editor functions
-final  htmlKey =  GlobalKey<QuillHtmlEditorState>();
-
+  final QuillEditorController controller = QuillEditorController();
+```
+```dart
 QuillHtmlEditor(
-  editorKey: htmlKey,
-  height: 600
+controller: controller,
+height: MediaQuery.of(context).size.height * 0.8,
 )
+```
+Define **ToolBar** widget and pass the same **controller** created for **QuillHtmlEditor**
+```dart
+ ToolBar(
+controller: controller,
+)
+```
+**Note**: *toolBarConfig*, if not passed to **ToolBar**, it will show all the Toolbar Buttons. To show only required buttons, please specify the types in the list as show below.
+```dart
+  final customToolBarList = [
+  ToolBarStyle.bold,
+  ToolBarStyle.italic,
+  ToolBarStyle.align,
+  ToolBarStyle.color,
+];
+
+ToolBar(
+controller: controller,
+toolBarConfig: customToolBarList
+),
 ```
 #### To get the html string from editor
 ```dart
-String? htmlText = await htmlKey.currentState?.getText();
+String? htmlText = await controller.getText();
 ```
 #### To set the html string to editor
 ```dart
- await htmlKey.currentState?.setText(text);
+ await controller.setText(text);
 ```
-
-
 #### To clear the editor
 ```dart
-  htmlKey.currentState?.clear();
+ controller.clear();
 ```
-
 
 #### To enable editor
 ```dart
-  htmlKey.currentState?.enableEditor(true);
+  controller.enableEditor(true);
 ```
 
 #### To disable editor
 ```dart
-  htmlKey.currentState?.enableEditor(false);
-
+  controller.enableEditor(false);
 ```
 
-## Todo
-- Customization of toolbar
+### Todo
 - Support for Windows and Mac
 
-## License
+### Credits
+[adrianflutur](https://github.com/adrianflutur/webviewx "adrianflutur") for webviewx package
+[Mahad61](https://github.com/Mahad61/webviewx_plus "Mahad61") for webviewx_plus package
+[miguelpruivo](https://github.com/miguelpruivo/flutter_file_picker "file_picker") for filepicker pacakge
+[marcelogil](https://github.com/marcelogil/el_tooltip "marcelogil") for eltooltip package, which we used in this package to create custom color picker
+
+------------
+
+### License
 
 
 Copyright (c) 2022 Pavan Kumar

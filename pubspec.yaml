@@ -14,9 +14,15 @@ dependencies:
     sdk: flutter
   flutter_web_plugins:
     sdk: flutter
-  webviewx: ^0.2.1
+  webviewx_plus: ^0.3.2
+  file_picker: ^5.2.2
+
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^2.0.0
+
+flutter:
+  assets:
+    - packages/quill_html_editor/assets/camera_roll_icon.png
