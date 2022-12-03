@@ -6,11 +6,13 @@ HTML rich text editor for Android, iOS, and Web, using the QuillJS library. Quil
 ------------
 ### 📸 Screenshots
 
-<img src="https://github.com/the-airbender/quill_html_editor/blob/beta-0.1/screenshots/screenshot1.png" width="200">
+<p float="left">
+  <img width="400" alt="1" src="https://github.com/the-airbender/quill_html_editor/blob/beta-0.1/screenshots/screenshot1.png">
+</p>
+<p float="left">
+  <img width="400" alt="1" src="https://github.com/the-airbender/quill_html_editor/blob/beta-0.1/screenshots/screenshot2.png">
+</p>
 
-
- 
-<img src="https://github.com/the-airbender/quill_html_editor/blob/beta-0.1/screenshots/screenshot2.png" width="200">
 
 ------------
 
@@ -35,17 +37,17 @@ controller: controller,
 ```
 **Note**: *toolBarConfig*, if not passed to **ToolBar**, it will show all the Toolbar Buttons. To show only required buttons, please specify the types in the list as show below.
 ```dart
-  final customToolBarList = [
-  ToolBarStyle.bold,
-  ToolBarStyle.italic,
-  ToolBarStyle.align,
-  ToolBarStyle.color,
-];
+    final customToolBarList = [
+      ToolBarStyle.bold,
+      ToolBarStyle.italic,
+      ToolBarStyle.align,
+      ToolBarStyle.color,
+    ];
 
-ToolBar(
-controller: controller,
-toolBarConfig: customToolBarList
-),
+    ToolBar(
+        controller: controller,
+        toolBarConfig: customToolBarList
+    ),
 ```
 #### To get the html string from editor
 ```dart
@@ -74,10 +76,10 @@ String? htmlText = await controller.getText();
 - Support for Windows and Mac
 
 ### Credits
-[adrianflutur](https://github.com/adrianflutur/webviewx "adrianflutur") for webviewx package
-[Mahad61](https://github.com/Mahad61/webviewx_plus "Mahad61") for webviewx_plus package
-[miguelpruivo](https://github.com/miguelpruivo/flutter_file_picker "file_picker") for filepicker pacakge
-[marcelogil](https://github.com/marcelogil/el_tooltip "marcelogil") for eltooltip package, which we used in this package to create custom color picker
+[adrianflutur](https://github.com/adrianflutur/webviewx "adrianflutur") for webviewx package<br>
+[Mahad61](https://github.com/Mahad61/webviewx_plus "Mahad61") for webviewx_plus package<br>
+[miguelpruivo](https://github.com/miguelpruivo/flutter_file_picker "file_picker") for filepicker pacakge<br>
+[marcelogil](https://github.com/marcelogil/el_tooltip "marcelogil") for eltooltip package, which we used in this package to create custom color picker<br>
 
 ------------
 
