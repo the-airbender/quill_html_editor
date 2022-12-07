@@ -1,17 +1,21 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:universal_io/io.dart';
 
 class ImageSelector {
-  Function(String) onImagePicked;
+  ///[onImagePicked] callback function for image picker
+  final Function(String) onImagePicked;
+
+  ///[ImageSelector] image selector widget to set images to editor
   ImageSelector({required this.onImagePicked});
-  List<PlatformFile>? _paths;
-  String? _extension;
+  late List<PlatformFile>? _paths;
+  late String? _extension;
   final FileType _pickingType = FileType.image;
+
+  ///[pickFiles] to pick the files
   Future<void> pickFiles() async {
     _resetState();
     try {
@@ -25,6 +29,7 @@ class ImageSelector {
             : null,
       ))
           ?.files;
+      print(_paths);
       if (_paths != null && _paths!.isNotEmpty) {
         Uint8List? bytes;
         if (kIsWeb) {
@@ -52,5 +57,6 @@ class ImageSelector {
   }
 }
 
+///[OnPickImageCallback] typedef for onPickImageCallback
 typedef OnPickImageCallback = void Function(
     double? maxWidth, double? maxHeight, int? quality);

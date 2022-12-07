@@ -19,32 +19,25 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      /*appBar: PreferredSize(
+      appBar: PreferredSize(
           preferredSize: const Size.fromHeight(250), // Set this height
           child: Container(
-            height: 140,
-          //  padding: const EdgeInsets.all(8),
+            height: 90,
             color: Colors.cyan.shade50,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Expanded(
-                  child: ToolBar(
-                    controller: controller,
-                  ),
+                ToolBar(
+                  controller: controller,
                 ),
               ],
             ),
-          )),*/
-      appBar: AppBar(
-        title: Text('Quill Html Editor'),
-      ),
+          )),
       body: SafeArea(
-        child: Row(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            SizedBox(width: 40, child: ToolBar(controller: controller)),
             Expanded(
               child: QuillHtmlEditor(
                 controller: controller,
@@ -52,7 +45,7 @@ class MyApp extends StatelessWidget {
                 isEnabled: true,
                 // to disable the editor set isEnabled to false (default value is true)
               ),
-            ),
+            )
           ],
         ),
       ),

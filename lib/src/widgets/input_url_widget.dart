@@ -1,15 +1,14 @@
 import 'dart:convert';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:quill_html_editor/src/constants/image_constants.dart';
-import 'package:quill_html_editor/src/widgets/el_tooltip/el_tooltip.dart';
 import 'package:webviewx_plus/webviewx_plus.dart';
-
+import 'el_tooltip/el_tooltip.dart';
+import '../constants/image_constants.dart';
 import '../../quill_html_editor.dart';
 import '../utils/hex_color.dart';
 import '../utils/url_validator.dart';
 
+///[InputUrlWidget] class to show widget that capture video/hyperlink urls
 class InputUrlWidget extends StatefulWidget {
   ///[onSubmit] callback when user submits the url input
   final Function(String) onSubmit;
@@ -23,6 +22,7 @@ class InputUrlWidget extends StatefulWidget {
   ///[isActive] to highlight icon on selection
   final bool isActive;
 
+  ///[InputUrlWidget] constuctor of input url widget to capture, video/hyperlink urls
   const InputUrlWidget(
       {super.key,
       required this.onSubmit,
@@ -65,8 +65,6 @@ class _InputUrlWidgetState extends State<InputUrlWidget> {
     if (kIsWeb) {
       return ElTooltip(
         key: _toolTipKey,
-        // enable: selection>0,
-        // error: 'Selection empty',
         content: WebViewAware(
           child: Form(
             key: _formKey,
@@ -148,6 +146,8 @@ class _InputUrlWidgetState extends State<InputUrlWidget> {
     } else {
       return InkWell(
         onTap: () async {
+          int onDoneLastClicked = 0;
+          int onCloseLastClicked = 0;
           var range = await widget.controller.getSelectionRange();
           var decodeMap = {};
           if (kIsWeb) {
@@ -155,6 +155,7 @@ class _InputUrlWidgetState extends State<InputUrlWidget> {
           } else {
             decodeMap = jsonDecode(range);
           }
+
           showBottomSheet(
               context: context,
               builder: (context) {
@@ -162,7 +163,7 @@ class _InputUrlWidgetState extends State<InputUrlWidget> {
                   child: Form(
                     key: _formKey,
                     child: Container(
-                        width: 350,
+                        // width: 350,
                         height: 60,
                         alignment: Alignment.center,
                         child: Row(
@@ -205,6 +206,12 @@ class _InputUrlWidgetState extends State<InputUrlWidget> {
                             ),
                             IconButton(
                               onPressed: () {
+                                final now =
+                                    DateTime.now().millisecondsSinceEpoch;
+                                if (now - onDoneLastClicked < 500) {
+                                  return;
+                                }
+                                onDoneLastClicked = now;
                                 if (_formKey.currentState!.validate()) {
                                   widget.controller.setSelectionRange(
                                       decodeMap['index'], decodeMap['length']);
@@ -226,6 +233,12 @@ class _InputUrlWidgetState extends State<InputUrlWidget> {
                             ),
                             IconButton(
                               onPressed: () {
+                                final now =
+                                    DateTime.now().millisecondsSinceEpoch;
+                                if (now - onCloseLastClicked < 500) {
+                                  return;
+                                }
+                                onCloseLastClicked = now;
                                 Navigator.pop(context);
                               },
                               icon: const Icon(

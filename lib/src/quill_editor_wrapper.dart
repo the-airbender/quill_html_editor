@@ -5,8 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:quill_html_editor/quill_html_editor.dart';
 import 'package:webviewx_plus/webviewx_plus.dart';
 
-// ignore: must_be_immutable
+///[QuillHtmlEditor] widget to show the quill editor,
 class QuillHtmlEditor extends StatefulWidget {
+  ///[QuillHtmlEditor] widget to show the quill editor,
+  ///pass the controller to access the editor methods
   QuillHtmlEditor(
       {this.text,
       required this.controller,
@@ -30,11 +32,13 @@ class QuillHtmlEditor extends StatefulWidget {
   /// When it is set to false, the user cannot edit or type in the editor
   final bool isEnabled;
 
-  QuillEditorController controller;
+  /// [controller] to access all the methods of editor and toolbar
+  final QuillEditorController controller;
   @override
   QuillHtmlEditorState createState() => QuillHtmlEditorState();
 }
 
+///[QuillHtmlEditorState] editor state class to render the editor
 class QuillHtmlEditorState extends State<QuillHtmlEditor> {
   /// it is the controller used to access the functions of quill js library
   late WebViewXController _webviewController;
@@ -42,7 +46,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
   /// this variable is used to set the html code that renders the quill js library
   String _initialContent = "";
 
-  /// isEnabled as the name suggests, is used to enable or disable the editor
+  /// [isEnabled] as the name suggests, is used to enable or disable the editor
   /// When it is set to false, the user cannot edit or type in the editor
   bool isEnabled = true;
 
@@ -181,7 +185,6 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
       <html>
       <head>
       <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
-      
       <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet" />
       <style>
       .ql-container.ql-snow {
@@ -200,8 +203,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
       
       #toolbar-container{
       display:none;
-      }
-      
+      }     
       </style>
       </head>
       <body>
@@ -525,10 +527,15 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
   }
 }
 
+///[QuillEditorController] controller constructor to generate editor, toolbar state keys
 class QuillEditorController {
   GlobalKey<QuillHtmlEditorState>? _editorKey;
   GlobalKey<ToolBarState>? _toolBarKey;
+
+  ///[isEnable] to enable/ disable editor
   bool isEnable = true;
+
+  ///[QuillEditorController] controller constructor to generate editor, toolbar state keys
   QuillEditorController() {
     _editorKey = GlobalKey<QuillHtmlEditorState>();
     _toolBarKey = GlobalKey<ToolBarState>();

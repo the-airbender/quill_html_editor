@@ -1,18 +1,24 @@
 import 'dart:core';
-
 import 'package:flutter/material.dart';
 import 'package:quill_html_editor/quill_html_editor.dart';
 import 'package:quill_html_editor/src/utils/hex_color.dart';
 import 'package:quill_html_editor/src/widgets/color_picker.dart';
 import 'package:quill_html_editor/src/widgets/image_picker.dart';
 import 'package:webviewx_plus/webviewx_plus.dart';
-
 import 'widgets/el_tooltip/el_tooltip.dart';
 import 'widgets/input_url_widget.dart';
 
+///[ToolBar] widget to show the quill toolbar
 class ToolBar extends StatefulWidget {
+  ///[toolBarConfig] optional list which takes the toolbar button types,
+  /// by default, toolbar will show all the buttons,
+  /// we can show required buttons by passing them in the list
   final List<ToolBarStyle>? toolBarConfig;
+
+  ///[controller] to access the editor and toolbar methods
   final QuillEditorController controller;
+
+  ///[ToolBar] widget to show the quill toolbar
   ToolBar({
     this.toolBarConfig,
     required this.controller,
@@ -23,22 +29,21 @@ class ToolBar extends StatefulWidget {
 }
 
 class ToolBarState extends State<ToolBar> {
-  List<ToolBarItem> toolbarList = [];
-  Map<String, dynamic> formatMap = {};
-  String? videoErrorText;
-  GlobalKey<ElTooltipState> fontBgColorKey =
+  List<ToolBarItem> _toolbarList = [];
+  Map<String, dynamic> _formatMap = {};
+  final GlobalKey<ElTooltipState> _fontBgColorKey =
       GlobalKey<ElTooltipState>(debugLabel: 'fontBgColorKey');
-  GlobalKey<ElTooltipState> fontColorKey =
+  final GlobalKey<ElTooltipState> _fontColorKey =
       GlobalKey<ElTooltipState>(debugLabel: 'fontColorKey');
   @override
   void initState() {
     if (widget.toolBarConfig == null) {
       for (var style in ToolBarStyle.values) {
-        toolbarList.add(ToolBarItem(style: style, isActive: false));
+        _toolbarList.add(ToolBarItem(style: style, isActive: false));
       }
     } else {
       for (var style in widget.toolBarConfig!) {
-        toolbarList.add(ToolBarItem(style: style, isActive: false));
+        _toolbarList.add(ToolBarItem(style: style, isActive: false));
       }
     }
 
@@ -59,10 +64,11 @@ class ToolBarState extends State<ToolBar> {
     );
   }
 
+  ///[updateToolBarFormat] method to update the toolbar state in sync with editor formats
   void updateToolBarFormat(Map<String, dynamic> formatMap) {
-    this.formatMap = formatMap;
+    _formatMap = formatMap;
 
-    for (var toolbarItem in toolbarList) {
+    for (var toolbarItem in _toolbarList) {
       switch (toolbarItem.style) {
         case ToolBarStyle.bold:
           toolbarItem.isActive = formatMap['bold'] == true;
@@ -106,7 +112,7 @@ class ToolBarState extends State<ToolBar> {
         case ToolBarStyle.color:
           toolbarItem.isActive = formatMap['color'] != null;
           if (formatMap['color'] != null) {
-            this.formatMap['color'] = formatMap['color'];
+            _formatMap['color'] = formatMap['color'];
           }
           break;
         case ToolBarStyle.align:
@@ -131,11 +137,11 @@ class ToolBarState extends State<ToolBar> {
         case ToolBarStyle.background:
           toolbarItem.isActive = formatMap['background'] != null;
           if (formatMap['background'] != null) {
-            this.formatMap['background'] = formatMap['background'];
+            _formatMap['background'] = formatMap['background'];
           }
           break;
         case ToolBarStyle.link:
-          this.formatMap['link'] = formatMap['link'];
+          _formatMap['link'] = formatMap['link'];
           break;
       }
     }
@@ -145,17 +151,17 @@ class ToolBarState extends State<ToolBar> {
   List<Widget> _generateToolBar(BuildContext context) {
     List<Widget> tempToolBarList = [];
 
-    for (int i = 0; i < toolbarList.length; i++) {
-      final toolbarItem = toolbarList[i];
+    for (int i = 0; i < _toolbarList.length; i++) {
+      final toolbarItem = _toolbarList[i];
       if (toolbarItem.style == ToolBarStyle.size) {
-        tempToolBarList.add(fontSizeDD());
+        tempToolBarList.add(_fontSizeDD());
       } else if (toolbarItem.style == ToolBarStyle.align) {
-        tempToolBarList.add(alignDD());
+        tempToolBarList.add(_alignDD());
       } else if (toolbarItem.style == ToolBarStyle.color) {
-        tempToolBarList.add(getFontColorWidget(i));
+        tempToolBarList.add(_getFontColorWidget(i));
       } else if (toolbarItem.style == ToolBarStyle.video) {
         tempToolBarList.add(InputUrlWidget(
-          isActive: formatMap['video'] != null,
+          isActive: _formatMap['video'] != null,
           controller: widget.controller,
           type: UrlInputType.video,
           onSubmit: (v) {
@@ -164,7 +170,7 @@ class ToolBarState extends State<ToolBar> {
         ));
       } else if (toolbarItem.style == ToolBarStyle.link) {
         tempToolBarList.add(InputUrlWidget(
-          isActive: formatMap['link'] != null,
+          isActive: _formatMap['link'] != null,
           controller: widget.controller,
           type: UrlInputType.hyperlink,
           onSubmit: (v) {
@@ -172,7 +178,7 @@ class ToolBarState extends State<ToolBar> {
           },
         ));
       } else if (toolbarItem.style == ToolBarStyle.background) {
-        tempToolBarList.add(getFontBackgndColorWidget(i));
+        tempToolBarList.add(_getFontBackgndColorWidget(i));
       } else {
         tempToolBarList.add(ToolBarItem(
           style: toolbarItem.style,
@@ -180,25 +186,25 @@ class ToolBarState extends State<ToolBar> {
           onTap: () async {
             if (toolbarItem.style == ToolBarStyle.image) {
               await ImageSelector(onImagePicked: (value) {
-                formatMap['image'] = value;
+                _formatMap['image'] = value;
                 widget.controller.embedImage(value);
               }).pickFiles();
             } else if (toolbarItem.style == ToolBarStyle.clean) {
               List<ToolBarItem> tempList = [];
-              for (var value in toolbarList) {
+              for (var value in _toolbarList) {
                 value.isActive = false;
                 tempList.add(value);
               }
-              toolbarList = tempList;
+              _toolbarList = tempList;
             } else if (toolbarItem.style == ToolBarStyle.headerOne) {
-              for (var element in toolbarList) {
+              for (var element in _toolbarList) {
                 if (element.style == ToolBarStyle.headerTwo) {
                   element.isActive = false;
                 }
               }
               toolbarItem.isActive = !toolbarItem.isActive;
             } else if (toolbarItem.style == ToolBarStyle.headerTwo) {
-              for (var element in toolbarList) {
+              for (var element in _toolbarList) {
                 if (element.style == ToolBarStyle.headerOne) {
                   element.isActive = false;
                 }
@@ -208,11 +214,11 @@ class ToolBarState extends State<ToolBar> {
               toolbarItem.isActive = !toolbarItem.isActive;
             }
             Map<String, dynamic> getFormat =
-                getFormatByStyle(toolbarItem.style, toolbarItem.isActive);
+                _getFormatByStyle(toolbarItem.style, toolbarItem.isActive);
             widget.controller.setFormat(
                 format: getFormat['format'], value: getFormat['value']);
 
-            if (formatMap['direction'] == 'rtl') {
+            if (_formatMap['direction'] == 'rtl') {
               widget.controller.setFormat(format: 'align', value: 'right');
             }
 
@@ -225,7 +231,7 @@ class ToolBarState extends State<ToolBar> {
     return tempToolBarList;
   }
 
-  Map<String, dynamic> getFormatByStyle(ToolBarStyle style, bool isActive) {
+  Map<String, dynamic> _getFormatByStyle(ToolBarStyle style, bool isActive) {
     switch (style) {
       case ToolBarStyle.bold:
         return {'format': 'bold', 'value': isActive};
@@ -274,7 +280,7 @@ class ToolBarState extends State<ToolBar> {
     }
   }
 
-  Widget fontSizeDD() {
+  Widget _fontSizeDD() {
     return FittedBox(
       child: DropdownButtonHideUnderline(
         child: ButtonTheme(
@@ -284,25 +290,25 @@ class ToolBarState extends State<ToolBar> {
               alignment: Alignment.centerLeft,
               selectedItemBuilder: (context) {
                 return [
-                  fontSelectionTextItem(type: 'Small'),
-                  fontSelectionTextItem(type: 'Normal'),
-                  fontSelectionTextItem(type: 'Large'),
-                  fontSelectionTextItem(type: 'Huge'),
+                  _fontSelectionTextItem(type: 'Small'),
+                  _fontSelectionTextItem(type: 'Normal'),
+                  _fontSelectionTextItem(type: 'Large'),
+                  _fontSelectionTextItem(type: 'Huge'),
                 ];
               },
               isDense: true,
-              value: formatMap['size'] ?? 'normal',
+              value: _formatMap['size'] ?? 'normal',
               style: const TextStyle(
                 fontSize: 12,
               ),
               items: [
-                fontSizeItem(type: 'Small', fontSize: 8),
-                fontSizeItem(type: 'Normal', fontSize: 12),
-                fontSizeItem(type: 'Large', fontSize: 16),
-                fontSizeItem(type: 'Huge', fontSize: 20),
+                _fontSizeItem(type: 'Small', fontSize: 8),
+                _fontSizeItem(type: 'Normal', fontSize: 12),
+                _fontSizeItem(type: 'Large', fontSize: 16),
+                _fontSizeItem(type: 'Huge', fontSize: 20),
               ],
               onChanged: (value) {
-                formatMap['size'] = value;
+                _formatMap['size'] = value;
                 widget.controller.setFormat(
                     format: 'size', value: value == 'normal' ? '' : value);
                 setState(() {});
@@ -312,7 +318,7 @@ class ToolBarState extends State<ToolBar> {
     );
   }
 
-  DropdownMenuItem fontSizeItem(
+  DropdownMenuItem _fontSizeItem(
       {required String type, required double fontSize}) {
     return DropdownMenuItem(
         value: type.toLowerCase(),
@@ -320,14 +326,14 @@ class ToolBarState extends State<ToolBar> {
           child: Text(type,
               style: TextStyle(
                   fontSize: fontSize,
-                  color: formatMap['size'] == type.toLowerCase()
+                  color: _formatMap['size'] == type.toLowerCase()
                       ? Colors.blue
                       : Colors.black87,
                   fontWeight: FontWeight.bold)),
         ));
   }
 
-  Widget fontSelectionTextItem({
+  Widget _fontSelectionTextItem({
     required String type,
   }) {
     return SizedBox(
@@ -341,41 +347,37 @@ class ToolBarState extends State<ToolBar> {
     );
   }
 
-  Widget alignDD() {
-    return SizedBox(
-      // width: 50,
-      child: DropdownButtonHideUnderline(
-        child: ButtonTheme(
-          // alignedDropdown: true,
-          child: DropdownButton<String>(
-              icon: const SizedBox(
-                width: 0,
-              ),
-              focusColor: Colors.transparent,
-              alignment: Alignment.bottomCenter,
-              isDense: true,
-              value: (formatMap['align'] == '' || formatMap['align'] == null)
-                  ? 'left'
-                  : formatMap['align'],
-              items: [
-                getAlignDDItem('left'),
-                getAlignDDItem('center'),
-                getAlignDDItem('right'),
-                getAlignDDItem('justify'),
-              ],
-              onChanged: (value) {
-                formatMap['align'] = value == 'left' ? '' : value;
-                widget.controller
-                    .setFormat(format: 'align', value: formatMap['align']);
+  Widget _alignDD() {
+    return DropdownButtonHideUnderline(
+      child: ButtonTheme(
+        child: DropdownButton<String>(
+            icon: const SizedBox(
+              width: 0,
+            ),
+            focusColor: Colors.transparent,
+            alignment: Alignment.bottomCenter,
+            isDense: true,
+            value: (_formatMap['align'] == '' || _formatMap['align'] == null)
+                ? 'left'
+                : _formatMap['align'],
+            items: [
+              _getAlignDDItem('left'),
+              _getAlignDDItem('center'),
+              _getAlignDDItem('right'),
+              _getAlignDDItem('justify'),
+            ],
+            onChanged: (value) {
+              _formatMap['align'] = value == 'left' ? '' : value;
+              widget.controller
+                  .setFormat(format: 'align', value: _formatMap['align']);
 
-                setState(() {});
-              }),
-        ),
+              setState(() {});
+            }),
       ),
     );
   }
 
-  DropdownMenuItem<String> getAlignDDItem(String type) {
+  DropdownMenuItem<String> _getAlignDDItem(String type) {
     IconData icon = Icons.format_align_left;
     if (type == 'center') {
       icon = Icons.format_align_center;
@@ -384,31 +386,30 @@ class ToolBarState extends State<ToolBar> {
     } else if (type == 'justify') {
       icon = Icons.format_align_justify;
     }
-
     return DropdownMenuItem<String>(
       value: type,
       child: WebViewAware(
           child: Icon(
         icon,
-        color: formatMap['align'] == type ? Colors.blue : Colors.black,
+        color: _formatMap['align'] == type ? Colors.blue : Colors.black,
       )),
     );
   }
 
-  Widget getFontColorWidget(int i) {
+  Widget _getFontColorWidget(int i) {
     return ElTooltip(
       position: ElTooltipPosition.bottomEnd,
-      key: fontColorKey,
+      key: _fontColorKey,
       content: ColorPicker(
         showPicker: false,
         onColorPicked: (color) {
-          formatMap['color'] = color;
-          toolbarList[i].isActive = true;
+          _formatMap['color'] = color;
+          _toolbarList[i].isActive = true;
           widget.controller
-              .setFormat(format: 'color', value: formatMap['color']);
+              .setFormat(format: 'color', value: _formatMap['color']);
           setState(() {});
-          if (fontColorKey.currentState != null) {
-            fontColorKey.currentState!.hideOverlay();
+          if (_fontColorKey.currentState != null) {
+            _fontColorKey.currentState!.hideOverlay();
           }
         },
       ),
@@ -426,12 +427,12 @@ class ToolBarState extends State<ToolBar> {
               style: TextStyle(
                   fontWeight: FontWeight.w600,
                   color:
-                      formatMap['color'] != null ? Colors.blue : Colors.black,
+                      _formatMap['color'] != null ? Colors.blue : Colors.black,
                   fontSize: 14),
             ),
             Container(
-              color: formatMap['color'] != null
-                  ? HexColor.fromHex(formatMap['color'])
+              color: _formatMap['color'] != null
+                  ? HexColor.fromHex(_formatMap['color'])
                   : Colors.black,
               height: 3,
               width: 18,
@@ -442,19 +443,19 @@ class ToolBarState extends State<ToolBar> {
     );
   }
 
-  Widget getFontBackgndColorWidget(int i) {
+  Widget _getFontBackgndColorWidget(int i) {
     return ElTooltip(
-      key: fontBgColorKey,
+      key: _fontBgColorKey,
       content: ColorPicker(
         showPicker: false,
         onColorPicked: (color) {
-          formatMap['background'] = color;
-          toolbarList[i].isActive = true;
+          _formatMap['background'] = color;
+          _toolbarList[i].isActive = true;
           widget.controller
-              .setFormat(format: 'background', value: formatMap['background']);
+              .setFormat(format: 'background', value: _formatMap['background']);
           setState(() {});
-          if (fontBgColorKey.currentState != null) {
-            fontBgColorKey.currentState!.hideOverlay();
+          if (_fontBgColorKey.currentState != null) {
+            _fontBgColorKey.currentState!.hideOverlay();
           }
         },
       ),
@@ -462,8 +463,8 @@ class ToolBarState extends State<ToolBar> {
         alignment: Alignment.center,
         decoration: BoxDecoration(
           border: Border.all(width: 0.1),
-          color: formatMap['background'] != null
-              ? HexColor.fromHex(formatMap['background'])
+          color: _formatMap['background'] != null
+              ? HexColor.fromHex(_formatMap['background'])
               : Colors.white,
         ),
         height: 22,
@@ -473,8 +474,9 @@ class ToolBarState extends State<ToolBar> {
           maxLines: 1,
           style: TextStyle(
               fontWeight: FontWeight.w600,
-              color:
-                  formatMap['background'] != null ? Colors.white : Colors.black,
+              color: _formatMap['background'] != null
+                  ? Colors.white
+                  : Colors.black,
               fontSize: 16),
         ),
       ),
@@ -484,9 +486,16 @@ class ToolBarState extends State<ToolBar> {
 
 // ignore: must_be_immutable
 class ToolBarItem extends StatelessWidget {
+  ///[style] to set the toolbar buttons by styles
   final ToolBarStyle style;
+
+  ///[isActive] to highlight the toolbar buttons when active
   bool isActive;
+
+  ///[onTap] callback to set format on tap
   final GestureTapCallback? onTap;
+
+  ///[ToolBarItem] toolbaritem widget to show buttons based on style
   ToolBarItem({
     super.key,
     required this.style,
@@ -500,53 +509,53 @@ class ToolBarItem extends StatelessWidget {
       onTap: onTap,
       child: Padding(
         padding: const EdgeInsets.all(0.0),
-        child: SizedBox(width: 25, child: getIconByStyle(style)),
+        child: SizedBox(width: 25, child: _getIconByStyle(style)),
       ),
     );
   }
 
-  Widget getIconByStyle(ToolBarStyle style) {
+  Widget _getIconByStyle(ToolBarStyle style) {
     switch (style) {
       case ToolBarStyle.bold:
-        return getIconWidget(Icons.format_bold_sharp);
+        return _getIconWidget(Icons.format_bold_sharp);
       case ToolBarStyle.italic:
-        return getIconWidget(Icons.format_italic_sharp);
+        return _getIconWidget(Icons.format_italic_sharp);
       case ToolBarStyle.underline:
-        return getIconWidget(Icons.format_underline_sharp);
+        return _getIconWidget(Icons.format_underline_sharp);
       case ToolBarStyle.strike:
-        return getIconWidget(Icons.format_strikethrough_sharp);
+        return _getIconWidget(Icons.format_strikethrough_sharp);
       case ToolBarStyle.blockQuote:
-        return getIconWidget(Icons.format_quote_sharp);
+        return _getIconWidget(Icons.format_quote_sharp);
       case ToolBarStyle.codeBlock:
-        return getIconWidget(Icons.code_sharp);
+        return _getIconWidget(Icons.code_sharp);
       case ToolBarStyle.indentAdd:
         isActive = false;
-        return getIconWidget(Icons.format_indent_increase_sharp);
+        return _getIconWidget(Icons.format_indent_increase_sharp);
       case ToolBarStyle.indentMinus:
         isActive = false;
-        return getIconWidget(Icons.format_indent_decrease_sharp);
+        return _getIconWidget(Icons.format_indent_decrease_sharp);
       case ToolBarStyle.directionRtl:
-        return getIconWidget(Icons.format_textdirection_r_to_l_sharp);
+        return _getIconWidget(Icons.format_textdirection_r_to_l_sharp);
       case ToolBarStyle.directionLtr:
-        return getIconWidget(Icons.format_textdirection_l_to_r_sharp);
+        return _getIconWidget(Icons.format_textdirection_l_to_r_sharp);
       case ToolBarStyle.color:
-        return getIconWidget(Icons.format_bold_sharp);
+        return _getIconWidget(Icons.format_bold_sharp);
       case ToolBarStyle.align:
-        return getIconWidget(Icons.format_align_left_sharp);
+        return _getIconWidget(Icons.format_align_left_sharp);
       case ToolBarStyle.clean:
-        return getIconWidget(Icons.format_clear_sharp);
+        return _getIconWidget(Icons.format_clear_sharp);
       case ToolBarStyle.listOrdered:
-        return getIconWidget(Icons.format_list_numbered_sharp);
+        return _getIconWidget(Icons.format_list_numbered_sharp);
       case ToolBarStyle.listBullet:
-        return getIconWidget(Icons.format_list_bulleted_sharp);
+        return _getIconWidget(Icons.format_list_bulleted_sharp);
       case ToolBarStyle.headerOne:
-        return getTextToolBarStyle('H1');
+        return _getTextToolBarStyle('H1');
       case ToolBarStyle.headerTwo:
-        return getTextToolBarStyle('H2');
+        return _getTextToolBarStyle('H2');
       case ToolBarStyle.background:
-        return getIconWidget(Icons.font_download_sharp);
+        return _getIconWidget(Icons.font_download_sharp);
       case ToolBarStyle.image:
-        return getIconWidget(Icons.image);
+        return _getIconWidget(Icons.image);
       case ToolBarStyle.link:
       case ToolBarStyle.video:
       case ToolBarStyle.size:
@@ -554,26 +563,13 @@ class ToolBarItem extends StatelessWidget {
     }
   }
 
-  Icon getIconWidget(IconData iconData) => Icon(
+  Icon _getIconWidget(IconData iconData) => Icon(
         iconData,
         color: isActive ? Colors.blue : Colors.black87,
         size: 22,
       );
 
-  Widget getAssetImage(String assetImg) {
-    return SizedBox(
-      height: 30,
-      child: FittedBox(
-          child: Image.asset(
-        assetImg,
-        color: isActive ? Colors.blue : Colors.black87,
-        fit: BoxFit.fitHeight,
-        width: 20,
-      )),
-    );
-  }
-
-  Widget getTextToolBarStyle(String text) {
+  Widget _getTextToolBarStyle(String text) {
     return Container(
       // width: 22,
       // height: 25,
@@ -597,6 +593,7 @@ class ToolBarItem extends StatelessWidget {
   }
 }
 
+///[ToolBarConfig] class to configure, toggle toolbar styles
 class ToolBarConfig {
   bool bold;
   bool italic;
@@ -620,6 +617,7 @@ class ToolBarConfig {
   bool image;
   bool video;
 
+  ///[ToolBarConfig] to enable or disable the toolbar styles
   ToolBarConfig(
       {this.bold = false,
       this.italic = false,

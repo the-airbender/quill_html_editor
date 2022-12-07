@@ -1,7 +1,5 @@
 library el_tooltip;
 
-import 'dart:io' as io;
-
 import 'package:flutter/material.dart';
 
 import 'src/arrow.dart';
@@ -52,6 +50,7 @@ class ElTooltip extends StatefulWidget {
   /// [error] showing the error message while the disabled
   final String error;
 
+  /// [ElTooltip] tooltip widget to show overlay
   const ElTooltip({
     required this.content,
     required this.child,
@@ -100,9 +99,7 @@ class ElTooltipState extends State<ElTooltip> with WidgetsBindingObserver {
   /// or when the user scrolls. This is done to avoid displacement.
   @override
   void didChangeMetrics() {
-    if (!io.Platform.isIOS) {
-      hideOverlay();
-    }
+    hideOverlay();
   }
 
   /// Measures the hidden tooltip after it's loaded with _loadHiddenOverlay(_)
