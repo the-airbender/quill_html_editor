@@ -84,7 +84,7 @@ String? htmlText = await controller.getText();
 
 ------------
 
-### License
+### MIT License
 
 
 Copyright (c) 2022 Pavan Kumar
