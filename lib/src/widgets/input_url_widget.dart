@@ -1,12 +1,13 @@
 import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:webviewx_plus/webviewx_plus.dart';
-import 'el_tooltip/el_tooltip.dart';
-import '../constants/image_constants.dart';
 import '../../quill_html_editor.dart';
+import '../constants/image_constants.dart';
 import '../utils/hex_color.dart';
 import '../utils/url_validator.dart';
+import 'el_tooltip/el_tooltip.dart';
 
 ///[InputUrlWidget] class to show widget that capture video/hyperlink urls
 class InputUrlWidget extends StatefulWidget {
@@ -22,7 +23,7 @@ class InputUrlWidget extends StatefulWidget {
   ///[isActive] to highlight icon on selection
   final bool isActive;
 
-  ///[InputUrlWidget] constuctor of input url widget to capture, video/hyperlink urls
+  ///[InputUrlWidget] constructor of input url widget to capture, video/hyperlink urls
   const InputUrlWidget(
       {super.key,
       required this.onSubmit,
@@ -77,12 +78,12 @@ class _InputUrlWidgetState extends State<InputUrlWidget> {
                     const SizedBox(
                       width: 10,
                     ),
-                    // Text(getTitle(widget.type)),
                     Flexible(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 4.0, vertical: 0),
                         child: Container(
+                          height: 50,
                           decoration: BoxDecoration(
                               color: HexColor.fromHex('#E7F0FE'),
                               borderRadius: BorderRadius.circular(10)),

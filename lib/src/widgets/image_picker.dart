@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -12,7 +13,7 @@ class ImageSelector {
   ///[ImageSelector] image selector widget to set images to editor
   ImageSelector({required this.onImagePicked});
   late List<PlatformFile>? _paths;
-  late String? _extension;
+  String? _extension;
   final FileType _pickingType = FileType.image;
 
   ///[pickFiles] to pick the files

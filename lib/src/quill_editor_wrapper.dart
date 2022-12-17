@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:quill_html_editor/quill_html_editor.dart';
@@ -119,9 +118,6 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
       mobileSpecificParams: const MobileSpecificParams(
         androidEnableHybridComposition: true,
       ),
-      navigationDelegate: (navigation) {
-        return NavigationDecision.navigate;
-      },
     );
   }
 
@@ -185,7 +181,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
       <html>
       <head>
       <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
-      <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet" />
+      <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet" />
       <style>
       .ql-container.ql-snow {
       margin-top:0px;
@@ -199,6 +195,9 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
         top: 0;
         left:0;
         right:0
+      }
+      .ql-tooltip{
+     display:none; 
       }
       
       #toolbar-container{
@@ -250,7 +249,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
       </div>
       </div>
       <!-- Include the Quill library -->
-      <script src="https://cdn.quilljs.com/1.3.7/quill.js"></script>
+      <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
       
       <!-- Initialize Quill editor -->
       <script>
@@ -303,7 +302,6 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
       editor.applyGoogleKeyboardWorkaround = true
       editor.on('editor-change', function (eventName, ...args) {
           if (eventName === 'text-change') {
-           
             // args[0] will be delta
             var ops = args[0]['ops']
             if(ops===null){
@@ -317,17 +315,13 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
             }
           
             setTimeout(function () {
-      
               var newPos = editor.getSelection().index
               if (newPos === oldPos) {
                 editor.setSelection(editor.getSelection().index + 1, 0)
               }
             }, 30);
             //onRangeChanged();
-           
           } 
-          
-   
         });
       } catch (e) {
         console.log(e);
@@ -357,25 +351,23 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
       quilleditor.enable($isEnabled);
       
       quilleditor.root.addEventListener("blur",function (){
-      
       resizeElementHeight(document.getElementById("editorcontainer"),1);
       resizeElementHeight(document.getElementById("editor"),1);                     
-      
       });
         
        quilleditor.on('selection-change', function(eventName, ...args) {
-             // console.log('selection changed');
+             /// console.log('selection changed');
                onRangeChanged(); 
           });
           
       quilleditor.on('text-change', function(eventName, ...args) {
-            // console.log('text changed');
+            /// console.log('text changed');
              onRangeChanged(); 
           });
       
      function onRangeChanged(){
            var range = quilleditor.getSelection();
-              var format = quilleditor.getFormat();
+           var format = quilleditor.getFormat();
            
               if (range) {
                   if (range.length == 0) {
@@ -392,7 +384,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
       
       
       function formatParser(format){
-         var formatMap = {};
+      var formatMap = {};
         formatMap['bold'] = format['bold'];
         formatMap['italic'] = format['italic'];
         formatMap['underline'] = format['underline'];
@@ -412,11 +404,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
         formatMap['video'] = format['video'];
         formatMap['clean'] = format['clean'];
         formatMap['link'] = format['link'];
-        
-        // for (var i = 0, keys = Object.keys(formatMap), ii = keys.length; i < ii; i++) {
-        //     console.log(keys[i] + '|' + formatMap[keys[i]]);
-        // }  
-        
+  
         if($kIsWeb){
         UpdateFormat(JSON.stringify(formatMap));
         }else{
@@ -424,8 +412,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
         }  
       }
         
-      quilleditor.root.addEventListener("focus",function (){
-  
+      quilleditor.root.addEventListener("focus",function (){  
       // onRangeChanged(); 
       resizeElementHeight(document.getElementById("editorcontainer"),2);
       resizeElementHeight(document.getElementById("editor"),2);       
@@ -433,16 +420,17 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
       });
       applyGoogleKeyboardWorkaround(quilleditor);
       
-      function getHtmlText()
+     function getHtmlText()
       {
         return quilleditor.root.innerHTML;
       }
-        function getSelection()
+      
+     function getSelection()
       {
        var range = quilleditor.getSelection();
-      if(range){
-      return range.length;
-      }
+       if(range){
+         return range.length;
+       }
         return -1;
       }
       
@@ -450,16 +438,13 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
       {
        var range = quilleditor.getSelection();
       if(range){
-      
-       var rangeMap = {};
-       rangeMap['length'] = range.length;
-       rangeMap['index'] = range.index;
-       return  JSON.stringify(rangeMap);
-      
+         var rangeMap = {};
+         rangeMap['length'] = range.length;
+         rangeMap['index'] = range.index;
+         return  JSON.stringify(rangeMap);   
       }
-      return {};
-      
-   }
+      return {};    
+      }
    
    
     function setSelection (index, length) 
@@ -468,23 +453,23 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
       return '';
       } 
    
-
       function setHtmlText(htmlString) 
       {
-        quilleditor.container.firstChild.innerHTML = htmlString;
+        const delta = quilleditor.clipboard.convert(htmlString);
+        quilleditor.setContents(delta, 'silent');
         return '';
       } 
       
-       function embedVideo(videlUrl) 
+      function embedVideo(videlUrl) 
       {  
         var range = quilleditor.getSelection();
         if(range){
           quilleditor.insertEmbed(range.index, 'video', videlUrl);
         }
       return '' ;
-           } 
+      } 
       
-          function embedImage(img) 
+      function embedImage(img) 
       {  
         var range = quilleditor.getSelection();
         if(range){
@@ -494,14 +479,13 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
       } 
       
       
-        function enableEditor(isEnabled) 
+     function enableEditor(isEnabled) 
       {
         quilleditor.enable(isEnabled);
          return '';
       } 
       
-      function setFormat(format,value){
-       
+      function setFormat(format,value){     
       if(format == 'clean'){
         var range = quilleditor.getSelection();
           if (range) {

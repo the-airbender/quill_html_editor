@@ -16,6 +16,7 @@ class MyApp extends StatelessWidget {
     ToolBarStyle.align,
     ToolBarStyle.color,
   ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,6 +39,9 @@ class MyApp extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
+            TextButton(onPressed: (){
+              controller.clear();
+            }, child: const Text('clear')),
             Expanded(
               child: QuillHtmlEditor(
                 controller: controller,
