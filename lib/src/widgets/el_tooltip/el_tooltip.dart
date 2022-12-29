@@ -103,7 +103,7 @@ class ElTooltipState extends State<ElTooltip> with WidgetsBindingObserver {
   /// or when the user scrolls. This is done to avoid displacement.
   @override
   void didChangeMetrics() {
-   /// hideOverlay();
+    /// hideOverlay();
   }
 
   /// Measures the hidden tooltip after it's loaded with _loadHiddenOverlay(_)
@@ -255,7 +255,8 @@ class ElTooltipState extends State<ElTooltip> with WidgetsBindingObserver {
     );
   }
 
-  void showOverlayOnTap(){
+  /// [showOverlayOnTap] a function to show the overlay on tap
+  void showOverlayOnTap() {
     if (widget.enable) {
       _overlayEntry != null ? hideOverlay() : _showOverlay(context);
     } else {
@@ -263,5 +264,4 @@ class ElTooltipState extends State<ElTooltip> with WidgetsBindingObserver {
           .showSnackBar(SnackBar(content: Text(widget.error)));
     }
   }
-
 }

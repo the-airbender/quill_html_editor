@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
       appBar: PreferredSize(
           preferredSize: const Size.fromHeight(250), // Set this height
           child: Container(
-             height: 130,
+            height: 130,
             color: Colors.cyan.shade50,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.end,
