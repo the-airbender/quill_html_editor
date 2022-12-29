@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
       appBar: PreferredSize(
           preferredSize: const Size.fromHeight(250), // Set this height
           child: Container(
-            height: 90,
+             height: 130,
             color: Colors.cyan.shade50,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -39,9 +39,6 @@ class MyApp extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            TextButton(onPressed: (){
-              controller.clear();
-            }, child: const Text('clear')),
             Expanded(
               child: QuillHtmlEditor(
                 controller: controller,
@@ -49,7 +46,7 @@ class MyApp extends StatelessWidget {
                 isEnabled: true,
                 // to disable the editor set isEnabled to false (default value is true)
               ),
-            )
+            ),
           ],
         ),
       ),

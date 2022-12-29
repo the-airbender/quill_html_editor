@@ -400,10 +400,14 @@ class ToolBarState extends State<ToolBar> {
 
   Widget _getFontColorWidget(int i) {
     return ElTooltip(
+      onTap: () {
+        if (_fontColorKey.currentState != null) {
+          _fontColorKey.currentState!.showOverlayOnTap();
+        }
+      },
       position: ElTooltipPosition.bottomEnd,
       key: _fontColorKey,
       content: ColorPicker(
-        showPicker: false,
         onColorPicked: (color) {
           _formatMap['color'] = color;
           _toolbarList[i].isActive = true;
@@ -447,9 +451,13 @@ class ToolBarState extends State<ToolBar> {
 
   Widget _getFontBackgndColorWidget(int i) {
     return ElTooltip(
+      onTap: () {
+        if (_fontBgColorKey.currentState != null) {
+          _fontBgColorKey.currentState!.showOverlayOnTap();
+        }
+      },
       key: _fontBgColorKey,
       content: ColorPicker(
-        showPicker: false,
         onColorPicked: (color) {
           _formatMap['background'] = color;
           _toolbarList[i].isActive = true;

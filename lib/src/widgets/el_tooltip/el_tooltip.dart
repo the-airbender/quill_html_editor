@@ -50,10 +50,14 @@ class ElTooltip extends StatefulWidget {
   /// [error] showing the error message while the disabled
   final String error;
 
+  /// [onTap] callback when tooltip is tapped
+  final GestureTapCallback onTap;
+
   /// [ElTooltip] tooltip widget to show overlay
   const ElTooltip({
     required this.content,
     required this.child,
+    required this.onTap,
     this.color = Colors.white,
     this.distance = 10.0,
     this.padding = 2.0,
@@ -246,15 +250,18 @@ class ElTooltipState extends State<ElTooltip> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        if (widget.enable) {
-          _overlayEntry != null ? hideOverlay() : _showOverlay(context);
-        } else {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text(widget.error)));
-        }
-      },
+      onTap: widget.onTap,
       child: widget.child,
     );
   }
+
+  void showOverlayOnTap(){
+    if (widget.enable) {
+      _overlayEntry != null ? hideOverlay() : _showOverlay(context);
+    } else {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(widget.error)));
+    }
+  }
+
 }

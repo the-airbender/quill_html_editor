@@ -3,10 +3,10 @@ import 'package:quill_html_editor/src/utils/hex_color.dart';
 import 'package:webviewx_plus/webviewx_plus.dart';
 
 class ColorPicker extends StatelessWidget {
-  const ColorPicker(
-      {super.key, required this.onColorPicked, required this.showPicker});
+  const ColorPicker({super.key, required this.onColorPicked});
+
+  /// [onColorPicked] callback when a color is picked
   final Function(String) onColorPicked;
-  final bool showPicker;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -15,7 +15,7 @@ class ColorPicker extends StatelessWidget {
         color: Colors.white,
         child: GridView.builder(
             shrinkWrap: true,
-            itemCount: colorList.length,
+            itemCount: _colorList.length,
             padding: const EdgeInsets.all(2),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 4),
@@ -23,14 +23,14 @@ class ColorPicker extends StatelessWidget {
               return WebViewAware(
                 child: GestureDetector(
                     onTap: () {
-                      onColorPicked(colorList[index]);
+                      onColorPicked(_colorList[index]);
                     },
-                    child: colorPalette(colorList[index])),
+                    child: _colorPaletteItem(_colorList[index])),
               );
             }));
   }
 
-  Widget colorPalette(String hexColor) {
+  Widget _colorPaletteItem(String hexColor) {
     return Padding(
       padding: const EdgeInsets.all(4.0),
       child: Container(
@@ -43,7 +43,7 @@ class ColorPicker extends StatelessWidget {
   }
 }
 
-const List<String> colorList = [
+const List<String> _colorList = [
   '#000000',
   '#FFFFFF',
   '#F44336',
