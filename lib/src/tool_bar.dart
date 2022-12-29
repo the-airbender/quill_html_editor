@@ -451,6 +451,7 @@ class ToolBarState extends State<ToolBar> {
 
   Widget _getFontBackgndColorWidget(int i) {
     return ElTooltip(
+      position: ElTooltipPosition.bottomEnd,
       onTap: () {
         if (_fontBgColorKey.currentState != null) {
           _fontBgColorKey.currentState!.showOverlayOnTap();
