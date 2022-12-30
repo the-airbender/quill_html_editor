@@ -5,17 +5,37 @@ void main() {
   runApp(MaterialApp(debugShowCheckedModeBanner: false, home: MyApp()));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   MyApp({super.key});
 
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   ///[controller] create a QuillEditorController to access the editor methods
   final QuillEditorController controller = QuillEditorController();
+
   final customToolBarList = [
     ToolBarStyle.bold,
     ToolBarStyle.italic,
     ToolBarStyle.align,
     ToolBarStyle.color,
   ];
+
+  @override
+  void initState() {
+    controller.onTextChanged((text) {
+      debugPrint('listening to $text');
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +50,10 @@ class MyApp extends StatelessWidget {
               children: [
                 ToolBar(
                   controller: controller,
+                  customButtons: [
+                    InkWell(onTap: () {}, child: const Icon(Icons.favorite)),
+                    InkWell(onTap: () {}, child: const Icon(Icons.add_circle)),
+                  ],
                 ),
               ],
             ),
@@ -43,6 +67,7 @@ class MyApp extends StatelessWidget {
               child: QuillHtmlEditor(
                 controller: controller,
                 height: MediaQuery.of(context).size.height,
+                onTextChanged: (text) => debugPrint('widget text change $text'),
                 isEnabled: true,
                 // to disable the editor set isEnabled to false (default value is true)
               ),

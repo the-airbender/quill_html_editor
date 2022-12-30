@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +14,7 @@ class QuillHtmlEditor extends StatefulWidget {
       required this.controller,
       required this.height,
       this.isEnabled = true,
+      this.onTextChanged,
       this.hintText = 'Description'})
       : super(key: controller._editorKey);
 
@@ -33,6 +35,10 @@ class QuillHtmlEditor extends StatefulWidget {
 
   /// [controller] to access all the methods of editor and toolbar
   final QuillEditorController controller;
+
+  /// [onTextChanged] callback function that triggers on text changed
+  final Function(String)? onTextChanged;
+
   @override
   QuillHtmlEditorState createState() => QuillHtmlEditorState();
 }
@@ -108,7 +114,33 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
                       ?.updateToolBarFormat(jsonDecode(map));
                 }
               } catch (e) {
-                debugPrint(e.toString());
+                if (!kReleaseMode) {
+                  debugPrint(e.toString());
+                }
+              }
+            }),
+        DartCallback(
+            name: 'OnTextChanged',
+            callBack: (map) {
+              try {
+                if (widget.controller._changeController != null) {
+                  String finalText = "";
+                  String parsedText =
+                      QuillEditorController._stripHtmlIfNeeded(map);
+                  if (parsedText.trim() == "") {
+                    finalText = "";
+                  } else {
+                    finalText = map;
+                  }
+                  if (widget.onTextChanged != null) {
+                    widget.onTextChanged!(finalText);
+                  }
+                  widget.controller._changeController!.add(finalText);
+                }
+              } catch (e) {
+                if (!kReleaseMode) {
+                  debugPrint(e.toString());
+                }
               }
             })
       },
@@ -361,8 +393,9 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
           });
           
       quilleditor.on('text-change', function(eventName, ...args) {
-            /// console.log('text changed');
+              console.log('text changed');
              onRangeChanged(); 
+             OnTextChanged(quilleditor.root.innerHTML);
           });
       
      function onRangeChanged(){
@@ -515,6 +548,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
 class QuillEditorController {
   GlobalKey<QuillHtmlEditorState>? _editorKey;
   GlobalKey<ToolBarState>? _toolBarKey;
+  StreamController<String>? _changeController;
 
   ///[isEnable] to enable/ disable editor
   bool isEnable = true;
@@ -523,6 +557,7 @@ class QuillEditorController {
   QuillEditorController() {
     _editorKey = GlobalKey<QuillHtmlEditorState>();
     _toolBarKey = GlobalKey<ToolBarState>();
+    _changeController = StreamController<String>();
   }
 
   /// to access toolbar key from toolbar widget
@@ -598,5 +633,28 @@ class QuillEditorController {
   /// it is a regex method to remove the tags and replace them with empty space
   static String _stripHtmlIfNeeded(String text) {
     return text.replaceAll(RegExp(r'<[^>]*>|&[^;]+;'), ' ');
+  }
+
+  ///[onTextChanged] method is used to listen to editor text changes
+  void onTextChanged(Function(String) data) {
+    try {
+      if (_changeController != null &&
+          _changeController?.hasListener == false) {
+        _changeController?.stream.listen((event) {
+          data(event);
+        });
+      }
+    } catch (e) {
+      if (!kReleaseMode) {
+        debugPrint(e.toString());
+      }
+    }
+
+    return;
+  }
+
+  ///[dispose] dispose function to close the stream
+  void dispose() {
+    _changeController?.close();
   }
 }

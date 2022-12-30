@@ -20,10 +20,14 @@ class ToolBar extends StatefulWidget {
   ///[controller] to access the editor and toolbar methods
   final QuillEditorController controller;
 
+  ///[customButtons] to add custom buttons in the toolbar
+  final List<Widget>? customButtons;
+
   ///[ToolBar] widget to show the quill toolbar
   ToolBar({
     this.toolBarConfig,
     required this.controller,
+    this.customButtons,
   }) : super(key: controller.toolBarKey);
 
   @override
@@ -229,7 +233,9 @@ class ToolBarState extends State<ToolBar> {
         ));
       }
     }
-
+    if (widget.customButtons != null && widget.customButtons!.isNotEmpty) {
+      tempToolBarList.addAll(widget.customButtons!);
+    }
     return tempToolBarList;
   }
 

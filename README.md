@@ -27,8 +27,16 @@ Define a **QuillEditorController** to access the editor methods, pass the contro
 ```dart
 QuillHtmlEditor(
 controller: controller,
-height: MediaQuery.of(context).size.height * 0.8,
+height: MediaQuery.of(context).size.height,
+onTextChanged: (text) => debugPrint('widget text change $text'),
+isEnabled: true,
 )
+```
+ **onTextChanged** can be used to listen to the text changes, as defined below
+```dart
+controller.onTextChanged((text) {
+debugPrint('listening to $text');
+});
 ```
 Define **ToolBar** widget and pass the same **controller** created for **QuillHtmlEditor**
 ```dart
@@ -50,6 +58,20 @@ controller: controller,
         toolBarConfig: customToolBarList
     ),
 ```
+
+We can also add custom buttons to our **ToolBar** as shown below
+```dart
+    final customButtons =  [
+      InkWell(onTap: () {}, child: const Icon(Icons.favorite)),
+      InkWell(onTap: () {}, child: const Icon(Icons.add_circle)),
+    ];
+    
+    ToolBar(
+        controller: controller,
+        customButtons:customButtons ,
+    ),
+```
+
 #### To get the html string from editor
 ```dart
 String? htmlText = await controller.getText();
