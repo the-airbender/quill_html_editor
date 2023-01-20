@@ -7,7 +7,7 @@ HTML rich text editor for Android, iOS, and Web, using the QuillJS library. Quil
 ### 📸 Screenshots
 
 <p float="left">
-  <img width="300" alt="1" src="https://imgur.com/a/AXnGj31.png">
+  <img width="300" alt="1" src="https://i.imgur.com/NUy0YX9.png">
 </p>
 
 <p float="left">

@@ -1,4 +1,4 @@
-## 2.0.1
+## 2.0.2
 
 - Added onTextChanged listeners
 - Added ability to add custom toolbar buttons
