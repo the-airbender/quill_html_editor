@@ -1,8 +1,7 @@
-import 'dart:convert';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:webviewx_plus/webviewx_plus.dart';
+
 import '../../quill_html_editor.dart';
 import '../constants/image_constants.dart';
 import '../utils/hex_color.dart';
@@ -67,7 +66,7 @@ class _InputUrlWidgetState extends State<InputUrlWidget> {
 
   Widget getWidgetByPlatform(BuildContext context) {
     if (kIsWeb) {
-      var selectionMap;
+      SelectionModel? selectionMap;
       return ElTooltip(
         onTap: () async {
           selectionMap = await widget.controller.getSelectionRange();
@@ -83,14 +82,13 @@ class _InputUrlWidgetState extends State<InputUrlWidget> {
     } else {
       return InkWell(
         onTap: () async {
-          var range = await widget.controller.getSelectionRange();
-          var selectionMap = {};
-          selectionMap = jsonDecode(range);
+          var selectionModel = await widget.controller.getSelectionRange();
+
           showBottomSheet(
               context: context,
               builder: (context) {
                 return _getTextFieldBytType(false, onDoneLastClicked,
-                    onCloseLastClicked, selectionMap, context);
+                    onCloseLastClicked, selectionModel, context);
               });
         },
         child: _getIcon(widget.type),
@@ -98,8 +96,12 @@ class _InputUrlWidgetState extends State<InputUrlWidget> {
     }
   }
 
-  Widget _getTextFieldBytType(bool isToolTip, int onDoneLastClicked,
-      int onCloseLastClicked, Map? selectionMap, BuildContext context) {
+  Widget _getTextFieldBytType(
+      bool isToolTip,
+      int onDoneLastClicked,
+      int onCloseLastClicked,
+      SelectionModel? selectionModel,
+      BuildContext context) {
     return WebViewAware(
       child: Form(
         key: _formKey,
@@ -151,10 +153,10 @@ class _InputUrlWidgetState extends State<InputUrlWidget> {
                     }
                     onDoneLastClicked = now;
                     if (_formKey.currentState!.validate()) {
-                      if (selectionMap != null) {
+                      if (selectionModel != null) {
                         widget.controller.setSelectionRange(
-                            selectionMap['index'] ?? 0,
-                            selectionMap['length'] ?? 0);
+                            selectionModel.index ?? 0,
+                            selectionModel.length ?? 0);
                       }
 
                       Future.delayed(const Duration(milliseconds: 10))

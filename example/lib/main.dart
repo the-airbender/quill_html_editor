@@ -6,7 +6,7 @@ void main() {
 }
 
 class MyApp extends StatefulWidget {
-  MyApp({super.key});
+  const MyApp({super.key});
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -42,20 +42,17 @@ class _MyAppState extends State<MyApp> {
     return Scaffold(
       appBar: PreferredSize(
           preferredSize: const Size.fromHeight(250), // Set this height
-          child: Container(
-            height: 130,
-            color: Colors.cyan.shade50,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                ToolBar(
-                  controller: controller,
-                  customButtons: [
-                    InkWell(onTap: () {}, child: const Icon(Icons.favorite)),
-                    InkWell(onTap: () {}, child: const Icon(Icons.add_circle)),
-                  ],
-                ),
-              ],
+          child: SafeArea(
+            child: Container(
+              color: Colors.cyan.shade50,
+              child: ToolBar(
+                padding: const EdgeInsets.all(16),
+                controller: controller,
+                customButtons: [
+                  InkWell(onTap: () async {}, child: const Icon(Icons.favorite)),
+                  InkWell(onTap: () {}, child: const Icon(Icons.add_circle)),
+                ],
+              ),
             ),
           )),
       body: SafeArea(
@@ -65,6 +62,7 @@ class _MyAppState extends State<MyApp> {
           children: [
             Expanded(
               child: QuillHtmlEditor(
+                hintText: 'Hint text goes here',
                 controller: controller,
                 height: MediaQuery.of(context).size.height,
                 onTextChanged: (text) => debugPrint('widget text change $text'),
