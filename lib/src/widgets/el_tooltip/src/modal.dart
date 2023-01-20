@@ -3,11 +3,19 @@ import 'package:flutter/material.dart';
 /// Modal is the fullscreen window displayed behind the tooltip.
 /// It's used to focus the user attention to the tooltip.
 class Modal extends StatelessWidget {
+  ///[visible] to show or hide the modal
   final bool visible;
+
+  ///[visible] to set a custom color, default color is black
   final Color color;
+
+  ///[visible] to set custom opacity, default opacity is 0.6
   final double opacity;
+
+  ///[visible] onTap void call back function when user clicks outside the tooltip
   final void Function()? onTap;
 
+  /// [Modal] is the fullscreen window displayed behind the tooltip.
   const Modal({
     required this.onTap,
     this.visible = true,

@@ -20,11 +20,21 @@ class ToolBar extends StatefulWidget {
   ///[controller] to access the editor and toolbar methods
   final QuillEditorController controller;
 
+  ///[customButtons] to add custom buttons in the toolbar
+  final List<Widget>? customButtons;
+
   ///[ToolBar] widget to show the quill toolbar
   ToolBar({
     this.toolBarConfig,
     required this.controller,
-  }) : super(key: controller.toolBarKey);
+    this.customButtons,
+    this.padding,
+  }) : super(
+          key: controller.toolBarKey,
+        );
+
+  /// [padding] The amount of space by which to inset the toolbar style widgets.
+  final EdgeInsetsGeometry? padding;
 
   @override
   State<ToolBar> createState() => ToolBarState();
@@ -37,15 +47,25 @@ class ToolBarState extends State<ToolBar> {
       GlobalKey<ElTooltipState>(debugLabel: 'fontBgColorKey');
   final GlobalKey<ElTooltipState> _fontColorKey =
       GlobalKey<ElTooltipState>(debugLabel: 'fontColorKey');
+  EdgeInsetsGeometry _buttonPadding = const EdgeInsets.all(6);
+
   @override
   void initState() {
+    if (widget.padding != null) {
+      _buttonPadding = widget.padding!;
+    }
     if (widget.toolBarConfig == null) {
       for (var style in ToolBarStyle.values) {
-        _toolbarList.add(ToolBarItem(style: style, isActive: false));
+        _toolbarList.add(ToolBarItem(
+          style: style,
+          isActive: false,
+          padding: _buttonPadding,
+        ));
       }
     } else {
       for (var style in widget.toolBarConfig!) {
-        _toolbarList.add(ToolBarItem(style: style, isActive: false));
+        _toolbarList.add(ToolBarItem(
+            style: style, isActive: false, padding: _buttonPadding));
       }
     }
 
@@ -54,15 +74,10 @@ class ToolBarState extends State<ToolBar> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(4.0),
-      child: Wrap(
-        spacing: 4,
-        runSpacing: 6,
-        alignment: WrapAlignment.start,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        children: _generateToolBar(context),
-      ),
+    return Wrap(
+      alignment: WrapAlignment.start,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: _generateToolBar(context),
     );
   }
 
@@ -156,33 +171,52 @@ class ToolBarState extends State<ToolBar> {
     for (int i = 0; i < _toolbarList.length; i++) {
       final toolbarItem = _toolbarList[i];
       if (toolbarItem.style == ToolBarStyle.size) {
-        tempToolBarList.add(_fontSizeDD());
+        tempToolBarList.add(Padding(
+          padding: _buttonPadding,
+          child: _fontSizeDD(),
+        ));
       } else if (toolbarItem.style == ToolBarStyle.align) {
-        tempToolBarList.add(_alignDD());
+        tempToolBarList.add(Padding(
+          padding: _buttonPadding,
+          child: _alignDD(),
+        ));
       } else if (toolbarItem.style == ToolBarStyle.color) {
-        tempToolBarList.add(_getFontColorWidget(i));
+        tempToolBarList.add(Padding(
+          padding: _buttonPadding,
+          child: _getFontColorWidget(i),
+        ));
       } else if (toolbarItem.style == ToolBarStyle.video) {
-        tempToolBarList.add(InputUrlWidget(
-          isActive: _formatMap['video'] != null,
-          controller: widget.controller,
-          type: UrlInputType.video,
-          onSubmit: (v) {
-            widget.controller.embedVideo(v);
-          },
+        tempToolBarList.add(Padding(
+          padding: _buttonPadding,
+          child: InputUrlWidget(
+            isActive: _formatMap['video'] != null,
+            controller: widget.controller,
+            type: UrlInputType.video,
+            onSubmit: (v) {
+              widget.controller.embedVideo(v);
+            },
+          ),
         ));
       } else if (toolbarItem.style == ToolBarStyle.link) {
-        tempToolBarList.add(InputUrlWidget(
-          isActive: _formatMap['link'] != null,
-          controller: widget.controller,
-          type: UrlInputType.hyperlink,
-          onSubmit: (v) {
-            widget.controller.setFormat(format: 'link', value: v);
-          },
+        tempToolBarList.add(Padding(
+          padding: _buttonPadding,
+          child: InputUrlWidget(
+            isActive: _formatMap['link'] != null,
+            controller: widget.controller,
+            type: UrlInputType.hyperlink,
+            onSubmit: (v) {
+              widget.controller.setFormat(format: 'link', value: v);
+            },
+          ),
         ));
       } else if (toolbarItem.style == ToolBarStyle.background) {
-        tempToolBarList.add(_getFontBackgndColorWidget(i));
+        tempToolBarList.add(Padding(
+          padding: _buttonPadding,
+          child: _getFontBackgndColorWidget(i),
+        ));
       } else {
         tempToolBarList.add(ToolBarItem(
+          padding: _buttonPadding,
           style: toolbarItem.style,
           isActive: toolbarItem.isActive,
           onTap: () async {
@@ -229,7 +263,14 @@ class ToolBarState extends State<ToolBar> {
         ));
       }
     }
-
+    if (widget.customButtons != null && widget.customButtons!.isNotEmpty) {
+      for (var element in widget.customButtons!) {
+        tempToolBarList.add(Padding(
+          padding: _buttonPadding,
+          child: element,
+        ));
+      }
+    }
     return tempToolBarList;
   }
 
@@ -506,11 +547,15 @@ class ToolBarItem extends StatelessWidget {
   ///[onTap] callback to set format on tap
   final GestureTapCallback? onTap;
 
+  /// The amount of space by which to inset the child.
+  EdgeInsetsGeometry padding;
+
   ///[ToolBarItem] toolbaritem widget to show buttons based on style
   ToolBarItem({
     super.key,
     required this.style,
     required this.isActive,
+    required this.padding,
     this.onTap,
   });
 
@@ -519,8 +564,8 @@ class ToolBarItem extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.all(0.0),
-        child: SizedBox(width: 25, child: _getIconByStyle(style)),
+        padding: padding,
+        child: SizedBox(child: _getIconByStyle(style)),
       ),
     );
   }
@@ -582,11 +627,8 @@ class ToolBarItem extends StatelessWidget {
 
   Widget _getTextToolBarStyle(String text) {
     return Container(
-      // width: 22,
-      // height: 25,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(2),
-        //    border: Border.all(width: 0.1)
       ),
       child: FittedBox(
         child: Center(
@@ -596,7 +638,7 @@ class ToolBarItem extends StatelessWidget {
             style: TextStyle(
                 fontWeight: FontWeight.w600,
                 color: isActive ? Colors.blue : Colors.black87,
-                fontSize: 14),
+                fontSize: 16),
           ),
         ),
       ),
@@ -653,6 +695,7 @@ class ToolBarConfig {
       this.link = false});
 }
 
+///[ToolBarStyle] an enum with multiple toolbar styles, to define required toolbar styles in custom config
 enum ToolBarStyle {
   bold,
   italic,

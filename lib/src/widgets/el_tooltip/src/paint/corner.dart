@@ -5,6 +5,7 @@ class Corner extends CustomPainter {
   /// [color] of the arrow.
   final Color color;
 
+  /// Design of the corner triangle that appears attached to the tooltip
   Corner({this.color = const Color(0xff000000)});
 
   @override

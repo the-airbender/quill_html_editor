@@ -7,10 +7,20 @@ import 'paint/triangle.dart';
 /// Loads the arrow from the paint code and applies the correct transformations
 /// color, rotation and mirroring
 class Arrow extends StatelessWidget {
+  ///color, to set color of the arrow
   final Color color;
+
+  ///position, to set the position of the arrow
   final ElTooltipPosition position;
+
+  ///width, to set the width of the arrow
   final double width;
+
+  ///width, to set the height of the arrow
   final double height;
+
+  /// Loads the arrow from the paint code and applies the correct transformations
+  /// color, rotation and mirroring
   const Arrow({
     required this.color,
     required this.position,

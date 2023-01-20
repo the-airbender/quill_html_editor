@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:universal_io/io.dart';
 
+///[ImageSelector] to pick files or media, supports all platforms
 class ImageSelector {
   ///[onImagePicked] callback function for image picker
   final Function(String) onImagePicked;
@@ -30,7 +31,6 @@ class ImageSelector {
             : null,
       ))
           ?.files;
-      print(_paths);
       if (_paths != null && _paths!.isNotEmpty) {
         Uint8List? bytes;
         if (kIsWeb) {

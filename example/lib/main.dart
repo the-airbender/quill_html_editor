@@ -5,11 +5,17 @@ void main() {
   runApp(MaterialApp(debugShowCheckedModeBanner: false, home: MyApp()));
 }
 
-class MyApp extends StatelessWidget {
-  MyApp({super.key});
+class MyApp extends StatefulWidget {
+  const MyApp({super.key});
 
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   ///[controller] create a QuillEditorController to access the editor methods
   final QuillEditorController controller = QuillEditorController();
+
   final customToolBarList = [
     ToolBarStyle.bold,
     ToolBarStyle.italic,
@@ -18,20 +24,35 @@ class MyApp extends StatelessWidget {
   ];
 
   @override
+  void initState() {
+    controller.onTextChanged((text) {
+      debugPrint('listening to $text');
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
           preferredSize: const Size.fromHeight(250), // Set this height
-          child: Container(
-            height: 130,
-            color: Colors.cyan.shade50,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                ToolBar(
-                  controller: controller,
-                ),
-              ],
+          child: SafeArea(
+            child: Container(
+              color: Colors.cyan.shade50,
+              child: ToolBar(
+                padding: const EdgeInsets.all(16),
+                controller: controller,
+                customButtons: [
+                  InkWell(onTap: () async {}, child: const Icon(Icons.favorite)),
+                  InkWell(onTap: () {}, child: const Icon(Icons.add_circle)),
+                ],
+              ),
             ),
           )),
       body: SafeArea(
@@ -41,8 +62,10 @@ class MyApp extends StatelessWidget {
           children: [
             Expanded(
               child: QuillHtmlEditor(
+                hintText: 'Hint text goes here',
                 controller: controller,
                 height: MediaQuery.of(context).size.height,
+                onTextChanged: (text) => debugPrint('widget text change $text'),
                 isEnabled: true,
                 // to disable the editor set isEnabled to false (default value is true)
               ),

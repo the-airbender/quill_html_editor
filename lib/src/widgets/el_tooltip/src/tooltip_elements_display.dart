@@ -11,6 +11,8 @@ class ToolTipElementsDisplay {
   final ElTooltipPosition position;
   final BorderRadiusGeometry? radius;
 
+  /// [ToolTipElementsDisplay] holds the size, position and style
+  /// for the tooltip and the arrow.
   ToolTipElementsDisplay({
     required this.bubble,
     required this.arrow,

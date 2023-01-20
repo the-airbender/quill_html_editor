@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:quill_html_editor/quill_html_editor.dart';
@@ -13,6 +15,7 @@ class QuillHtmlEditor extends StatefulWidget {
       required this.controller,
       required this.height,
       this.isEnabled = true,
+      this.onTextChanged,
       this.hintText = 'Description'})
       : super(key: controller._editorKey);
 
@@ -33,6 +36,10 @@ class QuillHtmlEditor extends StatefulWidget {
 
   /// [controller] to access all the methods of editor and toolbar
   final QuillEditorController controller;
+
+  /// [onTextChanged] callback function that triggers on text changed
+  final Function(String)? onTextChanged;
+
   @override
   QuillHtmlEditorState createState() => QuillHtmlEditorState();
 }
@@ -108,7 +115,33 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
                       ?.updateToolBarFormat(jsonDecode(map));
                 }
               } catch (e) {
-                debugPrint(e.toString());
+                if (!kReleaseMode) {
+                  debugPrint(e.toString());
+                }
+              }
+            }),
+        DartCallback(
+            name: 'OnTextChanged',
+            callBack: (map) {
+              try {
+                if (widget.controller._changeController != null) {
+                  String finalText = "";
+                  String parsedText =
+                      QuillEditorController._stripHtmlIfNeeded(map);
+                  if (parsedText.trim() == "") {
+                    finalText = "";
+                  } else {
+                    finalText = map;
+                  }
+                  if (widget.onTextChanged != null) {
+                    widget.onTextChanged!(finalText);
+                  }
+                  widget.controller._changeController!.add(finalText);
+                }
+              } catch (e) {
+                if (!kReleaseMode) {
+                  debugPrint(e.toString());
+                }
               }
             })
       },
@@ -170,24 +203,18 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
   /// This method generated the html code that is required to render the quill js editor
   /// We are rendering this html page with the help of webviewx and using the callbacks to call the quill js apis
   String _getQuillPage({required double height, required double width}) {
-    double finalHeight = width < 350
-        ? height - 110
-        : width < 600
-            ? height - 85
-            : height - 65;
-
     return '''
  <!DOCTYPE html>
       <html>
       <head>
       <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
-      <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet" />
+      <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet" />
       <style>
       .ql-container.ql-snow {
       margin-top:0px;
       width:100%;
       border:none;
-      height: ${finalHeight.toInt() - 43}px;
+      height: ${height.toInt()}px;
       min-height:100%;
       }
       .ql-toolbar { 
@@ -244,12 +271,12 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
       
       <!-- Create the editor container -->
       <div style="position:relative;margin-top:0em;">
-      <div id="editorcontainer" style="height:${finalHeight.toInt()}px; min-height:100%; overflow-y:auto;margin-top:0em;">
-      <div id="editor" style="min-height:100%; height:${finalHeight.toInt() - 43}px;  width:100%;"></div>
+      <div id="editorcontainer" style="height:${height.toInt()}px; min-height:100%; overflow-y:auto;margin-top:0em;">
+      <div id="editor" style="min-height:100%; height:${height.toInt()}px;  width:100%;"></div>
       </div>
       </div>
       <!-- Include the Quill library -->
-      <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+      <script src="https://cdn.quilljs.com/1.3.7/quill.js"></script>
       
       <!-- Initialize Quill editor -->
       <script>
@@ -287,7 +314,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
         if(isIOS){
         element.style.height = ((height/ratio - element.offsetTop) + "px");
         }else{
-        element.style.height = ((height - element.offsetTop-60) + "px");
+        element.style.height = ((height - element.offsetTop) + "px");
         }
       
       }
@@ -301,23 +328,23 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
       }
       editor.applyGoogleKeyboardWorkaround = true
       editor.on('editor-change', function (eventName, ...args) {
+       
           if (eventName === 'text-change') {
             // args[0] will be delta
             var ops = args[0]['ops']
             if(ops===null){
             return
             }
-            var oldSelection = editor.getSelection()
+            var oldSelection = editor.getSelection(true)
             var oldPos = oldSelection.index
             var oldSelectionLength = oldSelection.length
             if (ops[0]["retain"] === undefined || !ops[1] || !ops[1]["insert"] || !ops[1]["insert"] ||ops[1]["list"] === "bullet"|| ops[1]["list"] === "ordered"  || ops[1]["insert"] !=  "\\n" || oldSelectionLength > 0) {
               return
             }
-          
             setTimeout(function () {
-              var newPos = editor.getSelection().index
+              var newPos = editor.getSelection(true).index
               if (newPos === oldPos) {
-                editor.setSelection(editor.getSelection().index + 1, 0)
+                editor.setSelection(editor.getSelection(true).index + 1, 0)
               }
             }, 30);
             //onRangeChanged();
@@ -356,20 +383,21 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
       });
         
        quilleditor.on('selection-change', function(eventName, ...args) {
-             /// console.log('selection changed');
+              // console.log('selection changed');
                onRangeChanged(); 
           });
           
       quilleditor.on('text-change', function(eventName, ...args) {
-            /// console.log('text changed');
+           // console.log('text changed');
              onRangeChanged(); 
+             OnTextChanged(quilleditor.root.innerHTML);
           });
       
      function onRangeChanged(){
-           var range = quilleditor.getSelection();
-           var format = quilleditor.getFormat();
-           
-              if (range) {
+     try{
+    
+           var range = quilleditor.getSelection(true);   
+            if (range !=null) {
                   if (range.length == 0) {
                     var format = quilleditor.getFormat();
                      formatParser(format);
@@ -379,6 +407,9 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
                  }
               } else {
                   console.log('Cursor not in the editor');
+              }}
+              catch(e){
+              console.log(e);
               }
      } 
       
@@ -413,7 +444,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
       }
         
       quilleditor.root.addEventListener("focus",function (){  
-      // onRangeChanged(); 
+
       resizeElementHeight(document.getElementById("editorcontainer"),2);
       resizeElementHeight(document.getElementById("editor"),2);       
       
@@ -427,7 +458,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
       
      function getSelection()
       {
-       var range = quilleditor.getSelection();
+       var range = quilleditor.getSelection(true);
        if(range){
          return range.length;
        }
@@ -436,7 +467,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
       
    function getSelectionRange()
       {
-       var range = quilleditor.getSelection();
+       var range = quilleditor.getSelection(true);
       if(range){
          var rangeMap = {};
          rangeMap['length'] = range.length;
@@ -462,7 +493,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
       
       function embedVideo(videlUrl) 
       {  
-        var range = quilleditor.getSelection();
+        var range = quilleditor.getSelection(true);
         if(range){
           quilleditor.insertEmbed(range.index, 'video', videlUrl);
         }
@@ -471,7 +502,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
       
       function embedImage(img) 
       {  
-        var range = quilleditor.getSelection();
+        var range = quilleditor.getSelection(true);
         if(range){
           quilleditor.insertEmbed(range.index, 'image', img);
         }
@@ -487,7 +518,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
       
       function setFormat(format,value){     
       if(format == 'clean'){
-        var range = quilleditor.getSelection();
+        var range = quilleditor.getSelection(true);
           if (range) {
             if (range.length == 0) {
              quilleditor.removeFormat(range.index,quilleditor.root.innerHTML.length);
@@ -515,6 +546,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
 class QuillEditorController {
   GlobalKey<QuillHtmlEditorState>? _editorKey;
   GlobalKey<ToolBarState>? _toolBarKey;
+  StreamController<String>? _changeController;
 
   ///[isEnable] to enable/ disable editor
   bool isEnable = true;
@@ -523,6 +555,7 @@ class QuillEditorController {
   QuillEditorController() {
     _editorKey = GlobalKey<QuillHtmlEditorState>();
     _toolBarKey = GlobalKey<ToolBarState>();
+    _changeController = StreamController<String>();
   }
 
   /// to access toolbar key from toolbar widget
@@ -576,8 +609,12 @@ class QuillEditorController {
   }
 
   /// [getSelectionRange] to get the text selection range from editor
-  Future<dynamic> getSelectionRange() async {
-    return await _editorKey?.currentState?._getSelectionRange();
+  Future<SelectionModel> getSelectionRange() async {
+    var selection = await _editorKey?.currentState?._getSelectionRange();
+
+    return selection != null
+        ? SelectionModel.fromJson(jsonDecode(selection))
+        : SelectionModel(index: 0, length: 0);
   }
 
   /// [setSelectionRange] to select the text in the editor by index
@@ -598,5 +635,46 @@ class QuillEditorController {
   /// it is a regex method to remove the tags and replace them with empty space
   static String _stripHtmlIfNeeded(String text) {
     return text.replaceAll(RegExp(r'<[^>]*>|&[^;]+;'), ' ');
+  }
+
+  ///[onTextChanged] method is used to listen to editor text changes
+  void onTextChanged(Function(String) data) {
+    try {
+      if (_changeController != null &&
+          _changeController?.hasListener == false) {
+        _changeController?.stream.listen((event) {
+          data(event);
+        });
+      }
+    } catch (e) {
+      if (!kReleaseMode) {
+        debugPrint(e.toString());
+      }
+    }
+
+    return;
+  }
+
+  ///[dispose] dispose function to close the stream
+  void dispose() {
+    _changeController?.close();
+  }
+}
+
+///[SelectionModel] a model class for selection range
+class SelectionModel {
+  /// [index] index of the cursor
+  int? index;
+
+  ///[length] length of the selected value
+  int? length;
+
+  ///[SelectionModel] a model class constructor for selection range
+  SelectionModel({this.index, this.length});
+
+  ///[SelectionModel.fromJson] extension method to get selection model from json
+  SelectionModel.fromJson(Map<String, dynamic> json) {
+    index = json['index'];
+    length = json['length'];
   }
 }
