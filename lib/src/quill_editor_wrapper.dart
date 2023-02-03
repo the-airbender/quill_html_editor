@@ -7,6 +7,7 @@ import 'package:quill_html_editor/quill_html_editor.dart';
 import 'package:webviewx_plus/webviewx_plus.dart';
 
 ///[QuillHtmlEditor] widget to show the quill editor,
+//ignore: must_be_immutable
 class QuillHtmlEditor extends StatefulWidget {
   ///[QuillHtmlEditor] widget to show the quill editor,
   ///pass the controller to access the editor methods
@@ -16,6 +17,7 @@ class QuillHtmlEditor extends StatefulWidget {
       required this.height,
       this.isEnabled = true,
       this.onTextChanged,
+      this.defaultFontSize = 14,
       this.hintText = 'Description'})
       : super(key: controller._editorKey);
 
@@ -39,6 +41,9 @@ class QuillHtmlEditor extends StatefulWidget {
 
   /// [onTextChanged] callback function that triggers on text changed
   final Function(String)? onTextChanged;
+
+  ///[defaultFontSize] default font size of the editor
+  double? defaultFontSize;
 
   @override
   QuillHtmlEditorState createState() => QuillHtmlEditorState();
@@ -96,7 +101,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
       initialSourceType: SourceType.html,
       height: height,
       ignoreAllGestures: false,
-      width: width - 5,
+      width: width,
       onWebViewCreated: (controller) => _webviewController = controller,
       onPageStarted: (src) {},
       onPageFinished: (src) {
@@ -177,368 +182,355 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
 
   /// a private method to set the Html text to the editor
   Future _setHtmlTextToEditor({required String htmlText}) async {
-    await _webviewController.callJsMethod("setHtmlText", [htmlText]);
+    return await _webviewController.callJsMethod("setHtmlText", [htmlText]);
   }
 
   /// a private method to embed the video to the editor
   Future _embedVideo({required String videoUrl}) async {
-    await _webviewController.callJsMethod("embedVideo", [videoUrl]);
+    return await _webviewController.callJsMethod("embedVideo", [videoUrl]);
   }
 
 // a private method to embed the image to the editor
   Future _embedImage({required String imgSrc}) async {
-    await _webviewController.callJsMethod("embedImage", [imgSrc]);
+    return await _webviewController.callJsMethod("embedImage", [imgSrc]);
   }
 
   /// a private method to enable/disable the editor
   Future _enableTextEditor({required bool isEnabled}) async {
-    await _webviewController.callJsMethod("enableEditor", [isEnabled]);
+    return await _webviewController.callJsMethod("enableEditor", [isEnabled]);
   }
 
   /// a private method to enable/disable the editor
   Future _setFormat({required String format, required dynamic value}) async {
-    await _webviewController.callJsMethod("setFormat", [format, value]);
+    try {
+      return await _webviewController
+          .callJsMethod("setFormat", [format, value]);
+    } catch (e) {
+      _printWrapper(false, e.toString());
+    }
   }
 
   /// This method generated the html code that is required to render the quill js editor
   /// We are rendering this html page with the help of webviewx and using the callbacks to call the quill js apis
   String _getQuillPage({required double height, required double width}) {
     return '''
- <!DOCTYPE html>
-      <html>
-      <head>
-      <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
-      <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet" />
-      <style>
-      .ql-container.ql-snow {
-      margin-top:0px;
-      width:100%;
-      border:none;
-      height: ${height.toInt()}px;
-      min-height:100%;
-      }
-      .ql-toolbar { 
-        position: absolute; 
-        top: 0;
-        left:0;
-        right:0
-      }
-      .ql-tooltip{
-     display:none; 
-      }
-      
-      #toolbar-container{
-      display:none;
-      }     
-      </style>
-      </head>
-      <body>
-      
-      
-      <!-- Create the toolbar container -->
-      
-      <div id="toolbar-container">
-      
-      <span class="ql-formats">
-      <button class="ql-bold"></button>
-      <button class="ql-italic"></button>
-      <button class="ql-underline"></button>
-      <button class="ql-strike"></button>
-      <button class="ql-blockquote"></button>
-      <select class="ql-size"></select>
-      <button class="ql-direction" value="rtl"></button>
-      <button class="ql-direction" value="ltr"></button>
-     
-      
-      <select class="ql-color"></select>
-      <select class="ql-background"></select>
-      
-      <button class="ql-header" value="1"></button>
-      <button class="ql-header" value="2"></button>
-      
-      <button class="ql-list" value="ordered"></button>
-      <button class="ql-list" value="bullet"></button>
-      <select class="ql-align"></select>
-      <button class="ql-indent" value="-1"></button>
-      <button class="ql-indent" value="+1"></button>
-      <button class="ql-link"></button>
-      <button class="ql-image"></button>
-      <button class="ql-video"></button>
-      
-      <button class="ql-clean"></button>
-      </span>
-      </div>
-      
-      <!-- Create the editor container -->
-      <div style="position:relative;margin-top:0em;">
-      <div id="editorcontainer" style="height:${height.toInt()}px; min-height:100%; overflow-y:auto;margin-top:0em;">
-      <div id="editor" style="min-height:100%; height:${height.toInt()}px;  width:100%;"></div>
-      </div>
-      </div>
-      <!-- Include the Quill library -->
-      <script src="https://cdn.quilljs.com/1.3.7/quill.js"></script>
-      
-      <!-- Initialize Quill editor -->
-      <script>
-      
-      
-      let fullWindowHeight = window.innerHeight;
-      let keyboardIsProbablyOpen = false;
-      
-      window.addEventListener("resize", function() {
-      
-      resizeElementHeight(document.getElementById("editorcontainer"),1);
-      resizeElementHeight(document.getElementById("editor"),1);
-      if(window.innerHeight == fullWindowHeight) {
-      keyboardIsProbablyOpen = false;
-      
-      } else if(window.innerHeight < fullWindowHeight*0.9) {
-      
-      keyboardIsProbablyOpen = true;
-      }
-      });
-      
-      
-      function resizeElementHeight(element, ratio) {
-      var height = 0;
-      var body = window.document.body;
-      if (window.innerHeight) {
-      height = window.innerHeight;
-      } else if (body.parentElement.clientHeight) {
-      height = body.parentElement.clientHeight;
-      } else if (body && body.clientHeight) {
-      height = body.clientHeight;
-      }
-        let isIOS = /iPad|iPhone|iPod/.test(navigator.platform)
-        || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
-        if(isIOS){
-        element.style.height = ((height/ratio - element.offsetTop) + "px");
-        }else{
-        element.style.height = ((height - element.offsetTop) + "px");
+   <!DOCTYPE html>
+        <html>
+        <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+        <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet" />
+        <style>
+        .ql-container.ql-snow {
+        margin-top:0px;
+        margin-bottom:0px;
+        width:100%;
+        border:none;
+        font-size: ${widget.defaultFontSize}px;
+        height: ${height.toInt()}px;
+        min-height:100%;
         }
-      
-      }
-      
-      function applyGoogleKeyboardWorkaround(editor) {
-      
-      try {
-      
-      if (editor.applyGoogleKeyboardWorkaround) {
-          return
-      }
-      editor.applyGoogleKeyboardWorkaround = true
-      editor.on('editor-change', function (eventName, ...args) {
-       
-          if (eventName === 'text-change') {
-            // args[0] will be delta
-            var ops = args[0]['ops']
-            if(ops===null){
-            return
-            }
-            var oldSelection = editor.getSelection(true)
-            var oldPos = oldSelection.index
-            var oldSelectionLength = oldSelection.length
-            if (ops[0]["retain"] === undefined || !ops[1] || !ops[1]["insert"] || !ops[1]["insert"] ||ops[1]["list"] === "bullet"|| ops[1]["list"] === "ordered"  || ops[1]["insert"] !=  "\\n" || oldSelectionLength > 0) {
-              return
-            }
-            setTimeout(function () {
-              var newPos = editor.getSelection(true).index
-              if (newPos === oldPos) {
-                editor.setSelection(editor.getSelection(true).index + 1, 0)
-              }
-            }, 30);
-            //onRangeChanged();
-          } 
+        .ql-toolbar { 
+          position: absolute; 
+          top: 0;
+          left:0;
+          right:0
+        }
+        .ql-tooltip{
+       display:none; 
+        }
+        
+        #toolbar-container{
+        display:none;
+        }     
+        </style>
+        </head>
+        <body>
+        
+        <!-- Create the toolbar container -->
+        <div id="toolbar-container">
+        <span class="ql-formats">
+        <button class="ql-bold"></button>
+        <button class="ql-italic"></button>
+        <button class="ql-underline"></button>
+        <button class="ql-strike"></button>
+        <button class="ql-blockquote"></button>
+        <select class="ql-size"></select>
+        <button class="ql-direction" value="rtl"></button>
+        <button class="ql-direction" value="ltr"></button>    
+        <select class="ql-color"></select>
+        <select class="ql-background"></select>
+        <button class="ql-header" value="1"></button>
+        <button class="ql-header" value="2"></button>
+        <button class="ql-list" value="ordered"></button>
+        <button class="ql-list" value="bullet"></button>
+        <select class="ql-align"></select>
+        <button class="ql-indent" value="-1"></button>
+        <button class="ql-indent" value="+1"></button>
+        <button class="ql-link"></button>
+        <button class="ql-image"></button>
+        <button class="ql-video"></button>
+        <button class="ql-clean"></button>
+        </span>
+        </div>
+        
+        <!-- Create the editor container -->
+        <div style="position:relative;margin-top:0em;">
+        <div id="editorcontainer" style="height:${height.toInt()}px; min-height:100%; overflow-y:auto;margin-top:0em;">
+        <div id="editor" style="min-height:100%; height:${height.toInt()}px;  width:100%;"></div>
+        </div>
+        </div>
+        <!-- Include the Quill library -->
+        <script src="https://cdn.quilljs.com/1.3.7/quill.js"></script>
+        <!-- Initialize Quill editor -->
+        <script>
+        let fullWindowHeight = window.innerHeight;
+        let keyboardIsProbablyOpen = false;
+        
+        window.addEventListener("resize", function() {
+        resizeElementHeight(document.getElementById("editorcontainer"),1);
+        resizeElementHeight(document.getElementById("editor"),1);
+        if(window.innerHeight == fullWindowHeight) {
+          keyboardIsProbablyOpen = false;
+        } 
+        else if(window.innerHeight < fullWindowHeight*0.9) {
+          keyboardIsProbablyOpen = true;
+        }
         });
-      } catch (e) {
-        console.log(e);
-       }
-      }
-      
-      const Inline = Quill.import('blots/inline');
-      class RequirementBlot extends Inline {}
-      RequirementBlot.blotName = 'requirement';
-      RequirementBlot.tagName = 'requirement';
-      Quill.register(RequirementBlot);
-      
-      class ResponsibilityBlot extends Inline {}
-      ResponsibilityBlot.blotName = 'responsibility';
-      ResponsibilityBlot.tagName = 'responsibility';
-      Quill.register(ResponsibilityBlot);
-      
-      var quilleditor = new Quill('#editor', {
-        modules: { toolbar: '#toolbar-container' },
-        theme: 'snow',
-        placeholder: '${widget.hintText ?? "Description"}',
-        clipboard: {
-            matchVisual: false
-        }
-      });
-      
-      quilleditor.enable($isEnabled);
-      
-      quilleditor.root.addEventListener("blur",function (){
-      resizeElementHeight(document.getElementById("editorcontainer"),1);
-      resizeElementHeight(document.getElementById("editor"),1);                     
-      });
-        
-       quilleditor.on('selection-change', function(eventName, ...args) {
-              // console.log('selection changed');
-               onRangeChanged(); 
-          });
-          
-      quilleditor.on('text-change', function(eventName, ...args) {
-           // console.log('text changed');
-             onRangeChanged(); 
-             OnTextChanged(quilleditor.root.innerHTML);
-          });
-      
-     function onRangeChanged(){
-     try{
-    
-           var range = quilleditor.getSelection(true);   
-            if (range !=null) {
-                  if (range.length == 0) {
-                    var format = quilleditor.getFormat();
-                     formatParser(format);
-                 } else {
-                    var format = quilleditor.getFormat(range.index,range.length);
-                     formatParser(format);
-                 }
-              } else {
-                  console.log('Cursor not in the editor');
-              }}
-              catch(e){
-              console.log(e);
-              }
-     } 
-      
-      
-      function formatParser(format){
-      var formatMap = {};
-        formatMap['bold'] = format['bold'];
-        formatMap['italic'] = format['italic'];
-        formatMap['underline'] = format['underline'];
-        formatMap['strike'] = format['strike'];
-        formatMap['blockqoute'] = format['blockqoute'];
-        formatMap['background'] = format['background'];
-        formatMap['code-block'] = format['code-block'];
-        formatMap['indent'] = format['indent'];
-        formatMap['direction'] = format['direction'];
-        formatMap['size'] =   format['size'];
-        formatMap['header'] = format['header'];
-        formatMap['color'] = format['color'];
-        formatMap['font'] = format['font'];
-        formatMap['align'] = format['align'];
-        formatMap['list'] = format['list'];
-        formatMap['image'] = format['image'];
-        formatMap['video'] = format['video'];
-        formatMap['clean'] = format['clean'];
-        formatMap['link'] = format['link'];
   
-        if($kIsWeb){
-        UpdateFormat(JSON.stringify(formatMap));
-        }else{
-        UpdateFormat.postMessage(JSON.stringify(formatMap));
-        }  
-      }
-        
-      quilleditor.root.addEventListener("focus",function (){  
-
-      resizeElementHeight(document.getElementById("editorcontainer"),2);
-      resizeElementHeight(document.getElementById("editor"),2);       
-      
-      });
-      applyGoogleKeyboardWorkaround(quilleditor);
-      
-     function getHtmlText()
-      {
-        return quilleditor.root.innerHTML;
-      }
-      
-     function getSelection()
-      {
-       var range = quilleditor.getSelection(true);
-       if(range){
-         return range.length;
-       }
-        return -1;
-      }
-      
-   function getSelectionRange()
-      {
-       var range = quilleditor.getSelection(true);
-      if(range){
-         var rangeMap = {};
-         rangeMap['length'] = range.length;
-         rangeMap['index'] = range.index;
-         return  JSON.stringify(rangeMap);   
-      }
-      return {};    
-      }
-   
-   
-    function setSelection (index, length) 
-      {
-      setTimeout(() => quilleditor.setSelection(index, length), 1);
-      return '';
-      } 
-   
-      function setHtmlText(htmlString) 
-      {
-        const delta = quilleditor.clipboard.convert(htmlString);
-        quilleditor.setContents(delta, 'silent');
-        return '';
-      } 
-      
-      function embedVideo(videlUrl) 
-      {  
-        var range = quilleditor.getSelection(true);
-        if(range){
-          quilleditor.insertEmbed(range.index, 'video', videlUrl);
-        }
-      return '' ;
-      } 
-      
-      function embedImage(img) 
-      {  
-        var range = quilleditor.getSelection(true);
-        if(range){
-          quilleditor.insertEmbed(range.index, 'image', img);
-        }
-        return '';
-      } 
-      
-      
-     function enableEditor(isEnabled) 
-      {
-        quilleditor.enable(isEnabled);
-         return '';
-      } 
-      
-      function setFormat(format,value){     
-      if(format == 'clean'){
-        var range = quilleditor.getSelection(true);
-          if (range) {
-            if (range.length == 0) {
-             quilleditor.removeFormat(range.index,quilleditor.root.innerHTML.length);
-            
-            } else {
-              quilleditor.removeFormat(range.index,range.length);
-            }
-          } else {
-             quilleditor.format('clean');
+        function resizeElementHeight(element, ratio) {
+          var height = 0;
+          var body = window.document.body;
+          if (window.innerHeight) {
+          height = window.innerHeight;
+          } else if (body.parentElement.clientHeight) {
+          height = body.parentElement.clientHeight;
+          } else if (body && body.clientHeight) {
+          height = body.clientHeight;
           }
-      }else{
-      quilleditor.format(format,value);
-      }
-      return '';
-       
-      }
-      </script>
-      </body>
-      </html>
-     ''';
+          let isIOS = /iPad|iPhone|iPod/.test(navigator.platform)
+          || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+          if(isIOS){
+          element.style.height = ((height/ratio - element.offsetTop) + "px");
+          }else{
+          element.style.height = ((height - element.offsetTop) + "px");
+          }
+        
+        }
+        
+        function applyGoogleKeyboardWorkaround(editor) {
+        try {
+        if (editor.applyGoogleKeyboardWorkaround) {
+            return
+        }
+        editor.applyGoogleKeyboardWorkaround = true
+        editor.on('editor-change', function (eventName, ...args) {
+         
+            if (eventName === 'text-change') {
+              // args[0] will be delta
+              var ops = args[0]['ops']
+              if(ops===null){
+              return
+              }
+              var oldSelection = editor.getSelection(true)
+              var oldPos = oldSelection.index
+              var oldSelectionLength = oldSelection.length
+              if (ops[0]["retain"] === undefined || !ops[1] || !ops[1]["insert"] || !ops[1]["insert"] ||ops[1]["list"] === "bullet"|| ops[1]["list"] === "ordered"  || ops[1]["insert"] !=  "\\n" || oldSelectionLength > 0) {
+                return
+              }
+              setTimeout(function () {
+                var newPos = editor.getSelection(true).index
+                if (newPos === oldPos) {
+                  editor.setSelection(editor.getSelection(true).index + 1, 0)
+                }
+              }, 30);
+              //onRangeChanged();
+            } 
+          });
+        } catch (e) {
+          console.log(e);
+         }
+        }
+        
+        const Inline = Quill.import('blots/inline');
+        class RequirementBlot extends Inline {}
+        RequirementBlot.blotName = 'requirement';
+        RequirementBlot.tagName = 'requirement';
+        Quill.register(RequirementBlot);
+        
+        class ResponsibilityBlot extends Inline {}
+        ResponsibilityBlot.blotName = 'responsibility';
+        ResponsibilityBlot.tagName = 'responsibility';
+        Quill.register(ResponsibilityBlot);
+        
+        var quilleditor = new Quill('#editor', {
+          modules: { toolbar: '#toolbar-container' },
+          theme: 'snow',
+          placeholder: '${widget.hintText ?? "Description"}',
+          clipboard: {
+              matchVisual: false
+          }
+        });
+        
+        quilleditor.enable($isEnabled);
+        quilleditor.root.addEventListener("blur",function (){
+        resizeElementHeight(document.getElementById("editorcontainer"),1);
+        resizeElementHeight(document.getElementById("editor"),1);                     
+        });
+          
+         quilleditor.on('selection-change', function(eventName, ...args) {
+                // console.log('selection changed');
+                 onRangeChanged(); 
+            });
+            
+        quilleditor.on('text-change', function(eventName, ...args) {
+             // console.log('text changed');
+               onRangeChanged(); 
+               OnTextChanged(quilleditor.root.innerHTML);
+            });
+        
+       function onRangeChanged(){
+           try{
+             var range = quilleditor.getSelection(true);   
+              if (range !=null) {
+                    if (range.length == 0) {
+                      var format = quilleditor.getFormat();
+                       formatParser(format);
+                   } else {
+                      var format = quilleditor.getFormat(range.index,range.length);
+                       formatParser(format);
+                   }
+                } else {
+                    console.log('Cursor not in the editor');
+                }}
+                catch(e){
+                console.log(e);
+                }
+       } 
+        
+        
+     function formatParser(format){
+        var formatMap = {};
+          formatMap['bold'] = format['bold'];
+          formatMap['italic'] = format['italic'];
+          formatMap['underline'] = format['underline'];
+          formatMap['strike'] = format['strike'];
+          formatMap['blockqoute'] = format['blockqoute'];
+          formatMap['background'] = format['background'];
+          formatMap['code-block'] = format['code-block'];
+          formatMap['indent'] = format['indent'];
+          formatMap['direction'] = format['direction'];
+          formatMap['size'] =   format['size'];
+          formatMap['header'] = format['header'];
+          formatMap['color'] = format['color'];
+          formatMap['font'] = format['font'];
+          formatMap['align'] = format['align'];
+          formatMap['list'] = format['list'];
+          formatMap['image'] = format['image'];
+          formatMap['video'] = format['video'];
+          formatMap['clean'] = format['clean'];
+          formatMap['link'] = format['link'];
+    
+          if($kIsWeb){
+          UpdateFormat(JSON.stringify(formatMap));
+          }else{
+          UpdateFormat.postMessage(JSON.stringify(formatMap));
+          }  
+        }
+          
+        quilleditor.root.addEventListener("focus",function (){  
+          resizeElementHeight(document.getElementById("editorcontainer"),2);
+          resizeElementHeight(document.getElementById("editor"),2);         
+        });
+        applyGoogleKeyboardWorkaround(quilleditor);
+        
+       function getHtmlText()
+        {
+          return quilleditor.root.innerHTML;
+        }
+        
+       function getSelection()
+        {
+         var range = quilleditor.getSelection(true);
+         if(range){
+           return range.length;
+         }
+          return -1;
+        }
+        
+     function getSelectionRange()
+        {
+         var range = quilleditor.getSelection(true);
+        if(range){
+           var rangeMap = {};
+           rangeMap['length'] = range.length;
+           rangeMap['index'] = range.index;
+           return  JSON.stringify(rangeMap);   
+        }
+        return {};    
+        }
+     
+     
+      function setSelection (index, length) 
+        {
+        setTimeout(() => quilleditor.setSelection(index, length), 1);
+        return '';
+        } 
+     
+        function setHtmlText(htmlString) 
+        {
+          const delta = quilleditor.clipboard.convert(htmlString);
+          quilleditor.setContents(delta, 'silent');
+          return '';
+        } 
+        
+        function embedVideo(videlUrl) 
+        {  
+          var range = quilleditor.getSelection(true);
+          if(range){
+            quilleditor.insertEmbed(range.index, 'video', videlUrl);
+          }
+        return '' ;
+        } 
+        
+        function embedImage(img) 
+        {  
+          var range = quilleditor.getSelection(true);
+          if(range){
+            quilleditor.insertEmbed(range.index, 'image', img);
+          }
+          return '';
+        } 
+        
+        
+       function enableEditor(isEnabled) 
+        {
+          quilleditor.enable(isEnabled);
+           return '';
+        } 
+        
+        function setFormat(format,value){     
+        if(format == 'clean'){
+          var range = quilleditor.getSelection(true);
+            if (range) {
+              if (range.length == 0) {
+               quilleditor.removeFormat(range.index,quilleditor.root.innerHTML.length);
+              
+              } else {
+                quilleditor.removeFormat(range.index,range.length);
+              }
+            } else {
+               quilleditor.format('clean');
+            }
+        }else{
+        quilleditor.format(format,value);
+        }
+        return '';
+         
+        }
+        </script>
+        </body>
+        </html>
+       ''';
   }
 }
 
@@ -676,5 +668,11 @@ class SelectionModel {
   SelectionModel.fromJson(Map<String, dynamic> json) {
     index = json['index'];
     length = json['length'];
+  }
+}
+
+void _printWrapper(bool showPrint, String text) {
+  if (showPrint) {
+    debugPrint(text);
   }
 }

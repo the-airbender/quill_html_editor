@@ -2,6 +2,7 @@ import 'dart:core';
 
 import 'package:flutter/material.dart';
 import 'package:quill_html_editor/quill_html_editor.dart';
+import 'package:quill_html_editor/src/constants/image_constants.dart';
 import 'package:quill_html_editor/src/utils/hex_color.dart';
 import 'package:quill_html_editor/src/widgets/color_picker.dart';
 import 'package:quill_html_editor/src/widgets/image_picker.dart';
@@ -23,12 +24,24 @@ class ToolBar extends StatefulWidget {
   ///[customButtons] to add custom buttons in the toolbar
   final List<Widget>? customButtons;
 
+  ///[iconSize] to define the toolbar icon size
+  final double? iconSize;
+
+  ///[iconColor] to define the toolbar icon color
+  final Color? iconColor;
+
+  ///[activeIconColor] to define the active toolbar icon color
+  final Color? activeIconColor;
+
   ///[ToolBar] widget to show the quill toolbar
   ToolBar({
     this.toolBarConfig,
     required this.controller,
     this.customButtons,
     this.padding,
+    this.iconSize = 25,
+    this.iconColor = Colors.black,
+    this.activeIconColor = Colors.blue,
   }) : super(
           key: controller.toolBarKey,
         );
@@ -57,6 +70,9 @@ class ToolBarState extends State<ToolBar> {
     if (widget.toolBarConfig == null) {
       for (var style in ToolBarStyle.values) {
         _toolbarList.add(ToolBarItem(
+          activeIconColor: widget.activeIconColor!,
+          iconColor: widget.iconColor!,
+          iconSize: widget.iconSize!,
           style: style,
           isActive: false,
           padding: _buttonPadding,
@@ -65,7 +81,12 @@ class ToolBarState extends State<ToolBar> {
     } else {
       for (var style in widget.toolBarConfig!) {
         _toolbarList.add(ToolBarItem(
-            style: style, isActive: false, padding: _buttonPadding));
+            activeIconColor: widget.activeIconColor!,
+            iconColor: widget.iconColor!,
+            iconSize: widget.iconSize!,
+            style: style,
+            isActive: false,
+            padding: _buttonPadding));
       }
     }
 
@@ -178,17 +199,31 @@ class ToolBarState extends State<ToolBar> {
       } else if (toolbarItem.style == ToolBarStyle.align) {
         tempToolBarList.add(Padding(
           padding: _buttonPadding,
-          child: _alignDD(),
+          child: SizedBox(
+              width: widget.iconSize,
+              height: widget.iconSize,
+              child: _alignDD()),
         ));
       } else if (toolbarItem.style == ToolBarStyle.color) {
         tempToolBarList.add(Padding(
           padding: _buttonPadding,
-          child: _getFontColorWidget(i),
+          child: SizedBox(
+              width: widget.iconSize,
+              height: widget.iconSize,
+              child: _getFontColorWidget(i)),
         ));
       } else if (toolbarItem.style == ToolBarStyle.video) {
         tempToolBarList.add(Padding(
           padding: _buttonPadding,
           child: InputUrlWidget(
+            iconWidget: SizedBox(
+              width: widget.iconSize! - 2,
+              height: widget.iconSize! - 2,
+              child: Image.asset(
+                ImageConstant.kiCameraRollPng,
+                color: widget.iconColor,
+              ),
+            ),
             isActive: _formatMap['video'] != null,
             controller: widget.controller,
             type: UrlInputType.video,
@@ -201,6 +236,11 @@ class ToolBarState extends State<ToolBar> {
         tempToolBarList.add(Padding(
           padding: _buttonPadding,
           child: InputUrlWidget(
+            iconWidget: Icon(
+              Icons.link,
+              color: widget.iconColor,
+              size: widget.iconSize,
+            ),
             isActive: _formatMap['link'] != null,
             controller: widget.controller,
             type: UrlInputType.hyperlink,
@@ -212,10 +252,16 @@ class ToolBarState extends State<ToolBar> {
       } else if (toolbarItem.style == ToolBarStyle.background) {
         tempToolBarList.add(Padding(
           padding: _buttonPadding,
-          child: _getFontBackgndColorWidget(i),
+          child: SizedBox(
+              width: widget.iconSize,
+              height: widget.iconSize,
+              child: _getFontBackgroundColorWidget(i)),
         ));
       } else {
         tempToolBarList.add(ToolBarItem(
+          activeIconColor: widget.activeIconColor!,
+          iconColor: widget.iconColor!,
+          iconSize: widget.iconSize!,
           padding: _buttonPadding,
           style: toolbarItem.style,
           isActive: toolbarItem.isActive,
@@ -341,9 +387,7 @@ class ToolBarState extends State<ToolBar> {
               },
               isDense: true,
               value: _formatMap['size'] ?? 'normal',
-              style: const TextStyle(
-                fontSize: 12,
-              ),
+              style: TextStyle(fontSize: 12, color: widget.iconColor!),
               items: [
                 _fontSizeItem(type: 'Small', fontSize: 8),
                 _fontSizeItem(type: 'Normal', fontSize: 12),
@@ -370,8 +414,8 @@ class ToolBarState extends State<ToolBar> {
               style: TextStyle(
                   fontSize: fontSize,
                   color: _formatMap['size'] == type.toLowerCase()
-                      ? Colors.blue
-                      : Colors.black87,
+                      ? widget.activeIconColor
+                      : widget.iconColor!,
                   fontWeight: FontWeight.bold)),
         ));
   }
@@ -380,12 +424,12 @@ class ToolBarState extends State<ToolBar> {
     required String type,
   }) {
     return SizedBox(
-      width: 55,
       child: Text(type,
           style: TextStyle(
               fontSize: 14,
-              color:
-                  type.toLowerCase() != 'normal' ? Colors.blue : Colors.black87,
+              color: type.toLowerCase() != 'normal'
+                  ? widget.activeIconColor
+                  : widget.iconColor!,
               fontWeight: FontWeight.bold)),
     );
   }
@@ -393,6 +437,7 @@ class ToolBarState extends State<ToolBar> {
   Widget _alignDD() {
     return DropdownButtonHideUnderline(
       child: ButtonTheme(
+        padding: EdgeInsets.zero,
         child: DropdownButton<String>(
             icon: const SizedBox(
               width: 0,
@@ -413,7 +458,6 @@ class ToolBarState extends State<ToolBar> {
               _formatMap['align'] = value == 'left' ? '' : value;
               widget.controller
                   .setFormat(format: 'align', value: _formatMap['align']);
-
               setState(() {});
             }),
       ),
@@ -432,10 +476,14 @@ class ToolBarState extends State<ToolBar> {
     return DropdownMenuItem<String>(
       value: type,
       child: WebViewAware(
-          child: Icon(
-        icon,
-        color: _formatMap['align'] == type ? Colors.blue : Colors.black,
-      )),
+        child: Icon(
+          icon,
+          color: _formatMap['align'] == type
+              ? widget.activeIconColor
+              : widget.iconColor,
+          size: widget.iconSize,
+        ),
+      ),
     );
   }
 
@@ -461,28 +509,31 @@ class ToolBarState extends State<ToolBar> {
         },
       ),
       child: SizedBox(
-        width: 25,
-        height: 25,
+        width: widget.iconSize,
+        height: widget.iconSize,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              'A',
-              maxLines: 1,
-              style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  color:
-                      _formatMap['color'] != null ? Colors.blue : Colors.black,
-                  fontSize: 14),
+            Expanded(
+              child: Text(
+                'A',
+                maxLines: 1,
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: _formatMap['color'] != null
+                        ? widget.activeIconColor
+                        : widget.iconColor,
+                    fontSize: widget.iconSize! - 5),
+              ),
             ),
             Container(
               color: _formatMap['color'] != null
                   ? HexColor.fromHex(_formatMap['color'])
                   : Colors.black,
               height: 3,
-              width: 18,
+              width: widget.iconSize! - 3,
             ),
           ],
         ),
@@ -490,7 +541,7 @@ class ToolBarState extends State<ToolBar> {
     );
   }
 
-  Widget _getFontBackgndColorWidget(int i) {
+  Widget _getFontBackgroundColorWidget(int i) {
     return ElTooltip(
       position: ElTooltipPosition.bottomEnd,
       onTap: () {
@@ -519,17 +570,20 @@ class ToolBarState extends State<ToolBar> {
               ? HexColor.fromHex(_formatMap['background'])
               : Colors.white,
         ),
-        height: 22,
-        width: 22,
-        child: Text(
-          'A',
-          maxLines: 1,
-          style: TextStyle(
-              fontWeight: FontWeight.w600,
-              color: _formatMap['background'] != null
-                  ? Colors.white
-                  : Colors.black,
-              fontSize: 16),
+        height: widget.iconSize,
+        width: widget.iconSize,
+        child: FittedBox(
+          fit: BoxFit.fitHeight,
+          child: Text(
+            'A',
+            maxLines: 1,
+            style: TextStyle(
+                fontWeight: FontWeight.w600,
+                color: _formatMap['background'] != null
+                    ? widget.activeIconColor
+                    : widget.iconColor,
+                fontSize: widget.iconSize! - 1),
+          ),
         ),
       ),
     );
@@ -550,12 +604,24 @@ class ToolBarItem extends StatelessWidget {
   /// The amount of space by which to inset the child.
   EdgeInsetsGeometry padding;
 
+  ///[iconSize] to define the toolbar icon size
+  final double iconSize;
+
+  ///[iconColor] to define the toolbar icon color
+  final Color iconColor;
+
+  ///[activeIconColor] to define the active toolbar icon color
+  final Color? activeIconColor;
+
   ///[ToolBarItem] toolbaritem widget to show buttons based on style
   ToolBarItem({
     super.key,
     required this.style,
     required this.isActive,
     required this.padding,
+    required this.iconSize,
+    required this.iconColor,
+    required this.activeIconColor,
     this.onTap,
   });
 
@@ -605,9 +671,9 @@ class ToolBarItem extends StatelessWidget {
       case ToolBarStyle.listBullet:
         return _getIconWidget(Icons.format_list_bulleted_sharp);
       case ToolBarStyle.headerOne:
-        return _getTextToolBarStyle('H1');
+        return _getAssetImageWidget(ImageConstant.kiHeaderOneDarkPng);
       case ToolBarStyle.headerTwo:
-        return _getTextToolBarStyle('H2');
+        return _getAssetImageWidget(ImageConstant.kiHeaderTwoDarkPng);
       case ToolBarStyle.background:
         return _getIconWidget(Icons.font_download_sharp);
       case ToolBarStyle.image:
@@ -621,29 +687,18 @@ class ToolBarItem extends StatelessWidget {
 
   Icon _getIconWidget(IconData iconData) => Icon(
         iconData,
-        color: isActive ? Colors.blue : Colors.black87,
-        size: 22,
+        color: isActive ? activeIconColor : iconColor,
+        size: iconSize,
       );
 
-  Widget _getTextToolBarStyle(String text) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(2),
-      ),
-      child: FittedBox(
-        child: Center(
-          child: Text(
-            text,
-            maxLines: 1,
-            style: TextStyle(
-                fontWeight: FontWeight.w600,
-                color: isActive ? Colors.blue : Colors.black87,
-                fontSize: 16),
-          ),
+  Widget _getAssetImageWidget(String imagePath) => SizedBox(
+        width: iconSize,
+        height: iconSize,
+        child: Image.asset(
+          imagePath,
+          color: isActive ? activeIconColor : iconColor,
         ),
-      ),
-    );
-  }
+      );
 }
 
 ///[ToolBarConfig] class to configure, toggle toolbar styles

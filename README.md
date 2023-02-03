@@ -7,14 +7,8 @@ HTML rich text editor for Android, iOS, and Web, using the QuillJS library. Quil
 ### 📸 Screenshots
 
 <p float="left">
-  <img width="300" alt="1" src="https://i.imgur.com/NUy0YX9.png">
+  <img width="300" alt="1" src="https://i.imgur.com/5WSVtDv.png">
 </p>
-
-<p float="left">
-  <img width="300" alt="1" src="https://i.imgur.com/SPu8y6H.gif">
-</p>
-
-
 ------------
 
 
@@ -25,30 +19,36 @@ Define a **QuillEditorController** to access the editor methods, pass the contro
   final QuillEditorController controller = QuillEditorController();
 ```
 ```dart
-QuillHtmlEditor(
-    hintText: 'Hint text goes here',
-    controller: controller,
-    height: MediaQuery.of(context).size.height,
-    onTextChanged: (text) => debugPrint('widget text changed $text'),
-    isEnabled: true, // to disable the editor set isEnabled to false (default value is true)
-)
+    QuillHtmlEditor(
+        hintText: 'Hint text goes here',
+        controller: controller,
+        height: MediaQuery.of(context).size.height,
+        onTextChanged: (text) => debugPrint('widget text change $text'),
+        defaultFontSize: 16,
+        isEnabled: true,
+        // to disable the editor set isEnabled to false (default value is true)
+    )
 ```
  **onTextChanged** can be used to listen to the text changes, as defined below
 ```dart
-controller.onTextChanged((text) {
-  debugPrint('listening to $text');
-});
+    controller.onTextChanged((text) {
+      debugPrint('listening to $text');
+    });
 ```
 Define **ToolBar** widget and pass the same **controller** created for **QuillHtmlEditor**
 ```dart
- ToolBar(
-    padding: const EdgeInsets.all(6),
-    controller: controller,
-    customButtons: [
-        InkWell(onTap: () {}, child: const Icon(Icons.favorite)),
-        InkWell(onTap: () {}, child: const Icon(Icons.add_circle)),
-    ],
-)
+      ToolBar(
+        padding: const EdgeInsets.all(8),
+        iconSize: 22,
+        iconColor: Colors.black87, 
+        activeIconColor: Colors.blueAccent,
+        controller: controller,
+        customButtons: [
+            InkWell(
+            onTap: () async {}, child: const Icon(Icons.favorite)),
+            InkWell(onTap: () {}, child: const Icon(Icons.add_circle)),
+        ],
+      )
 ```
 **Note**: *toolBarConfig*, if not passed to **ToolBar**, it will show all the Toolbar Buttons. To show only required buttons, please specify the types in the list as show below.
 ```dart

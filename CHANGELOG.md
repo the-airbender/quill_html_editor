@@ -1,12 +1,8 @@
-## 2.0.2
+## 2.0.3
 
-- Added onTextChanged listeners
-- Added ability to add custom toolbar buttons
-- Added ability to change the padding of toolbar buttons
-- Fixed bug - OnTextChanged is not firing when text is copied to editor
-- Changed getSelectionRange return type from dynamic to a selection model
-- Fixed bug - removed invisible extra bottom padding on focus
-- Other minor bug fixes
+- Added capability to change toolbar icons color and size
+- Added option to change the default font size of the editor
+- Fixed analysis issues with Flutter 3.7
 
 
 

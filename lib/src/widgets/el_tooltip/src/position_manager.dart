@@ -26,7 +26,7 @@ class PositionManager {
   /// [radius] border radius amount of the tooltip.
   final double radius;
 
-  PositionManager({
+  const PositionManager({
     required this.arrowBox,
     required this.triggerBox,
     required this.overlayBox,

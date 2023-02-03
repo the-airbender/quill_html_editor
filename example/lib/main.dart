@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:quill_html_editor/quill_html_editor.dart';
 
 void main() {
-  runApp(MaterialApp(debugShowCheckedModeBanner: false, home: MyApp()));
+  runApp(const MaterialApp(debugShowCheckedModeBanner: false, home: MyApp()));
 }
 
 class MyApp extends StatefulWidget {
@@ -28,6 +28,7 @@ class _MyAppState extends State<MyApp> {
     controller.onTextChanged((text) {
       debugPrint('listening to $text');
     });
+
     super.initState();
   }
 
@@ -44,17 +45,22 @@ class _MyAppState extends State<MyApp> {
           preferredSize: const Size.fromHeight(250), // Set this height
           child: SafeArea(
             child: Container(
-              color: Colors.cyan.shade50,
+              color: Colors.greenAccent.shade100,
               child: ToolBar(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(8),
+                iconSize: 25,
+                iconColor: Colors.black87,
+                activeIconColor: Colors.blueAccent,
                 controller: controller,
                 customButtons: [
-                  InkWell(onTap: () async {}, child: const Icon(Icons.favorite)),
+                  InkWell(
+                      onTap: () async {}, child: const Icon(Icons.favorite)),
                   InkWell(onTap: () {}, child: const Icon(Icons.add_circle)),
                 ],
               ),
             ),
           )),
+
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -66,6 +72,7 @@ class _MyAppState extends State<MyApp> {
                 controller: controller,
                 height: MediaQuery.of(context).size.height,
                 onTextChanged: (text) => debugPrint('widget text change $text'),
+                defaultFontSize: 18,
                 isEnabled: true,
                 // to disable the editor set isEnabled to false (default value is true)
               ),

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:webviewx_plus/webviewx_plus.dart';
 
 import '../../quill_html_editor.dart';
-import '../constants/image_constants.dart';
 import '../utils/hex_color.dart';
 import '../utils/url_validator.dart';
 import 'el_tooltip/el_tooltip.dart';
@@ -22,13 +21,17 @@ class InputUrlWidget extends StatefulWidget {
   ///[isActive] to highlight icon on selection
   final bool isActive;
 
+  ///[iconWidget] icon for url picker
+  final Widget iconWidget;
+
   ///[InputUrlWidget] constructor of input url widget to capture, video/hyperlink urls
   const InputUrlWidget(
       {super.key,
       required this.onSubmit,
       required this.type,
       required this.controller,
-      required this.isActive});
+      required this.isActive,
+      required this.iconWidget});
   @override
   State<StatefulWidget> createState() {
     return _InputUrlWidgetState();
@@ -77,21 +80,21 @@ class _InputUrlWidgetState extends State<InputUrlWidget> {
         key: _toolTipKey,
         content: _getTextFieldBytType(
             true, onDoneLastClicked, onCloseLastClicked, selectionMap, context),
-        child: _getIcon(widget.type),
+        child: widget.iconWidget,
       );
     } else {
       return InkWell(
         onTap: () async {
-          var selectionModel = await widget.controller.getSelectionRange();
-
-          showBottomSheet(
-              context: context,
-              builder: (context) {
-                return _getTextFieldBytType(false, onDoneLastClicked,
-                    onCloseLastClicked, selectionModel, context);
-              });
+          await widget.controller.getSelectionRange().then((selectionModel) {
+            showBottomSheet(
+                context: context,
+                builder: (context) {
+                  return _getTextFieldBytType(false, onDoneLastClicked,
+                      onCloseLastClicked, selectionModel, context);
+                });
+          });
         },
-        child: _getIcon(widget.type),
+        child: widget.iconWidget,
       );
     }
   }
@@ -206,21 +209,6 @@ class _InputUrlWidgetState extends State<InputUrlWidget> {
             )),
       ),
     );
-  }
-
-  Widget _getIcon(UrlInputType type) {
-    switch (type) {
-      case UrlInputType.video:
-        return SizedBox(
-            height: 18,
-            width: 18,
-            child: Image.asset(ImageConstant.kiCameraRollPng));
-      case UrlInputType.hyperlink:
-        return Icon(
-          Icons.link,
-          color: widget.isActive ? Colors.blue : Colors.black,
-        );
-    }
   }
 }
 
