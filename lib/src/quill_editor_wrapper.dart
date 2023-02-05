@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:quill_html_editor/quill_html_editor.dart';
+import 'package:quill_html_editor/src/utils/hex_color.dart';
 import 'package:webviewx_plus/webviewx_plus.dart';
 
 ///[QuillHtmlEditor] widget to show the quill editor,
@@ -18,6 +19,8 @@ class QuillHtmlEditor extends StatefulWidget {
       this.isEnabled = true,
       this.onTextChanged,
       this.defaultFontSize = 14,
+      this.defaultFontColor = Colors.black,
+      this.backgroundColor = Colors.white,
       this.hintText = 'Description'})
       : super(key: controller._editorKey);
 
@@ -44,6 +47,12 @@ class QuillHtmlEditor extends StatefulWidget {
 
   ///[defaultFontSize] default font size of the editor
   double? defaultFontSize;
+
+  ///[backgroundColor] to set the background color of the editor
+  Color backgroundColor;
+
+  ///[defaultFontColor] to set the default font color
+  Color defaultFontColor;
 
   @override
   QuillHtmlEditorState createState() => QuillHtmlEditorState();
@@ -220,12 +229,18 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
         <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
         <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet" />
         <style>
+        body{
+           margin:0px !important;
+        }
         .ql-container.ql-snow {
-        margin-top:0px;
-        margin-bottom:0px;
+        margin-top:0px !important;
+        margin-bottom:0px !important;
+        margin:0px !important;
         width:100%;
         border:none;
         font-size: ${widget.defaultFontSize}px;
+        color:${widget.defaultFontColor.toHex()};
+        background-color:${widget.backgroundColor.toHex()};
         height: ${height.toInt()}px;
         min-height:100%;
         }
@@ -248,29 +263,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
         
         <!-- Create the toolbar container -->
         <div id="toolbar-container">
-        <span class="ql-formats">
-        <button class="ql-bold"></button>
-        <button class="ql-italic"></button>
-        <button class="ql-underline"></button>
-        <button class="ql-strike"></button>
-        <button class="ql-blockquote"></button>
-        <select class="ql-size"></select>
-        <button class="ql-direction" value="rtl"></button>
-        <button class="ql-direction" value="ltr"></button>    
-        <select class="ql-color"></select>
-        <select class="ql-background"></select>
-        <button class="ql-header" value="1"></button>
-        <button class="ql-header" value="2"></button>
-        <button class="ql-list" value="ordered"></button>
-        <button class="ql-list" value="bullet"></button>
-        <select class="ql-align"></select>
-        <button class="ql-indent" value="-1"></button>
-        <button class="ql-indent" value="+1"></button>
-        <button class="ql-link"></button>
-        <button class="ql-image"></button>
-        <button class="ql-video"></button>
-        <button class="ql-clean"></button>
-        </span>
+      
         </div>
         
         <!-- Create the editor container -->

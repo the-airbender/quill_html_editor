@@ -44,37 +44,45 @@ class _MyAppState extends State<MyApp> {
       appBar: PreferredSize(
           preferredSize: const Size.fromHeight(250), // Set this height
           child: SafeArea(
-            child: Container(
-              color: Colors.greenAccent.shade100,
-              child: ToolBar(
-                padding: const EdgeInsets.all(8),
-                iconSize: 25,
-                iconColor: Colors.black87,
-                activeIconColor: Colors.blueAccent,
-                controller: controller,
-                customButtons: [
-                  InkWell(
-                      onTap: () async {}, child: const Icon(Icons.favorite)),
-                  InkWell(onTap: () {}, child: const Icon(Icons.add_circle)),
-                ],
-              ),
+            child: ToolBar(
+              toolBarColor: Colors.cyan.shade50,
+              padding: const EdgeInsets.all(8),
+              iconSize: 20,
+              activeIconColor: Colors.green,
+              controller: controller,
+              customButtons: [
+                InkWell(
+                    onTap: () async {},
+                    child: const Icon(
+                      Icons.favorite,
+                    )),
+                InkWell(
+                    onTap: () {},
+                    child: const Icon(
+                      Icons.add_circle,
+                    )),
+              ],
             ),
           )),
-
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Expanded(
-              child: QuillHtmlEditor(
-                hintText: 'Hint text goes here',
-                controller: controller,
-                height: MediaQuery.of(context).size.height,
-                onTextChanged: (text) => debugPrint('widget text change $text'),
-                defaultFontSize: 18,
-                isEnabled: true,
-                // to disable the editor set isEnabled to false (default value is true)
+              child: Container(
+                color: Colors.black45,
+                child: QuillHtmlEditor(
+                  hintText: 'Hint text goes here',
+                  controller: controller,
+                  height: MediaQuery.of(context).size.height,
+                  onTextChanged: (text) =>
+                      debugPrint('widget text change $text'),
+                  defaultFontSize: 18,
+                  defaultFontColor: Colors.black45,
+                  isEnabled: true,
+                  backgroundColor: Colors.white,
+                ),
               ),
             ),
           ],

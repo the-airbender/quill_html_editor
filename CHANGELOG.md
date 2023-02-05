@@ -1,8 +1,10 @@
-## 2.0.3
+## 2.0.5
 
-- Added capability to change toolbar icons color and size
-- Added option to change the default font size of the editor
-- Fixed analysis issues with Flutter 3.7
+- Added [defaultFontColor] to the QuillHtmlEditor for custom themes, eg.Dark modes
+- Fixed a bug : Toolbar crashes, when user applies multiple colors and selects the text with multiple colors
+- Added [toolBarColor] for custom theme, to match the background and dropdown color with the theme.
+- Fixed Readme file
+
 
 
 

@@ -1,5 +1,6 @@
 import 'dart:core';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:quill_html_editor/quill_html_editor.dart';
 import 'package:quill_html_editor/src/constants/image_constants.dart';
@@ -30,6 +31,9 @@ class ToolBar extends StatefulWidget {
   ///[iconColor] to define the toolbar icon color
   final Color? iconColor;
 
+  ///[toolBarColor] to define the toolbar icon color
+  final Color? toolBarColor;
+
   ///[activeIconColor] to define the active toolbar icon color
   final Color? activeIconColor;
 
@@ -42,6 +46,7 @@ class ToolBar extends StatefulWidget {
     this.iconSize = 25,
     this.iconColor = Colors.black,
     this.activeIconColor = Colors.blue,
+    this.toolBarColor,
   }) : super(
           key: controller.toolBarKey,
         );
@@ -95,17 +100,19 @@ class ToolBarState extends State<ToolBar> {
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(
-      alignment: WrapAlignment.start,
-      crossAxisAlignment: WrapCrossAlignment.center,
-      children: _generateToolBar(context),
+    return Container(
+      color: widget.toolBarColor,
+      child: Wrap(
+        alignment: WrapAlignment.start,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: _generateToolBar(context),
+      ),
     );
   }
 
   ///[updateToolBarFormat] method to update the toolbar state in sync with editor formats
   void updateToolBarFormat(Map<String, dynamic> formatMap) {
     _formatMap = formatMap;
-
     for (var toolbarItem in _toolbarList) {
       switch (toolbarItem.style) {
         case ToolBarStyle.bold:
@@ -149,8 +156,19 @@ class ToolBarState extends State<ToolBar> {
           break;
         case ToolBarStyle.color:
           toolbarItem.isActive = formatMap['color'] != null;
-          if (formatMap['color'] != null) {
-            _formatMap['color'] = formatMap['color'];
+          try {
+            if (formatMap['color'] != null) {
+              if (formatMap['color'].runtimeType.toString() ==
+                  'List<dynamic>') {
+                _formatMap['color'] = formatMap['color'][0];
+              } else {
+                _formatMap['color'] = formatMap['color'];
+              }
+            }
+          } catch (e) {
+            if (!kReleaseMode) {
+              debugPrint(e.toString());
+            }
           }
           break;
         case ToolBarStyle.align:
@@ -174,8 +192,19 @@ class ToolBarState extends State<ToolBar> {
           break;
         case ToolBarStyle.background:
           toolbarItem.isActive = formatMap['background'] != null;
-          if (formatMap['background'] != null) {
-            _formatMap['background'] = formatMap['background'];
+          try {
+            if (formatMap['background'] != null) {
+              if (formatMap['background'].runtimeType.toString() ==
+                  'List<dynamic>') {
+                _formatMap['background'] = formatMap['background'][0];
+              } else {
+                _formatMap['background'] = formatMap['background'];
+              }
+            }
+          } catch (e) {
+            if (!kReleaseMode) {
+              debugPrint(e.toString());
+            }
           }
           break;
         case ToolBarStyle.link:
@@ -376,6 +405,7 @@ class ToolBarState extends State<ToolBar> {
           alignedDropdown: true,
           padding: EdgeInsets.zero,
           child: DropdownButton(
+              dropdownColor: widget.toolBarColor,
               alignment: Alignment.centerLeft,
               selectedItemBuilder: (context) {
                 return [
@@ -439,6 +469,7 @@ class ToolBarState extends State<ToolBar> {
       child: ButtonTheme(
         padding: EdgeInsets.zero,
         child: DropdownButton<String>(
+            dropdownColor: widget.toolBarColor,
             icon: const SizedBox(
               width: 0,
             ),
@@ -568,7 +599,7 @@ class ToolBarState extends State<ToolBar> {
           border: Border.all(width: 0.1),
           color: _formatMap['background'] != null
               ? HexColor.fromHex(_formatMap['background'])
-              : Colors.white,
+              : Colors.transparent,
         ),
         height: widget.iconSize,
         width: widget.iconSize,
