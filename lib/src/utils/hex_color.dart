@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 ////[HexColor] color utility class to convert hex to color
 class HexColor extends Color {
   static int _getColorFromHex(String hexColor) {
+    if(hexColor.substring(0) != '#'){
+      return Colors.transparent.value;
+    }
     hexColor = hexColor.toUpperCase().replaceAll("#", "");
     if (hexColor.length == 6) {
       hexColor = "FF$hexColor";
