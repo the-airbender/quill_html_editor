@@ -29,3 +29,5 @@ flutter:
       - packages/quill_html_editor/assets/camera_roll_icon.png
       - packages/quill_html_editor/assets/h1_dark.png
       - packages/quill_html_editor/assets/h2_dark.png
+      - packages/quill_html_editor/assets/quill/quill_2.0.0_4_min.css
+      - packages/quill_html_editor/assets/quill/quill_2.0.0_4_min.js

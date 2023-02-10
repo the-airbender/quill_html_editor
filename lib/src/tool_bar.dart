@@ -7,8 +7,8 @@ import 'package:quill_html_editor/src/constants/image_constants.dart';
 import 'package:quill_html_editor/src/utils/hex_color.dart';
 import 'package:quill_html_editor/src/widgets/color_picker.dart';
 import 'package:quill_html_editor/src/widgets/image_picker.dart';
+import 'package:quill_html_editor/src/widgets/table_picker.dart';
 import 'package:webviewx_plus/webviewx_plus.dart';
-
 import 'widgets/el_tooltip/el_tooltip.dart';
 import 'widgets/input_url_widget.dart';
 
@@ -65,6 +65,8 @@ class ToolBarState extends State<ToolBar> {
       GlobalKey<ElTooltipState>(debugLabel: 'fontBgColorKey');
   final GlobalKey<ElTooltipState> _fontColorKey =
       GlobalKey<ElTooltipState>(debugLabel: 'fontColorKey');
+  final GlobalKey<ElTooltipState> _tablePickerKey =
+      GlobalKey<ElTooltipState>(debugLabel: '_tablePickerKey');
   EdgeInsetsGeometry _buttonPadding = const EdgeInsets.all(6);
 
   @override
@@ -112,6 +114,7 @@ class ToolBarState extends State<ToolBar> {
 
   ///[updateToolBarFormat] method to update the toolbar state in sync with editor formats
   void updateToolBarFormat(Map<String, dynamic> formatMap) {
+    print(_formatMap);
     _formatMap = formatMap;
     for (var toolbarItem in _toolbarList) {
       switch (toolbarItem.style) {
@@ -234,6 +237,14 @@ class ToolBarState extends State<ToolBar> {
               child: _alignDD()),
         ));
       } else if (toolbarItem.style == ToolBarStyle.color) {
+        tempToolBarList.add(Padding(
+          padding: _buttonPadding,
+          child: SizedBox(
+              width: widget.iconSize,
+              height: widget.iconSize,
+              child: _getTablePickerWidget(i)),
+        ));
+
         tempToolBarList.add(Padding(
           padding: _buttonPadding,
           child: SizedBox(
@@ -617,6 +628,31 @@ class ToolBarState extends State<ToolBar> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _getTablePickerWidget(int i) {
+    return ElTooltip(
+      position: ElTooltipPosition.bottomEnd,
+      onTap: () {
+        if (_tablePickerKey.currentState != null) {
+          _tablePickerKey.currentState!.showOverlayOnTap();
+        }
+      },
+      key: _tablePickerKey,
+      content: Container(
+          padding: const EdgeInsets.all(8),
+          width: 150,
+          height: 150,
+          child: TablePicker(
+            onTablePicked: (int row, int column) {
+              widget.controller.insertTable(row, column);
+              if (_tablePickerKey.currentState != null) {
+                _tablePickerKey.currentState!.hideOverlay();
+              }
+            },
+          )),
+      child: const Icon(Icons.table_chart_outlined),
     );
   }
 }

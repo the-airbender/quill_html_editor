@@ -28,7 +28,6 @@ class _MyAppState extends State<MyApp> {
     controller.onTextChanged((text) {
       debugPrint('listening to $text');
     });
-
     super.initState();
   }
 
@@ -70,21 +69,26 @@ class _MyAppState extends State<MyApp> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Expanded(
-              child: Container(
-                color: Colors.black45,
+              child: SizedBox(width: 1500,
                 child: QuillHtmlEditor(
+                  text: '''<b>Hello</b> world. This is a <b>test</b>''' '',
                   hintText: 'Hint text goes here',
                   controller: controller,
                   height: MediaQuery.of(context).size.height,
-                  onTextChanged: (text) =>
-                      debugPrint('widget text change $text'),
-                  defaultFontSize: 18,
+                  onTextChanged: (text) => debugPrint('widget text change $text'),
+                  defaultFontSize: 14,
                   defaultFontColor: Colors.black45,
                   isEnabled: true,
                   backgroundColor: Colors.white,
                 ),
               ),
             ),
+            TextButton(
+                onPressed: () async {
+
+                  setHtmlText('1343234rf2');
+                },
+                child: const Text('Insert')),
           ],
         ),
       ),
@@ -100,6 +104,11 @@ class _MyAppState extends State<MyApp> {
   /// to set the html text to editor
   void setHtmlText(String text) async {
     await controller.setText(text);
+  }
+
+  /// to set the html text to editor
+  void insertHtmlText(String text) async {
+    await controller.insertText(text, index: 10);
   }
 
   /// to clear the editor
