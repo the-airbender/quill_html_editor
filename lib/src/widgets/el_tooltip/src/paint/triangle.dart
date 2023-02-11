@@ -5,7 +5,8 @@ class Triangle extends CustomPainter {
   /// [color] of the arrow.
   final Color color;
 
-  Triangle({this.color = const Color(0xff000000)});
+  /// Design of the triangle that appears attached to the tooltip
+  const Triangle({this.color = const Color(0xff000000)});
 
   @override
   void paint(Canvas canvas, Size size) {

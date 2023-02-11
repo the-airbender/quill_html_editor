@@ -1,16 +1,27 @@
 import 'package:flutter/material.dart';
-
 import 'element_box.dart';
 
 /// Bubble serves as the tooltip container
 class Bubble extends StatefulWidget {
+  /// [color] sets color to the bubble widget
   final Color color;
+
+  /// [padding] sets padding to the bubble widget
   final double padding;
+
+  /// [maxWidth] defines width constraints to the bubble widget
   final double maxWidth;
+
+  /// [triggerBox] defines the offset position to bubble widget
   final ElementBox triggerBox;
+
+  /// [radius] defines the radius of bubble widget
   final BorderRadiusGeometry? radius;
+
+  /// [child] to pass the child widget
   final Widget child;
 
+  /// [Bubble] serves as the tooltip container
   const Bubble({
     this.color = Colors.white,
     this.padding = 10.0,

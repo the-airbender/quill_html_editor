@@ -1,24 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:webviewx_plus/webviewx_plus.dart';
-class TablePicker extends StatefulWidget {
-  const TablePicker(
-      {super.key, this.rowCount = 5, required this.onTablePicked});
-  final Function(int row, int column) onTablePicked;
-  @override
-  TablePickerState createState() {
-    return TablePickerState();
-  }
 
+final _cellKey = GlobalKey();
+
+///[TablePicker] a widget to interactively selected the number of rows and columns to insert in editor
+class TablePicker extends StatefulWidget {
+  ///[TablePicker] a widget to interactively selected the number of rows and columns to insert in editor
+  const TablePicker(
+      {super.key, this.rowCount = 6, required this.onTablePicked});
+
+  ///[onTablePicked] a callback function that returns the selected row and column index
+  final Function(int row, int column) onTablePicked;
+
+  ///[rowCount] to define the table row*column matrix
   final int? rowCount;
+
+  @override
+  State<TablePicker> createState() => _TablePickerState();
 }
 
-class TablePickerState extends State<TablePicker> {
-  final Set<int> selectedIndexes = <int>{};
-  final key = GlobalKey();
-  final Set<CellBox> _trackTaped = <CellBox>{};
-  int selectedRow = 0;
-  int selectedColumn = 0;
+class _TablePickerState extends State<TablePicker> {
+  final Set<int> _selectedIndexes = <int>{};
+
+  final Set<_CellBox> _trackTaped = <_CellBox>{};
+  int _selectedRow = 0;
+  int _selectedColumn = 0;
   @override
   initState() {
     super.initState();
@@ -27,14 +34,14 @@ class TablePickerState extends State<TablePicker> {
   _detectTapedItem(PointerEvent event) {
     _clearSelection();
     final RenderBox box =
-        key.currentContext!.findAncestorRenderObjectOfType<RenderBox>()!;
+        _cellKey.currentContext!.findAncestorRenderObjectOfType<RenderBox>()!;
     final result = BoxHitTestResult();
     Offset local = box.globalToLocal(event.position);
     if (box.hitTest(result, position: local)) {
       for (final hit in result.path) {
         /// temporary variable so that the [is] allows access of [index]
         final target = hit.target;
-        if (target is CellBox && !_trackTaped.contains(target)) {
+        if (target is _CellBox && !_trackTaped.contains(target)) {
           _trackTaped.add(target);
           _selectIndex(target.index);
         }
@@ -44,20 +51,17 @@ class TablePickerState extends State<TablePicker> {
 
   _selectIndex(int index) {
     setState(() {
-      selectedIndexes.add(index);
-      List<int> tempList = selectedIndexes.toList();
+      _selectedIndexes.add(index);
+      List<int> tempList = _selectedIndexes.toList();
       tempList.sort((a, b) => a - b);
-      selectedRow = tempList.last ~/ widget.rowCount!;
-      selectedColumn = tempList.last % widget.rowCount!;
-      print(tempList);
-      print("Column $selectedColumn");
-      print("Row $selectedRow");
+      _selectedRow = tempList.last ~/ widget.rowCount!;
+      _selectedColumn = tempList.last % widget.rowCount!;
       int count = 0;
-      selectedIndexes.clear();
+      _selectedIndexes.clear();
       for (int i = 0; i < widget.rowCount!; i++) {
         for (int j = 0; j < widget.rowCount!; j++) {
-          if (i <= selectedRow && j <= selectedColumn) {
-            selectedIndexes.add(count);
+          if (i <= _selectedRow && j <= _selectedColumn) {
+            _selectedIndexes.add(count);
           }
           count++;
         }
@@ -71,36 +75,38 @@ class TablePickerState extends State<TablePicker> {
       onPointerDown: _detectTapedItem,
       onPointerMove: _detectTapedItem,
       onPointerUp: _onSelectionDone,
-      child: GridView.builder(
-        key: key,
-        itemCount: widget.rowCount! * widget.rowCount!,
-        physics: const NeverScrollableScrollPhysics(),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: widget.rowCount!,
-          childAspectRatio: 1.0,
-          crossAxisSpacing: 0.0,
-          mainAxisSpacing: 0.0,
-        ),
-        itemBuilder: (context, index) {
-          return WebViewAware(
-            child: CellSelectionWidget(
-              index: index,
-              child: Container(
-                margin: const EdgeInsets.all(2),
-                decoration: BoxDecoration(
-                    color: selectedIndexes.contains(index)
-                        ? Colors.lightBlue.shade50
-                        : Colors.transparent,
-                    border: Border.all(
-                      width: selectedIndexes.contains(index) ? 2 : 1,
-                      color: selectedIndexes.contains(index)
-                          ? Colors.lightBlue.shade100
-                          : Colors.black26,
-                    )),
+      child: Container(
+        width: 200,
+        padding: const EdgeInsets.all(4),
+        child: GridView.builder(
+          key: _cellKey,
+          shrinkWrap: true,
+          itemCount: widget.rowCount! * widget.rowCount!,
+          scrollDirection: Axis.horizontal,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: widget.rowCount!),
+          itemBuilder: (context, index) {
+            return WebViewAware(
+              child: _CellSelectionWidget(
+                index: index,
+                child: Container(
+                  margin: const EdgeInsets.all(2),
+                  decoration: BoxDecoration(
+                      color: _selectedIndexes.contains(index)
+                          ? Colors.lightBlue.shade50
+                          : Colors.transparent,
+                      border: Border.all(
+                        width: _selectedIndexes.contains(index) ? 2 : 1,
+                        color: _selectedIndexes.contains(index)
+                            ? Colors.lightBlue.shade100
+                            : Colors.black45,
+                      )),
+                ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }
@@ -108,33 +114,34 @@ class TablePickerState extends State<TablePicker> {
   void _clearSelection() {
     _trackTaped.clear();
     setState(() {
-      selectedIndexes.clear();
+      _selectedIndexes.clear();
     });
   }
 
   void _onSelectionDone(PointerUpEvent event) {
-    widget.onTablePicked(selectedRow+1, selectedColumn+1);
+    widget.onTablePicked(_selectedRow + 1, _selectedColumn + 1);
   }
 }
 
-class CellSelectionWidget extends SingleChildRenderObjectWidget {
+class _CellSelectionWidget extends SingleChildRenderObjectWidget {
   final int index;
 
-  CellSelectionWidget({required Widget child, required this.index, Key? key})
+  const _CellSelectionWidget(
+      {required Widget child, required this.index, Key? key})
       : super(child: child, key: key);
 
   @override
-  CellBox createRenderObject(BuildContext context) {
-    return CellBox(index);
+  _CellBox createRenderObject(BuildContext context) {
+    return _CellBox(index);
   }
 
   @override
-  void updateRenderObject(BuildContext context, CellBox renderObject) {
+  void updateRenderObject(BuildContext context, _CellBox renderObject) {
     renderObject.index = index;
   }
 }
 
-class CellBox extends RenderProxyBox {
+class _CellBox extends RenderProxyBox {
   int index;
-  CellBox(this.index);
+  _CellBox(this.index);
 }

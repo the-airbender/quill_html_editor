@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:quill_html_editor/src/utils/hex_color.dart';
 import 'package:webviewx_plus/webviewx_plus.dart';
+
 ///[ColorPicker] a widget to pick colors from a color grid
 class ColorPicker extends StatelessWidget {
   ///[ColorPicker] constructor of a widget to pick colors from a color grid
