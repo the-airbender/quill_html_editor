@@ -29,5 +29,12 @@ flutter:
       - packages/quill_html_editor/assets/camera_roll_icon.png
       - packages/quill_html_editor/assets/h1_dark.png
       - packages/quill_html_editor/assets/h2_dark.png
-      - packages/quill_html_editor/assets/quill/quill_2.0.0_4_min.css
-      - packages/quill_html_editor/assets/quill/quill_2.0.0_4_min.js
+      - packages/quill_html_editor/assets/edit_table.png
+      - packages/quill_html_editor/assets/insert_table.png
+      - packages/quill_html_editor/assets/delete_column.png
+      - packages/quill_html_editor/assets/delete_row.png
+      - packages/quill_html_editor/assets/delete_table.png
+      - packages/quill_html_editor/assets/insert_column_left.png
+      - packages/quill_html_editor/assets/insert_row_above.png
+      - packages/quill_html_editor/assets/insert_row_below.png
+      - packages/quill_html_editor/assets/insert_column_right.png

@@ -6,7 +6,7 @@ class Corner extends CustomPainter {
   final Color color;
 
   /// Design of the corner triangle that appears attached to the tooltip
-  Corner({this.color = const Color(0xff000000)});
+  const Corner({this.color = const Color(0xff000000)});
 
   @override
   void paint(Canvas canvas, Size size) {

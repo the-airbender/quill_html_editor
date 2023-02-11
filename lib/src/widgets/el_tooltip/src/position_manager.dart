@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'element_box.dart';
 import 'enum/el_tooltip_position.dart';
 import 'tooltip_elements_display.dart';
@@ -26,6 +25,9 @@ class PositionManager {
   /// [radius] border radius amount of the tooltip.
   final double radius;
 
+  /// [PositionManager] Calculates the position of the tooltip and the arrow on the screen
+  /// Verifies if the desired position fits the screen.
+  /// If it doesn't the position changes automatically.
   const PositionManager({
     required this.arrowBox,
     required this.triggerBox,

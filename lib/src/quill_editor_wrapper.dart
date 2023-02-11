@@ -2,9 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:quill_html_editor/quill_html_editor.dart';
 import 'package:quill_html_editor/src/utils/hex_color.dart';
+import 'package:quill_html_editor/src/widgets/edit_table_drop_down.dart';
 import 'package:webviewx_plus/webviewx_plus.dart';
 
 ///[QuillHtmlEditor] widget to show the quill editor,
@@ -113,10 +113,9 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
       width: width,
       onWebViewCreated: (controller) => _webviewController = controller,
       onPageFinished: (src) {
-        print('OnpageFinished');
-       // widget.controller.enableEditor(isEnabled);
+        widget.controller.enableEditor(isEnabled);
         if (widget.text != null) {
-       //   _setHtmlTextToEditor(htmlText: widget.text!);
+          _setHtmlTextToEditor(htmlText: widget.text!);
         }
       },
       dartCallBacks: {
@@ -159,11 +158,11 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
               }
             })
       },
-      webSpecificParams: WebSpecificParams(
+      webSpecificParams: const WebSpecificParams(
         printDebugInfo: false,
       ),
       mobileSpecificParams: const MobileSpecificParams(
-        androidEnableHybridComposition: true,
+        androidEnableHybridComposition: false,
       ),
     );
   }
@@ -191,18 +190,11 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
 
   /// a private method to set the Html text to the editor
   Future _setHtmlTextToEditor({required String htmlText}) async {
-    print(htmlText);
     return await _webviewController.callJsMethod("setHtmlText", [htmlText]);
-  }
-
-  /// a private method to insert table by row and column to the editor
-  Future _insertTableToEditor({required int row, required int column}) async {
-    return await _webviewController.callJsMethod("insertTable", [row, column]);
   }
 
   /// a private method to insert the Html text to the editor
   Future _insertHtmlTextToEditor({required String htmlText, int? index}) async {
-    print(htmlText);
     return await _webviewController
         .callJsMethod("insertHtmlText", [htmlText, index]);
   }
@@ -230,6 +222,16 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
     } catch (e) {
       _printWrapper(false, e.toString());
     }
+  }
+
+  /// a private method to insert table by row and column to the editor
+  Future _insertTableToEditor({required int row, required int column}) async {
+    return await _webviewController.callJsMethod("insertTable", [row, column]);
+  }
+  /// a private method to add remove or delete table in the editor
+  Future _modifyTable(EditTableEnum type) async {
+    return await _webviewController
+        .callJsMethod("modifyTable", [describeEnum(type)]);
   }
 
   /// This method generated the html code that is required to render the quill js editor
@@ -261,6 +263,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
         background-color:${widget.backgroundColor.toHex()};
         height: ${height.toInt()}px;
         min-height:100%;
+        contenteditable=true !important;
         }
         .ql-toolbar { 
           position: absolute; 
@@ -347,34 +350,33 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
                     setTimeout(function() {
                       var newPos = editor.getSelection(true).index
                       if(newPos === oldPos) {
-                        editor.setSelection(editor.getSelection(true).index + 1, 0)
+                       // editor.setSelection(editor.getSelection(true).index + 1, 0)
                       }
                     }, 30);
                     //onRangeChanged();
+                   
                   }
                 });
               } catch(e) {
                 console.log(e);
-              }
+              } 
             }
-          
-         
-
 
             const Inline = Quill.import('blots/inline');
             class RequirementBlot extends Inline {}
             RequirementBlot.blotName = 'requirement';
             RequirementBlot.tagName = 'requirement';
             Quill.register(RequirementBlot);
+            
             class ResponsibilityBlot extends Inline {}
             ResponsibilityBlot.blotName = 'responsibility';
             ResponsibilityBlot.tagName = 'responsibility';
             Quill.register(ResponsibilityBlot);
+            
             var quilleditor = new Quill('#editor', {
               modules: {
                 toolbar: '#toolbar-container',
-                 table: true,  
-          
+                 table: true,
               },
               theme: 'snow',
               placeholder: '${widget.hintText ?? "Description"}',
@@ -384,6 +386,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
             });
             const table = quilleditor.getModule('table');
             quilleditor.enable($isEnabled);
+         
             quilleditor.root.addEventListener("blur", function() {
               resizeElementHeight(document.getElementById("editorcontainer"), 1);
               resizeElementHeight(document.getElementById("editor"), 1);
@@ -393,9 +396,13 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
               onRangeChanged();
             });
             quilleditor.on('text-change', function(eventName, ...args) {
-              // console.log('text changed');
-              onRangeChanged();
-              OnTextChanged(quilleditor.root.innerHTML);
+               //console.log('text changed');
+              if($kIsWeb) {
+                OnTextChanged(quilleditor.root.innerHTML);
+              } else {
+                OnTextChanged.postMessage(quilleditor.root.innerHTML);
+              } 
+              
             });
             
             function onRangeChanged() {
@@ -413,7 +420,8 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
                   console.log('Cursor not in the editor');
                 }
               } catch(e) {
-                console.log(e);
+            //  console.log("exception onrange");
+              //  console.log(e);
               }
             }
             
@@ -448,8 +456,9 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
               resizeElementHeight(document.getElementById("editorcontainer"), 2);
               resizeElementHeight(document.getElementById("editor"), 2);
             });
-            applyGoogleKeyboardWorkaround(quilleditor);
             
+           /// applyGoogleKeyboardWorkaround(quilleditor);
+           
             function getHtmlText() {
               return quilleditor.root.innerHTML;
             }
@@ -487,7 +496,25 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
               table.insertTable(row, column);
               return '';
             }
-              
+            
+            function modifyTable(type) {
+                if(type =="insertRowAbove"){
+                 table.insertRowAbove();
+                }else if(type == "insertRowBelow"){
+                  table.insertRowBelow();
+                }else if(type == "insertColumnLeft"){
+                  table.insertColumnLeft();
+                }else if(type == "insertColumnRight"){
+                  table.insertColumnRight();
+                }else if(type == "deleteRow"){
+                  table.deleteRow();
+                }else if(type == "deleteColumn"){
+                  table.deleteColumn();
+                }else if(type == "deleteTable"){
+                  table.deleteTable();
+                }
+              return '';
+            }
             
             
             function insertHtmlText(htmlString, index) {
@@ -595,6 +622,11 @@ class QuillEditorController {
   Future insertTable(int row, int column) async {
     return await _editorKey?.currentState
         ?._insertTableToEditor(row: row, column: column);
+  }
+
+  /// [modifyTable] method is used to add or remove, rows or columns of the table
+  Future modifyTable(EditTableEnum type) async {
+    return await _editorKey?.currentState?._modifyTable(type);
   }
 
   /// [insertText] method is used to insert the html text to the editor

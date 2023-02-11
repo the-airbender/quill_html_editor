@@ -1,5 +1,4 @@
 import 'dart:core';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:quill_html_editor/quill_html_editor.dart';
@@ -9,6 +8,7 @@ import 'package:quill_html_editor/src/widgets/color_picker.dart';
 import 'package:quill_html_editor/src/widgets/image_picker.dart';
 import 'package:quill_html_editor/src/widgets/table_picker.dart';
 import 'package:webviewx_plus/webviewx_plus.dart';
+import 'widgets/edit_table_drop_down.dart';
 import 'widgets/el_tooltip/el_tooltip.dart';
 import 'widgets/input_url_widget.dart';
 
@@ -46,7 +46,7 @@ class ToolBar extends StatefulWidget {
     this.iconSize = 25,
     this.iconColor = Colors.black,
     this.activeIconColor = Colors.blue,
-    this.toolBarColor,
+    this.toolBarColor = Colors.white,
   }) : super(
           key: controller.toolBarKey,
         );
@@ -58,6 +58,7 @@ class ToolBar extends StatefulWidget {
   State<ToolBar> createState() => ToolBarState();
 }
 
+///[ToolBarState] state object to access the apis of toolbar
 class ToolBarState extends State<ToolBar> {
   List<ToolBarItem> _toolbarList = [];
   Map<String, dynamic> _formatMap = {};
@@ -96,14 +97,16 @@ class ToolBarState extends State<ToolBar> {
             padding: _buttonPadding));
       }
     }
-
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: widget.toolBarColor,
+      width: double.maxFinite,
+      decoration: BoxDecoration(
+        color: widget.toolBarColor,
+      ),
       child: Wrap(
         alignment: WrapAlignment.start,
         crossAxisAlignment: WrapCrossAlignment.center,
@@ -114,7 +117,6 @@ class ToolBarState extends State<ToolBar> {
 
   ///[updateToolBarFormat] method to update the toolbar state in sync with editor formats
   void updateToolBarFormat(Map<String, dynamic> formatMap) {
-    print(_formatMap);
     _formatMap = formatMap;
     for (var toolbarItem in _toolbarList) {
       switch (toolbarItem.style) {
@@ -242,14 +244,6 @@ class ToolBarState extends State<ToolBar> {
           child: SizedBox(
               width: widget.iconSize,
               height: widget.iconSize,
-              child: _getTablePickerWidget(i)),
-        ));
-
-        tempToolBarList.add(Padding(
-          padding: _buttonPadding,
-          child: SizedBox(
-              width: widget.iconSize,
-              height: widget.iconSize,
               child: _getFontColorWidget(i)),
         ));
       } else if (toolbarItem.style == ToolBarStyle.video) {
@@ -296,6 +290,22 @@ class ToolBarState extends State<ToolBar> {
               width: widget.iconSize,
               height: widget.iconSize,
               child: _getFontBackgroundColorWidget(i)),
+        ));
+
+        tempToolBarList.add(Padding(
+          padding: _buttonPadding,
+          child: SizedBox(
+              width: widget.iconSize,
+              height: widget.iconSize,
+              child: _getTablePickerWidget(i)),
+        ));
+
+        tempToolBarList.add(EditTableDropDown(
+          padding: _buttonPadding,
+          iconColor: widget.iconColor!,
+          iconSize: widget.iconSize!,
+          dropDownColor: widget.toolBarColor!,
+          onOptionSelected: (type) => widget.controller.modifyTable(type),
         ));
       } else {
         tempToolBarList.add(ToolBarItem(
@@ -550,34 +560,36 @@ class ToolBarState extends State<ToolBar> {
           }
         },
       ),
-      child: SizedBox(
-        width: widget.iconSize,
-        height: widget.iconSize,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Expanded(
-              child: Text(
-                'A',
-                maxLines: 1,
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: _formatMap['color'] != null
-                        ? widget.activeIconColor
-                        : widget.iconColor,
-                    fontSize: widget.iconSize! - 5),
+      child: Material(color: Colors.transparent,
+        child: SizedBox(
+          width: widget.iconSize,
+          height: widget.iconSize,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Text(
+                  'A',
+                  maxLines: 1,
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: _formatMap['color'] != null
+                          ? widget.activeIconColor
+                          : widget.iconColor,
+                      fontSize: widget.iconSize! - 5),
+                ),
               ),
-            ),
-            Container(
-              color: _formatMap['color'] != null
-                  ? HexColor.fromHex(_formatMap['color'])
-                  : Colors.black,
-              height: 3,
-              width: widget.iconSize! - 3,
-            ),
-          ],
+              Container(
+                color: _formatMap['color'] != null
+                    ? HexColor.fromHex(_formatMap['color'])
+                    : Colors.black,
+                height: 3,
+                width: widget.iconSize! - 3,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -604,27 +616,29 @@ class ToolBarState extends State<ToolBar> {
           }
         },
       ),
-      child: Container(
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          border: Border.all(width: 0.1),
-          color: _formatMap['background'] != null
-              ? HexColor.fromHex(_formatMap['background'])
-              : Colors.transparent,
-        ),
-        height: widget.iconSize,
-        width: widget.iconSize,
-        child: FittedBox(
-          fit: BoxFit.fitHeight,
-          child: Text(
-            'A',
-            maxLines: 1,
-            style: TextStyle(
-                fontWeight: FontWeight.w600,
-                color: _formatMap['background'] != null
-                    ? widget.activeIconColor
-                    : widget.iconColor,
-                fontSize: widget.iconSize! - 1),
+      child: Material(color: Colors.transparent,
+        child: Container(
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            border: Border.all(width: 0.1),
+            color: _formatMap['background'] != null
+                ? HexColor.fromHex(_formatMap['background'])
+                : Colors.transparent,
+          ),
+          height: widget.iconSize,
+          width: widget.iconSize,
+          child: FittedBox(
+            fit: BoxFit.fitHeight,
+            child: Text(
+              'A',
+              maxLines: 1,
+              style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: _formatMap['background'] != null
+                      ? widget.activeIconColor
+                      : widget.iconColor,
+                  fontSize: widget.iconSize! - 1),
+            ),
           ),
         ),
       ),
@@ -633,31 +647,39 @@ class ToolBarState extends State<ToolBar> {
 
   Widget _getTablePickerWidget(int i) {
     return ElTooltip(
-      position: ElTooltipPosition.bottomEnd,
+      distance: 0,
+      position: ElTooltipPosition.bottomCenter,
       onTap: () {
         if (_tablePickerKey.currentState != null) {
           _tablePickerKey.currentState!.showOverlayOnTap();
         }
       },
       key: _tablePickerKey,
-      content: Container(
-          padding: const EdgeInsets.all(8),
-          width: 150,
-          height: 150,
-          child: TablePicker(
-            onTablePicked: (int row, int column) {
-              widget.controller.insertTable(row, column);
-              if (_tablePickerKey.currentState != null) {
-                _tablePickerKey.currentState!.hideOverlay();
-              }
-            },
-          )),
-      child: const Icon(Icons.table_chart_outlined),
+      content: SizedBox(
+        height: 200,
+        child: TablePicker(
+          onTablePicked: (int row, int column) {
+            widget.controller.insertTable(row, column);
+            if (_tablePickerKey.currentState != null) {
+              _tablePickerKey.currentState!.hideOverlay();
+            }
+          },
+        ),
+      ),
+      child: SizedBox(
+        width: widget.iconSize,
+        height: widget.iconSize,
+        child: Image.asset(
+          ImageConstant.kiInsertTablePng,
+          color: widget.iconColor,
+        ),
+      ),
     );
   }
 }
 
 // ignore: must_be_immutable
+///[ToolBarItem] toolbaritem widget to show buttons based on style
 class ToolBarItem extends StatelessWidget {
   ///[style] to set the toolbar buttons by styles
   final ToolBarStyle style;
@@ -669,7 +691,7 @@ class ToolBarItem extends StatelessWidget {
   final GestureTapCallback? onTap;
 
   /// The amount of space by which to inset the child.
-  EdgeInsetsGeometry padding;
+  final EdgeInsetsGeometry padding;
 
   ///[iconSize] to define the toolbar icon size
   final double iconSize;

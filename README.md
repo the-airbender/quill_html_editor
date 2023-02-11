@@ -1,18 +1,23 @@
 
-## Quill Html Editor
+### Quill Html Editor
 
-HTML rich text editor for Android, iOS, and Web, using the QuillJS library. QuillJS is a free, open source WYSIWYG editor built for the modern web.
+Quill Html Editor is a HTML rich text editor for Android, iOS, and Web, it is built with the powerful QuillJs library.  Which is an open source WYSIWYG editor built for the modern web.
 
 ------------
+
 ### 📸 Screenshots
+Highly customizable **Editor** and **Toolbar** widgets, we can define custom color, custom font, custom icon size to the Toolbar. The below image demonstrates the light and dark mode editors.
 
-<p float="left">
-  <img width="600" alt="1" src="https://i.imgur.com/c3n5IzE.png">
+<p style="text-align: center;" float="center">**Mobile**
+<img
+  style="display: block;  margin-left: auto;  margin-right: auto;"
+  width="600" alt="1" src="https://i.imgur.com/3PrFsZU.png">
+  **Web**
+   <img  style="display: block;  margin-left: auto;  margin-right: auto;" width="600" alt="1" src="https://i.imgur.com/4FOw7Ap.png">
 </p>
+
 ------------
-
-
-### Usage
+#### Usage
 
 Define a **QuillEditorController** to access the editor methods, pass the controller to **QuillHtmlEditor** Widget
 ```dart
@@ -20,37 +25,37 @@ Define a **QuillEditorController** to access the editor methods, pass the contro
 ```
 ```dart
    QuillHtmlEditor(
-	   hintText: 'Hint text goes here',
-	   controller: controller,
-	   height: MediaQuery.of(context).size.height,
-	   onTextChanged: (text) =>
-	   debugPrint('widget text change $text'),
-	   defaultFontSize: 18,
-	   defaultFontColor: Colors.black45,
-	   isEnabled: true,
-	   backgroundColor: Colors.white,  
-    )
+hintText: 'Hint text goes here',
+controller: controller,
+height: MediaQuery.of(context).size.height,
+onTextChanged: (text) =>
+debugPrint('widget text change $text'),
+defaultFontSize: 18,
+defaultFontColor: Colors.black45,
+isEnabled: true,
+backgroundColor: Colors.white,
+)
 ```
 **onTextChanged** can be used to listen to the text changes, as defined below
 ```dart
     controller.onTextChanged((text) {
-      debugPrint('listening to $text');
-    });
+debugPrint('listening to $text');
+});
 ```
 Define **ToolBar** widget and pass the same **controller** created for **QuillHtmlEditor**
 ```dart
       ToolBar(
-		  toolBarColor: Colors.cyan.shade50,
-		  activeIconColor: Colors.green,
-		  padding: const EdgeInsets.all(8),
-		  iconSize: 20,
-		  controller: controller,
-			customButtons: [
-				InkWell(
-				onTap: () async {}, child: const Icon(Icons.favorite)),
-				InkWell(onTap: () {}, child: const Icon(Icons.add_circle)),
-			],
-      )
+toolBarColor: Colors.cyan.shade50,
+activeIconColor: Colors.green,
+padding: const EdgeInsets.all(8),
+iconSize: 20,
+controller: controller,
+customButtons: [
+InkWell(
+onTap: () async {}, child: const Icon(Icons.favorite)),
+InkWell(onTap: () {}, child: const Icon(Icons.add_circle)),
+],
+)
 ```
 **Note**: *toolBarConfig*, if not passed to **ToolBar**, it will show all the Toolbar Buttons. To show only required buttons, please specify the types in the list as show below.
 ```dart
@@ -80,30 +85,35 @@ We can also add custom buttons to our **ToolBar** as shown below
     ),
 ```
 
-#### To get the html string from editor
+##### To get the html string from editor
 ```dart
 String? htmlText = await controller.getText();
 ```
-#### To set the html string to editor
+##### To set the html string to editor
 ```dart
  await controller.setText(text);
 ```
-#### To clear the editor
+##### To insert the html string to editor
+```dart
+ await controller.insertText(text, index: 10);  /// index is optional
+/// If the index is not passed, the text will be inserted at the cursor position
+```
+##### To clear the editor
 ```dart
  controller.clear();
 ```
 
-#### To enable editor
+##### To enable editor
 ```dart
   controller.enableEditor(true);
 ```
 
-#### To disable editor
+##### To disable editor
 ```dart
   controller.enableEditor(false);
 ```
 
-### Todo
+#### Todo
 
 - Custom Font Styles
 - Image button should support custom async upload over network and embed url
@@ -120,7 +130,6 @@ String? htmlText = await controller.getText();
 ------------
 
 ### MIT License
-
 
 Copyright (c) 2022 Pavan Kumar
 

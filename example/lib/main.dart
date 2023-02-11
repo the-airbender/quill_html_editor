@@ -23,6 +23,7 @@ class _MyAppState extends State<MyApp> {
     ToolBarStyle.color,
   ];
 
+  final _toolbarColor = Color(int.parse('FF30363C', radix: 16));
   @override
   void initState() {
     controller.onTextChanged((text) {
@@ -39,56 +40,100 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(250), // Set this height
-          child: SafeArea(
-            child: ToolBar(
-              toolBarColor: Colors.cyan.shade50,
+    return SafeArea(
+      child: Scaffold(
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            ToolBar(
+              toolBarColor: _toolbarColor,
               padding: const EdgeInsets.all(8),
-              iconSize: 20,
-              activeIconColor: Colors.green,
+              iconSize: 25,
+              iconColor: Colors.white70,
+              activeIconColor: Colors.orange.shade300,
               controller: controller,
               customButtons: [
                 InkWell(
                     onTap: () async {},
                     child: const Icon(
                       Icons.favorite,
+                      color: Colors.white70,
                     )),
                 InkWell(
                     onTap: () {},
                     child: const Icon(
                       Icons.add_circle,
+                      color: Colors.white70,
                     )),
               ],
             ),
-          )),
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
             Expanded(
-              child: SizedBox(width: 1500,
-                child: QuillHtmlEditor(
-                  text: '''<b>Hello</b> world. This is a <b>test</b>''' '',
-                  hintText: 'Hint text goes here',
-                  controller: controller,
-                  height: MediaQuery.of(context).size.height,
-                  onTextChanged: (text) => debugPrint('widget text change $text'),
-                  defaultFontSize: 14,
-                  defaultFontColor: Colors.black45,
-                  isEnabled: true,
-                  backgroundColor: Colors.white,
-                ),
+              child: QuillHtmlEditor(
+                text:
+                    "<h1>Hello</h1>This is a quill html editor example text. :-)",
+                hintText: 'Hint text goes here',
+                controller: controller,
+                height: MediaQuery.of(context).size.height,
+                onTextChanged: (text) => debugPrint('widget text change $text'),
+                defaultFontSize: 18,
+                defaultFontColor: Colors.white70,
+                isEnabled: true,
+                backgroundColor: Color(int.parse('FF424242', radix: 16)),
               ),
             ),
-            TextButton(
-                onPressed: () async {
-
-                  setHtmlText('1343234rf2');
-                },
-                child: const Text('Insert')),
+            Container(
+              color: Color(int.parse('FF424242', radix: 16)).withOpacity(0.8),
+              child: Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: MaterialButton(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8)),
+                        color: _toolbarColor,
+                        child: const Text(
+                          'Set Text',
+                          style: TextStyle(color: Colors.white70),
+                        ),
+                        onPressed: () {
+                          setHtmlText("This text is set by the setText method");
+                        }),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: MaterialButton(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8)),
+                        color: _toolbarColor,
+                        child: const Text(
+                          'Insert Text',
+                          style: TextStyle(color: Colors.white70),
+                        ),
+                        onPressed: () {
+                          insertHtmlText(
+                              "This text is set by the insertText method");
+                        }),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: MaterialButton(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8)),
+                        color: _toolbarColor,
+                        child: const Text(
+                          'Insert Index',
+                          style: TextStyle(color: Colors.white70),
+                        ),
+                        onPressed: () {
+                          insertHtmlText(
+                              "This text is set by the insertText method",
+                              index: 10);
+                        }),
+                  ),
+                ],
+              ),
+            )
           ],
         ),
       ),
@@ -107,8 +152,9 @@ class _MyAppState extends State<MyApp> {
   }
 
   /// to set the html text to editor
-  void insertHtmlText(String text) async {
-    await controller.insertText(text, index: 10);
+  /// if index is not set, it will be inserted at the cursor postion
+  void insertHtmlText(String text, {int? index}) async {
+    await controller.insertText(text, index: index);
   }
 
   /// to clear the editor

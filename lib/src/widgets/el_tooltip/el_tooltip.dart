@@ -1,7 +1,7 @@
 library el_tooltip;
 
 import 'package:flutter/material.dart';
-
+import 'package:webviewx_plus/webviewx_plus.dart';
 import 'src/arrow.dart';
 import 'src/bubble.dart';
 import 'src/element_box.dart';
@@ -15,14 +15,32 @@ export 'src/enum/el_tooltip_position.dart';
 /// Widget that displays a tooltip
 /// It takes a widget as the trigger and a widget as the content
 class ElTooltip extends StatefulWidget {
-  /// [content] Widget that appears inside the tooltip.
-  final Widget content;
+  ///[ElTooltip] Widget that displays a tooltip
+  /// It takes a widget as the trigger and a widget as the content
+  const ElTooltip({
+    required this.content,
+    required this.child,
+    this.color = Colors.white,
+    this.distance = 10.0,
+    this.padding = 2.0,
+    this.position = ElTooltipPosition.topCenter,
+    this.radius = 8.0,
+    this.showModal = true,
+    required this.onTap,
+    this.enable = true,
+    this.timeout = 0,
+    this.error = '',
+    super.key,
+  });
 
   /// [child] Widget that will trigger the tooltip to appear.
   final Widget child;
 
   /// [color] Background color of the tooltip and the arrow.
   final Color color;
+
+  /// [content] Widget that appears inside the tooltip.
+  final Widget content;
 
   /// [distance] Space between the tooltip and the trigger.
   final double distance;
@@ -44,44 +62,40 @@ class ElTooltip extends StatefulWidget {
   /// The default value is 0 (zero) which means it never disappears.
   final int timeout;
 
+  /// [onTap] callback when tooltip is tapped
+  final GestureTapCallback onTap;
+
   ///[enable] to enable to disable the onpressed function of child
   final bool enable;
 
   /// [error] showing the error message while the disabled
   final String error;
 
-  /// [onTap] callback when tooltip is tapped
-  final GestureTapCallback onTap;
-
-  /// [ElTooltip] tooltip widget to show overlay
-  const ElTooltip({
-    required this.content,
-    required this.child,
-    required this.onTap,
-    this.color = Colors.white,
-    this.distance = 10.0,
-    this.padding = 2.0,
-    this.position = ElTooltipPosition.topCenter,
-    this.radius = 8.0,
-    this.showModal = true,
-    this.timeout = 0,
-    this.enable = true,
-    this.error = '',
-    super.key,
-  });
   @override
   State<ElTooltip> createState() => ElTooltipState();
 }
 
-/// _ElTooltipState extends ElTooltip class
+/// ElTooltipState extends ElTooltip class
 class ElTooltipState extends State<ElTooltip> with WidgetsBindingObserver {
-  final GlobalKey _widgetKey = GlobalKey();
-  OverlayEntry? _overlayEntryHidden;
+  final ElementBox _arrowBox = const ElementBox(h: 10.0, w: 16.0);
+  ElementBox _overlayBox = const ElementBox(h: 0.0, w: 0.0);
   OverlayEntry? _overlayEntry;
-  ElementBox get _screenSize => _getScreenSize();
-  ElementBox get _triggerBox => _getTriggerSize();
-  ElementBox _overlayBox = ElementBox(h: 0.0, w: 0.0);
-  final ElementBox _arrowBox = ElementBox(h: 10.0, w: 16.0);
+  OverlayEntry? _overlayEntryHidden;
+  final GlobalKey _widgetKey = GlobalKey();
+
+  /// Automatically hide the overlay when the screen dimension changes
+  /// or when the user scrolls. This is done to avoid displacement.
+  @override
+  void didChangeMetrics() {
+  //  hideOverlay();
+  }
+
+  /// Dispode the observer
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
 
   /// Init state and trigger the hidden overlay to measure its size
   @override
@@ -92,25 +106,14 @@ class ElTooltipState extends State<ElTooltip> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
   }
 
-  /// Dispode the observer
-  @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
-  }
+  ElementBox get _screenSize => _getScreenSize();
 
-  /// Automatically hide the overlay when the screen dimension changes
-  /// or when the user scrolls. This is done to avoid displacement.
-  @override
-  void didChangeMetrics() {
-    /// hideOverlay();
-  }
+  ElementBox get _triggerBox => _getTriggerSize();
 
   /// Measures the hidden tooltip after it's loaded with _loadHiddenOverlay(_)
   void _getHiddenOverlaySize(context) {
-    if (mounted && _widgetKey.currentContext != null) {
-      RenderBox box =
-          _widgetKey.currentContext?.findRenderObject() as RenderBox;
+    RenderBox box = _widgetKey.currentContext?.findRenderObject() as RenderBox;
+    if (mounted) {
       setState(() {
         _overlayBox = ElementBox(
           w: box.size.width,
@@ -141,7 +144,10 @@ class ElTooltipState extends State<ElTooltip> with WidgetsBindingObserver {
         );
       },
     );
-    overlayStateHidden.insert(_overlayEntryHidden!);
+
+    if (_overlayEntryHidden != null) {
+      overlayStateHidden.insert(_overlayEntryHidden!);
+    }
   }
 
   /// Measures the size of the trigger widget
@@ -156,7 +162,8 @@ class ElTooltipState extends State<ElTooltip> with WidgetsBindingObserver {
         y: offset.dy,
       );
     }
-    return ElementBox(w: 0, h: 0);
+    hideOverlay();
+    return const ElementBox(w: 0, h: 0, x: 0, y: 0);
   }
 
   /// Measures the size of the screen to calculate possible overflow
@@ -186,13 +193,15 @@ class ElTooltipState extends State<ElTooltip> with WidgetsBindingObserver {
       builder: (context) {
         return Stack(
           children: [
-            Modal(
-              color: Colors.black87,
-              opacity: 0.7,
-              visible: widget.showModal,
-              onTap: () {
-                hideOverlay();
-              },
+            WebViewAware(
+              child: Modal(
+                color: Colors.black87,
+                opacity: 0.7,
+                visible: widget.showModal,
+                onTap: () {
+                  hideOverlay();
+                },
+              ),
             ),
             Positioned(
               top: toolTipElementsDisplay.bubble.y,
@@ -220,7 +229,9 @@ class ElTooltipState extends State<ElTooltip> with WidgetsBindingObserver {
               left: _triggerBox.x,
               child: GestureDetector(
                 onTap: () {
-                  _overlayEntry != null ? hideOverlay() : _showOverlay(context);
+                  /* _overlayEntry != null
+                      ? hideOverlay()
+                      : _showOverlay(context);*/
                 },
                 child: widget.child,
               ),
@@ -230,7 +241,9 @@ class ElTooltipState extends State<ElTooltip> with WidgetsBindingObserver {
       },
     );
 
-    overlayState.insert(_overlayEntry!);
+    if (_overlayEntry != null) {
+      overlayState.insert(_overlayEntry!);
+    }
 
     // Add timeout for the tooltip to disapear after a few seconds
     if (widget.timeout > 0) {
