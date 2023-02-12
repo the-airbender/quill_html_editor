@@ -118,49 +118,63 @@ class ToolBarState extends State<ToolBar> {
   ///[updateToolBarFormat] method to update the toolbar state in sync with editor formats
   void updateToolBarFormat(Map<String, dynamic> formatMap) {
     _formatMap = formatMap;
-    for (var toolbarItem in _toolbarList) {
-      switch (toolbarItem.style) {
+    for (int i = 0; i < _toolbarList.length; i++) {
+      switch (_toolbarList[i].style) {
         case ToolBarStyle.bold:
-          toolbarItem.isActive = formatMap['bold'] == true;
+          _toolbarList[i] =
+              _toolbarList[i].copyWith(isActive: formatMap['bold'] == true);
           break;
         case ToolBarStyle.italic:
-          toolbarItem.isActive = formatMap['italic'] == true;
+          _toolbarList[i] =
+              _toolbarList[i].copyWith(isActive: formatMap['italic'] == true);
           break;
         case ToolBarStyle.underline:
-          toolbarItem.isActive = formatMap['underline'] == true;
+          _toolbarList[i] = _toolbarList[i]
+              .copyWith(isActive: formatMap['underline'] == true);
           break;
         case ToolBarStyle.strike:
-          toolbarItem.isActive = formatMap['strike'] == true;
+          _toolbarList[i] =
+              _toolbarList[i].copyWith(isActive: formatMap['strike'] == true);
           break;
         case ToolBarStyle.blockQuote:
-          toolbarItem.isActive = formatMap['blockquote'] == true;
+          _toolbarList[i] = _toolbarList[i]
+              .copyWith(isActive: formatMap['blockquote'] == true);
           break;
         case ToolBarStyle.codeBlock:
-          toolbarItem.isActive = formatMap['code-block'] == true;
+          _toolbarList[i] = _toolbarList[i]
+              .copyWith(isActive: formatMap['code-block'] == true);
           break;
         case ToolBarStyle.indentMinus:
-          toolbarItem.isActive = formatMap['indent'] != null;
+          _toolbarList[i] =
+              _toolbarList[i].copyWith(isActive: formatMap['indent'] != null);
           break;
         case ToolBarStyle.indentAdd:
-          toolbarItem.isActive = formatMap['indent'] != null;
+          _toolbarList[i] =
+              _toolbarList[i].copyWith(isActive: formatMap['indent'] != null);
           break;
         case ToolBarStyle.directionRtl:
-          toolbarItem.isActive = formatMap['direction'] == 'rtl';
+          _toolbarList[i] = _toolbarList[i]
+              .copyWith(isActive: formatMap['direction'] == 'rtl');
           break;
         case ToolBarStyle.directionLtr:
-          toolbarItem.isActive = formatMap['direction'] != 'rtl';
+          _toolbarList[i] = _toolbarList[i]
+              .copyWith(isActive: formatMap['direction'] != 'rtl');
           break;
         case ToolBarStyle.size:
-          toolbarItem.isActive = formatMap['size'] != null;
+          _toolbarList[i] =
+              _toolbarList[i].copyWith(isActive: formatMap['size'] != null);
           break;
         case ToolBarStyle.headerOne:
-          toolbarItem.isActive = formatMap['header'] == 1;
+          _toolbarList[i] =
+              _toolbarList[i].copyWith(isActive: formatMap['header'] == 1);
           break;
         case ToolBarStyle.headerTwo:
-          toolbarItem.isActive = formatMap['header'] == 2;
+          _toolbarList[i] =
+              _toolbarList[i].copyWith(isActive: formatMap['header'] == 2);
           break;
         case ToolBarStyle.color:
-          toolbarItem.isActive = formatMap['color'] != null;
+          _toolbarList[i] =
+              _toolbarList[i].copyWith(isActive: formatMap['color'] != null);
           try {
             if (formatMap['color'] != null) {
               if (formatMap['color'].runtimeType.toString() ==
@@ -178,25 +192,32 @@ class ToolBarState extends State<ToolBar> {
           break;
         case ToolBarStyle.align:
           formatMap['align'] ??= '';
-          toolbarItem.isActive = formatMap['align'] != null;
+          _toolbarList[i] =
+              _toolbarList[i].copyWith(isActive: formatMap['align'] != null);
           break;
         case ToolBarStyle.listOrdered:
-          toolbarItem.isActive = formatMap['list'] == 'ordered';
+          _toolbarList[i] = _toolbarList[i]
+              .copyWith(isActive: formatMap['list'] == 'ordered');
           break;
         case ToolBarStyle.listBullet:
-          toolbarItem.isActive = formatMap['list'] == 'bullet';
+          _toolbarList[i] =
+              _toolbarList[i].copyWith(isActive: formatMap['list'] == 'bullet');
           break;
         case ToolBarStyle.image:
-          toolbarItem.isActive = formatMap['image'] != null;
+          _toolbarList[i] =
+              _toolbarList[i].copyWith(isActive: formatMap['image'] != null);
           break;
         case ToolBarStyle.video:
-          toolbarItem.isActive = formatMap['video'] != null;
+          _toolbarList[i] =
+              _toolbarList[i].copyWith(isActive: formatMap['video'] != null);
           break;
         case ToolBarStyle.clean:
-          toolbarItem.isActive = formatMap['clean'] != null;
+          _toolbarList[i] =
+              _toolbarList[i].copyWith(isActive: formatMap['clean'] != null);
           break;
         case ToolBarStyle.background:
-          toolbarItem.isActive = formatMap['background'] != null;
+          _toolbarList[i] = _toolbarList[i]
+              .copyWith(isActive: formatMap['background'] != null);
           try {
             if (formatMap['background'] != null) {
               if (formatMap['background'].runtimeType.toString() ==
@@ -224,7 +245,7 @@ class ToolBarState extends State<ToolBar> {
     List<Widget> tempToolBarList = [];
 
     for (int i = 0; i < _toolbarList.length; i++) {
-      final toolbarItem = _toolbarList[i];
+      var toolbarItem = _toolbarList[i];
       if (toolbarItem.style == ToolBarStyle.size) {
         tempToolBarList.add(Padding(
           padding: _buttonPadding,
@@ -324,26 +345,29 @@ class ToolBarState extends State<ToolBar> {
             } else if (toolbarItem.style == ToolBarStyle.clean) {
               List<ToolBarItem> tempList = [];
               for (var value in _toolbarList) {
-                value.isActive = false;
+                value = value.copyWith(isActive: false);
                 tempList.add(value);
               }
               _toolbarList = tempList;
             } else if (toolbarItem.style == ToolBarStyle.headerOne) {
               for (var element in _toolbarList) {
                 if (element.style == ToolBarStyle.headerTwo) {
-                  element.isActive = false;
+                  element = element.copyWith(isActive: false);
                 }
               }
-              toolbarItem.isActive = !toolbarItem.isActive;
+              toolbarItem =
+                  toolbarItem.copyWith(isActive: !toolbarItem.isActive);
             } else if (toolbarItem.style == ToolBarStyle.headerTwo) {
               for (var element in _toolbarList) {
                 if (element.style == ToolBarStyle.headerOne) {
-                  element.isActive = false;
+                  element = element.copyWith(isActive: false);
                 }
               }
-              toolbarItem.isActive = !toolbarItem.isActive;
+              toolbarItem =
+                  toolbarItem.copyWith(isActive: !toolbarItem.isActive);
             } else {
-              toolbarItem.isActive = !toolbarItem.isActive;
+              toolbarItem =
+                  toolbarItem.copyWith(isActive: !toolbarItem.isActive);
             }
             Map<String, dynamic> getFormat =
                 _getFormatByStyle(toolbarItem.style, toolbarItem.isActive);
@@ -551,7 +575,7 @@ class ToolBarState extends State<ToolBar> {
       content: ColorPicker(
         onColorPicked: (color) {
           _formatMap['color'] = color;
-          _toolbarList[i].isActive = true;
+          _toolbarList[i] = _toolbarList[i].copyWith(isActive: true);
           widget.controller
               .setFormat(format: 'color', value: _formatMap['color']);
           setState(() {});
@@ -560,7 +584,8 @@ class ToolBarState extends State<ToolBar> {
           }
         },
       ),
-      child: Material(color: Colors.transparent,
+      child: Material(
+        color: Colors.transparent,
         child: SizedBox(
           width: widget.iconSize,
           height: widget.iconSize,
@@ -607,7 +632,8 @@ class ToolBarState extends State<ToolBar> {
       content: ColorPicker(
         onColorPicked: (color) {
           _formatMap['background'] = color;
-          _toolbarList[i].isActive = true;
+          _toolbarList[i] = _toolbarList[i].copyWith(isActive: true);
+
           widget.controller
               .setFormat(format: 'background', value: _formatMap['background']);
           setState(() {});
@@ -616,7 +642,8 @@ class ToolBarState extends State<ToolBar> {
           }
         },
       ),
-      child: Material(color: Colors.transparent,
+      child: Material(
+        color: Colors.transparent,
         child: Container(
           alignment: Alignment.center,
           decoration: BoxDecoration(
@@ -647,6 +674,7 @@ class ToolBarState extends State<ToolBar> {
 
   Widget _getTablePickerWidget(int i) {
     return ElTooltip(
+      color: widget.toolBarColor!,
       distance: 0,
       position: ElTooltipPosition.bottomCenter,
       onTap: () {
@@ -678,14 +706,14 @@ class ToolBarState extends State<ToolBar> {
   }
 }
 
-// ignore: must_be_immutable
 ///[ToolBarItem] toolbaritem widget to show buttons based on style
+@immutable
 class ToolBarItem extends StatelessWidget {
   ///[style] to set the toolbar buttons by styles
   final ToolBarStyle style;
 
   ///[isActive] to highlight the toolbar buttons when active
-  bool isActive;
+  final bool isActive;
 
   ///[onTap] callback to set format on tap
   final GestureTapCallback? onTap;
@@ -703,7 +731,7 @@ class ToolBarItem extends StatelessWidget {
   final Color? activeIconColor;
 
   ///[ToolBarItem] toolbaritem widget to show buttons based on style
-  ToolBarItem({
+  const ToolBarItem({
     super.key,
     required this.style,
     required this.isActive,
@@ -740,10 +768,10 @@ class ToolBarItem extends StatelessWidget {
       case ToolBarStyle.codeBlock:
         return _getIconWidget(Icons.code_sharp);
       case ToolBarStyle.indentAdd:
-        isActive = false;
+        //isActive = false;
         return _getIconWidget(Icons.format_indent_increase_sharp);
       case ToolBarStyle.indentMinus:
-        isActive = false;
+        //  isActive = false;
         return _getIconWidget(Icons.format_indent_decrease_sharp);
       case ToolBarStyle.directionRtl:
         return _getIconWidget(Icons.format_textdirection_r_to_l_sharp);
@@ -788,6 +816,18 @@ class ToolBarItem extends StatelessWidget {
           color: isActive ? activeIconColor : iconColor,
         ),
       );
+
+  ToolBarItem copyWith({
+    bool? isActive,
+  }) {
+    return ToolBarItem(
+        style: style,
+        isActive: isActive ?? this.isActive,
+        padding: padding,
+        iconSize: iconSize,
+        iconColor: iconColor,
+        activeIconColor: activeIconColor);
+  }
 }
 
 ///[ToolBarConfig] class to configure, toggle toolbar styles

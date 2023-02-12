@@ -87,7 +87,7 @@ class ElTooltipState extends State<ElTooltip> with WidgetsBindingObserver {
   /// or when the user scrolls. This is done to avoid displacement.
   @override
   void didChangeMetrics() {
-  //  hideOverlay();
+    //  hideOverlay();
   }
 
   /// Dispode the observer
