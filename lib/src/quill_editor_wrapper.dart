@@ -228,6 +228,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
   Future _insertTableToEditor({required int row, required int column}) async {
     return await _webviewController.callJsMethod("insertTable", [row, column]);
   }
+
   /// a private method to add remove or delete table in the editor
   Future _modifyTable(EditTableEnum type) async {
     return await _webviewController
@@ -402,7 +403,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
               } else {
                 OnTextChanged.postMessage(quilleditor.root.innerHTML);
               } 
-              
+               onRangeChanged();
             });
             
             function onRangeChanged() {

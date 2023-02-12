@@ -23,7 +23,7 @@ class _MyAppState extends State<MyApp> {
     ToolBarStyle.color,
   ];
 
-  final _toolbarColor = Color(int.parse('FF30363C', radix: 16));
+  final _toolbarColor = Colors.grey.shade100;
   @override
   void initState() {
     controller.onTextChanged((text) {
@@ -50,7 +50,7 @@ class _MyAppState extends State<MyApp> {
               toolBarColor: _toolbarColor,
               padding: const EdgeInsets.all(8),
               iconSize: 25,
-              iconColor: Colors.white70,
+              iconColor: Colors.black,
               activeIconColor: Colors.orange.shade300,
               controller: controller,
               customButtons: [
@@ -58,13 +58,13 @@ class _MyAppState extends State<MyApp> {
                     onTap: () async {},
                     child: const Icon(
                       Icons.favorite,
-                      color: Colors.white70,
+                      color: Colors.black,
                     )),
                 InkWell(
                     onTap: () {},
                     child: const Icon(
                       Icons.add_circle,
-                      color: Colors.white70,
+                      color: Colors.black,
                     )),
               ],
             ),
@@ -77,61 +77,65 @@ class _MyAppState extends State<MyApp> {
                 height: MediaQuery.of(context).size.height,
                 onTextChanged: (text) => debugPrint('widget text change $text'),
                 defaultFontSize: 18,
-                defaultFontColor: Colors.white70,
+                defaultFontColor: Colors.black45,
                 isEnabled: true,
-                backgroundColor: Color(int.parse('FF424242', radix: 16)),
+                backgroundColor: Colors.white70,
               ),
             ),
-            Container(
-              color: Color(int.parse('FF424242', radix: 16)).withOpacity(0.8),
-              child: Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: MaterialButton(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8)),
-                        color: _toolbarColor,
-                        child: const Text(
-                          'Set Text',
-                          style: TextStyle(color: Colors.white70),
-                        ),
-                        onPressed: () {
-                          setHtmlText("This text is set by the setText method");
-                        }),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: MaterialButton(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8)),
-                        color: _toolbarColor,
-                        child: const Text(
-                          'Insert Text',
-                          style: TextStyle(color: Colors.white70),
-                        ),
-                        onPressed: () {
-                          insertHtmlText(
-                              "This text is set by the insertText method");
-                        }),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: MaterialButton(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8)),
-                        color: _toolbarColor,
-                        child: const Text(
-                          'Insert Index',
-                          style: TextStyle(color: Colors.white70),
-                        ),
-                        onPressed: () {
-                          insertHtmlText(
-                              "This text is set by the insertText method",
-                              index: 10);
-                        }),
-                  ),
-                ],
+            Visibility(
+              visible: false,
+              child: Container(
+                color: Color(int.parse('FF424242', radix: 16)).withOpacity(0.8),
+                child: Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: MaterialButton(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8)),
+                          color: _toolbarColor,
+                          child: const Text(
+                            'Set Text',
+                            style: TextStyle(color: Colors.white70),
+                          ),
+                          onPressed: () {
+                            setHtmlText(
+                                "This text is set by the setText method");
+                          }),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: MaterialButton(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8)),
+                          color: _toolbarColor,
+                          child: const Text(
+                            'Insert Text',
+                            style: TextStyle(color: Colors.white70),
+                          ),
+                          onPressed: () {
+                            insertHtmlText(
+                                "This text is set by the insertText method");
+                          }),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: MaterialButton(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8)),
+                          color: _toolbarColor,
+                          child: const Text(
+                            'Insert Index',
+                            style: TextStyle(color: Colors.white70),
+                          ),
+                          onPressed: () {
+                            insertHtmlText(
+                                "This text is set by the insertText method",
+                                index: 10);
+                          }),
+                    ),
+                  ],
+                ),
               ),
             )
           ],
