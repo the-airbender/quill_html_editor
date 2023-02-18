@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:webviewx_plus/webviewx_plus.dart';
+import 'package:quill_html_editor/src/widgets/webviewx/src/webviewx_plus.dart';
 import '../constants/image_constants.dart';
 import 'el_tooltip/el_tooltip.dart';
 
+/// [EditTableDropDown] to edit the table, add remove columns rows etc.
 class EditTableDropDown extends StatefulWidget {
+  /// [EditTableDropDown] constructor to edit the table, add remove columns rows etc.
   const EditTableDropDown({
     Key? key,
     required this.dropDownColor,
@@ -152,6 +154,7 @@ class _EditTableDropDownState extends State<EditTableDropDown> {
   }
 }
 
+///[EditTableEnum] enum options for edit table dropdown
 enum EditTableEnum {
   insertRowAbove,
   insertRowBelow,

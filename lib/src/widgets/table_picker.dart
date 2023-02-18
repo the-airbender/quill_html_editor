@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:webviewx_plus/webviewx_plus.dart';
+import 'package:quill_html_editor/src/widgets/webviewx/src/webviewx_plus.dart';
 
 final _cellKey = GlobalKey();
 
@@ -22,7 +22,6 @@ class TablePicker extends StatefulWidget {
 
 class _TablePickerState extends State<TablePicker> {
   final Set<int> _selectedIndexes = <int>{};
-
   final Set<_CellBox> _trackTaped = <_CellBox>{};
   int _selectedRow = 0;
   int _selectedColumn = 0;
@@ -54,13 +53,13 @@ class _TablePickerState extends State<TablePicker> {
       _selectedIndexes.add(index);
       List<int> tempList = _selectedIndexes.toList();
       tempList.sort((a, b) => a - b);
-      _selectedRow = tempList.last ~/ widget.rowCount!;
-      _selectedColumn = tempList.last % widget.rowCount!;
+      _selectedColumn = tempList.last ~/ widget.rowCount!;
+      _selectedRow = tempList.last % widget.rowCount!;
       int count = 0;
       _selectedIndexes.clear();
       for (int i = 0; i < widget.rowCount!; i++) {
         for (int j = 0; j < widget.rowCount!; j++) {
-          if (i <= _selectedRow && j <= _selectedColumn) {
+          if (i <= _selectedColumn && j <= _selectedRow) {
             _selectedIndexes.add(count);
           }
           count++;
@@ -75,20 +74,20 @@ class _TablePickerState extends State<TablePicker> {
       onPointerDown: _detectTapedItem,
       onPointerMove: _detectTapedItem,
       onPointerUp: _onSelectionDone,
-      child: Container(
-        width: 200,
-        padding: const EdgeInsets.all(4),
-        child: GridView.builder(
-          key: _cellKey,
-          shrinkWrap: true,
-          itemCount: widget.rowCount! * widget.rowCount!,
-          scrollDirection: Axis.horizontal,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: widget.rowCount!),
-          itemBuilder: (context, index) {
-            return WebViewAware(
-              child: _CellSelectionWidget(
+      child: WebViewAware(
+        child: Container(
+          width: 200,
+          padding: const EdgeInsets.all(4),
+          child: GridView.builder(
+            key: _cellKey,
+            shrinkWrap: true,
+            itemCount: widget.rowCount! * widget.rowCount!,
+            scrollDirection: Axis.horizontal,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: widget.rowCount!),
+            itemBuilder: (context, index) {
+              return _CellSelectionWidget(
                 index: index,
                 child: Container(
                   margin: const EdgeInsets.all(2),
@@ -103,9 +102,9 @@ class _TablePickerState extends State<TablePicker> {
                             : Colors.black45,
                       )),
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         ),
       ),
     );

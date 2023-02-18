@@ -7,7 +7,7 @@ import 'package:quill_html_editor/src/utils/hex_color.dart';
 import 'package:quill_html_editor/src/widgets/color_picker.dart';
 import 'package:quill_html_editor/src/widgets/image_picker.dart';
 import 'package:quill_html_editor/src/widgets/table_picker.dart';
-import 'package:webviewx_plus/webviewx_plus.dart';
+import 'package:quill_html_editor/src/widgets/webviewx/src/webviewx_plus.dart';
 import 'widgets/edit_table_drop_down.dart';
 import 'widgets/el_tooltip/el_tooltip.dart';
 import 'widgets/input_url_widget.dart';
@@ -37,6 +37,9 @@ class ToolBar extends StatefulWidget {
   ///[activeIconColor] to define the active toolbar icon color
   final Color? activeIconColor;
 
+  /// [padding] The amount of space by which to inset the toolbar style widgets.
+  final EdgeInsetsGeometry? padding;
+
   ///[ToolBar] widget to show the quill toolbar
   ToolBar({
     this.toolBarConfig,
@@ -50,10 +53,6 @@ class ToolBar extends StatefulWidget {
   }) : super(
           key: controller.toolBarKey,
         );
-
-  /// [padding] The amount of space by which to inset the toolbar style widgets.
-  final EdgeInsetsGeometry? padding;
-
   @override
   State<ToolBar> createState() => ToolBarState();
 }

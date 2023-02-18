@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:universal_io/io.dart';
 
 ///[ImageSelector] to pick files or media, supports all platforms
 class ImageSelector {
@@ -13,48 +12,28 @@ class ImageSelector {
 
   ///[ImageSelector] image selector widget to set images to editor
   ImageSelector({required this.onImagePicked});
-  late List<PlatformFile>? _paths;
-  String? _extension;
+
   final FileType _pickingType = FileType.image;
 
   ///[pickFiles] to pick the files
   Future<void> pickFiles() async {
-    _resetState();
     try {
-      _paths = (await FilePicker.platform.pickFiles(
-        type: _pickingType,
-        allowMultiple: false,
-        onFileLoading: (FilePickerStatus status) =>
-            debugPrint(status.toString()),
-        allowedExtensions: (_extension?.isNotEmpty ?? false)
-            ? _extension?.replaceAll(' ', '').split(',')
-            : null,
-      ))
-          ?.files;
-      if (_paths != null && _paths!.isNotEmpty) {
-        Uint8List? bytes;
-        if (kIsWeb) {
-          bytes = _paths!.single.bytes;
-        } else {
-          if (_paths!.single.path != null) {
-            bytes = await File(_paths!.single.path!).readAsBytes();
-          }
-        }
+      FilePickerResult? result = await FilePicker.platform
+          .pickFiles(allowMultiple: false, type: _pickingType, withData: true);
+
+      if (result != null) {
+        PlatformFile file = result.files.first;
+        Uint8List? bytes = file.bytes;
         if (bytes != null) {
           String base64String = base64Encode(bytes);
-          onImagePicked(
-              'data:image/${_paths!.single.extension};base64,$base64String');
+          onImagePicked('data:image/${file.extension};base64,$base64String');
         }
       }
     } on PlatformException catch (e) {
       debugPrint('Unsupported operation $e');
     } catch (e) {
-      debugPrint(e.toString());
+      debugPrint('File Picker ${e.toString()}');
     }
-  }
-
-  void _resetState() {
-    _paths = null;
   }
 }
 

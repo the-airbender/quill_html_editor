@@ -23,7 +23,14 @@ class _MyAppState extends State<MyApp> {
     ToolBarStyle.color,
   ];
 
-  final _toolbarColor = Colors.grey.shade100;
+  final _toolbarColor = Colors.greenAccent.shade100;
+  final _backgroundColor = Colors.white70;
+  final _toolbarIconColor = Colors.black87;
+  final _editorTextStyle = const TextStyle(
+      fontSize: 18, color: Colors.black54, fontWeight: FontWeight.normal);
+  final _hintTextStyle = const TextStyle(
+      fontSize: 18, color: Colors.teal, fontWeight: FontWeight.normal);
+
   @override
   void initState() {
     controller.onTextChanged((text) {
@@ -42,16 +49,16 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        resizeToAvoidBottomInset: true,
+        backgroundColor: Colors.black45,
         body: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             ToolBar(
               toolBarColor: _toolbarColor,
               padding: const EdgeInsets.all(8),
               iconSize: 25,
-              iconColor: Colors.black,
-              activeIconColor: Colors.orange.shade300,
+              iconColor: _toolbarIconColor,
+              activeIconColor: Colors.purple.shade300,
               controller: controller,
               customButtons: [
                 InkWell(
@@ -70,71 +77,50 @@ class _MyAppState extends State<MyApp> {
             ),
             Expanded(
               child: QuillHtmlEditor(
-                text:
-                    "<h1>Hello</h1>This is a quill html editor example text. :-)",
+                text: "<h1>Hello</h1>This is a quill html editor example 😊",
                 hintText: 'Hint text goes here',
                 controller: controller,
-                height: MediaQuery.of(context).size.height,
-                onTextChanged: (text) => debugPrint('widget text change $text'),
-                defaultFontSize: 18,
-                defaultFontColor: Colors.black45,
                 isEnabled: true,
-                backgroundColor: Colors.white70,
+                height: MediaQuery.of(context).size.height,
+                textStyle: _editorTextStyle,
+                hintTextStyle: _hintTextStyle,
+                hintTextAlign: TextAlign.start,
+                padding: const EdgeInsets.only(left: 10, top: 5),
+                hintTextPadding: EdgeInsets.zero,
+                backgroundColor: _backgroundColor,
+                onFocusChanged: (hasFocus) => debugPrint('has focus $hasFocus'),
+                onTextChanged: (text) => debugPrint('widget text change $text'),
               ),
             ),
             Visibility(
               visible: false,
-              child: Container(
-                color: Color(int.parse('FF424242', radix: 16)).withOpacity(0.8),
-                child: Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: MaterialButton(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8)),
-                          color: _toolbarColor,
-                          child: const Text(
-                            'Set Text',
-                            style: TextStyle(color: Colors.white70),
-                          ),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Container(
+                  color: _toolbarColor,
+                  child: Row(
+                    children: [
+                      textButton(
+                          text: 'Set Text',
                           onPressed: () {
                             setHtmlText(
                                 "This text is set by the setText method");
                           }),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: MaterialButton(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8)),
-                          color: _toolbarColor,
-                          child: const Text(
-                            'Insert Text',
-                            style: TextStyle(color: Colors.white70),
-                          ),
+                      textButton(
+                          text: 'Insert Text',
                           onPressed: () {
                             insertHtmlText(
                                 "This text is set by the insertText method");
                           }),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: MaterialButton(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8)),
-                          color: _toolbarColor,
-                          child: const Text(
-                            'Insert Index',
-                            style: TextStyle(color: Colors.white70),
-                          ),
+                      textButton(
+                          text: 'Insert Index',
                           onPressed: () {
                             insertHtmlText(
                                 "This text is set by the insertText method",
                                 index: 10);
                           }),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             )
@@ -144,13 +130,27 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  /// to get the html text from editor
+  Widget textButton({required String text, required VoidCallback onPressed}) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: MaterialButton(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          color: _toolbarIconColor,
+          onPressed: onPressed,
+          child: Text(
+            text,
+            style: TextStyle(color: _toolbarColor),
+          )),
+    );
+  }
+
+  ///[getHtmlText] to get the html text from editor
   void getHtmlText() async {
     String? htmlText = await controller.getText();
     debugPrint(htmlText.toString());
   }
 
-  /// to set the html text to editor
+  ///[setHtmlText] to set the html text to editor
   void setHtmlText(String text) async {
     await controller.setText(text);
   }

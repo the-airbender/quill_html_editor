@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quill_html_editor/src/utils/hex_color.dart';
-import 'package:webviewx_plus/webviewx_plus.dart';
+import 'package:quill_html_editor/src/widgets/webviewx/src/webviewx_plus.dart';
 
 ///[ColorPicker] a widget to pick colors from a color grid
 class ColorPicker extends StatelessWidget {
@@ -45,6 +45,7 @@ class ColorPicker extends StatelessWidget {
   }
 }
 
+///// custom color list feature will coming in future release
 const List<String> _colorList = [
   '#000000',
   '#FFFFFF',
