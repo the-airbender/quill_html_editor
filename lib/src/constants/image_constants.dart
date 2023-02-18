@@ -20,7 +20,6 @@ class ImageConstant {
   static const String kiEditTablePng =
       'packages/quill_html_editor/assets/edit_table.png';
 
-
   ///delete column icon for toolbar
   static const String kiDeleteColumnPng =
       'packages/quill_html_editor/assets/delete_column.png';
@@ -33,17 +32,13 @@ class ImageConstant {
   static const String kiDeleteTablePng =
       'packages/quill_html_editor/assets/delete_table.png';
 
-
-
   ///delete row icon for toolbar
   static const String kiInsertColumnLeftPng =
       'packages/quill_html_editor/assets/insert_column_left.png';
 
-
   ///delete row icon for toolbar
   static const String kiInsertRowAbovePng =
       'packages/quill_html_editor/assets/insert_row_above.png';
-
 
   ///delete row icon for toolbar
   static const String kiInsertRowBelowPng =
@@ -55,8 +50,4 @@ class ImageConstant {
 /*
   insert_row_below.png
   insert_row_right.png*/
-
-
-
-
 }

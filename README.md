@@ -8,13 +8,31 @@ Quill Html Editor is a HTML rich text editor for Android, iOS, and Web, it is bu
 ### 📸 Screenshots
 Highly customizable **Editor** and **Toolbar** widgets, we can define custom color, custom font, custom icon size to the Toolbar. The below image demonstrates the light and dark mode editors.
 
-<p style="text-align: center;" float="center">**Mobile**
+
 <img
-  style="display: block;  margin-left: auto;  margin-right: auto;"
-  width="600" alt="1" src="https://i.imgur.com/3PrFsZU.png">
-  **Web**
-   <img  style="display: block;  margin-left: auto;  margin-right: auto;" width="600" alt="1" src="https://i.imgur.com/4FOw7Ap.png">
-</p>
+style="display: block;  margin-left: auto;  margin-right: auto;"
+width="600" alt="1" src="https://i.imgur.com/3PrFsZU.png">
+
+<img  style="display: block;  margin-left: auto;  margin-right: auto;" width="600" alt="1" src="https://i.imgur.com/4FOw7Ap.png">
+
+<p>
+<div style="text-align: center">
+    <table>
+        <tr>
+            <td style="text-align: center">
+                <a href="https://i.imgur.com/eNUzhgj.gif">
+                    <img src="https://i.imgur.com/eNUzhgj.gif" width="300"/>
+                </a>
+            </td>            
+            <td style="text-align: center">
+                <a href="https://i.imgur.com/0DVAOec.gif">
+                    <img src="https://i.imgur.com/0DVAOec.gif" width="300"/>
+                </a>
+            </td>
+        </tr>
+    </table>
+</div> </p>
+
 
 ------------
 #### Usage
@@ -25,51 +43,49 @@ Define a **QuillEditorController** to access the editor methods, pass the contro
 ```
 ```dart
    QuillHtmlEditor(
-hintText: 'Hint text goes here',
-controller: controller,
-height: MediaQuery.of(context).size.height,
-onTextChanged: (text) =>
-debugPrint('widget text change $text'),
-defaultFontSize: 18,
-defaultFontColor: Colors.black45,
-isEnabled: true,
-backgroundColor: Colors.white,
-)
+   	hintText: 'Hint text goes here',
+ 	controller: controller,
+	height: MediaQuery.of(context).size.height,
+ 	onTextChanged: (text) => debugPrint('widget text change $text'),
+	defaultFontSize: 18,
+  	defaultFontColor: Colors.black45,
+  	isEnabled: true,
+  	backgroundColor: Colors.white,  
+    )
 ```
 **onTextChanged** can be used to listen to the text changes, as defined below
 ```dart
     controller.onTextChanged((text) {
-debugPrint('listening to $text');
-});
+	debugPrint('listening to $text');
+    });
 ```
 Define **ToolBar** widget and pass the same **controller** created for **QuillHtmlEditor**
 ```dart
-      ToolBar(
-toolBarColor: Colors.cyan.shade50,
-activeIconColor: Colors.green,
-padding: const EdgeInsets.all(8),
-iconSize: 20,
-controller: controller,
-customButtons: [
-InkWell(
-onTap: () async {}, child: const Icon(Icons.favorite)),
-InkWell(onTap: () {}, child: const Icon(Icons.add_circle)),
-],
-)
+   ToolBar(
+	toolBarColor: Colors.cyan.shade50,
+	activeIconColor: Colors.green,
+	padding: const EdgeInsets.all(8),
+	iconSize: 20,
+	controller: controller,
+	customButtons: [
+		InkWell(onTap: () {}, child: const Icon(Icons.favorite)),
+		InkWell(onTap: () {}, child: const Icon(Icons.add_circle)),
+	],
+   )
 ```
 **Note**: *toolBarConfig*, if not passed to **ToolBar**, it will show all the Toolbar Buttons. To show only required buttons, please specify the types in the list as show below.
 ```dart
-    final customToolBarList = [
-		  ToolBarStyle.bold,
-		  ToolBarStyle.italic,
-		  ToolBarStyle.align,
-		  ToolBarStyle.color,
-    ];
-
-    ToolBar(
-        controller: controller,
-        toolBarConfig: customToolBarList
-    ),
+    final customToolBarList = [	
+    	ToolBarStyle.bold,
+	    ToolBarStyle.italic,
+	    ToolBarStyle.align,
+	    ToolBarStyle.color,
+	];
+	
+   ToolBar(
+   	controller: controller,
+   	toolBarConfig: customToolBarList
+   ),
 ```
 
 We can also add custom buttons to our **ToolBar** as shown below
@@ -78,10 +94,10 @@ We can also add custom buttons to our **ToolBar** as shown below
       InkWell(onTap: () {}, child: const Icon(Icons.favorite)),
       InkWell(onTap: () {}, child: const Icon(Icons.add_circle)),
     ];
-    
+
     ToolBar(
-        controller: controller,
-        customButtons:customButtons ,
+      controller: controller,
+      customButtons:customButtons
     ),
 ```
 
