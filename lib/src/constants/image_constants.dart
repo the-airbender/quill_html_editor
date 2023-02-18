@@ -47,7 +47,4 @@ class ImageConstant {
   ///delete row icon for toolbar
   static const String kiInsertColumnRightPng =
       'packages/quill_html_editor/assets/insert_column_right.png';
-/*
-  insert_row_below.png
-  insert_row_right.png*/
 }

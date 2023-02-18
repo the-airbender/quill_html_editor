@@ -1,13 +1,20 @@
-
+![Pub Version](https://img.shields.io/pub/v/quill_html_editor) ![GitHub](https://img.shields.io/github/license/the-airbender/quill_html_editor) ![Pub Points](https://img.shields.io/pub/points/quill_html_editor)
 ### Quill Html Editor
 
-Quill Html Editor is a HTML rich text editor for Android, iOS, and Web, it is built with the powerful QuillJs library.  Which is an open source WYSIWYG editor built for the modern web.
+Quill Html Editor is a HTML rich text editor for Android, iOS, and Web, it is built with the powerful QuillJs library, an open source WYSIWYG editor for the modern web.
+
+------------
+
+### 📸 Features
+- Highly customizable **Editor** and **Toolbar** widgets
+- Supports copy pasting the RichText from other files or webpages
+- Because the Toolbar is completely detached from editor, it can be placed anywhere in the page, as per the requirement
+- We can also add custom buttons to the toolbar
+- Supports Embedding Images, Videos, Inserting Tables
 
 ------------
 
 ### 📸 Screenshots
-Highly customizable **Editor** and **Toolbar** widgets, we can define custom color, custom font, custom icon size to the Toolbar. The below image demonstrates the light and dark mode editors.
-
 
 <img
 style="display: block;  margin-left: auto;  margin-right: auto;"
@@ -33,6 +40,9 @@ width="600" alt="1" src="https://i.imgur.com/3PrFsZU.png">
     </table>
 </div> </p>
 
+------------
+#### Quill Html Editor Demo
+Please go to [Demo Page](https://the-airbender.github.io/) to try out the Quill Editor on Web
 
 ------------
 #### Usage
@@ -42,21 +52,27 @@ Define a **QuillEditorController** to access the editor methods, pass the contro
   final QuillEditorController controller = QuillEditorController();
 ```
 ```dart
-   QuillHtmlEditor(
-   	hintText: 'Hint text goes here',
- 	controller: controller,
-	height: MediaQuery.of(context).size.height,
- 	onTextChanged: (text) => debugPrint('widget text change $text'),
-	defaultFontSize: 18,
-  	defaultFontColor: Colors.black45,
-  	isEnabled: true,
-  	backgroundColor: Colors.white,  
-    )
+     QuillHtmlEditor(
+        text:
+        "<h1>Hello</h1>This is a quill html editor example 😊",
+        hintText: 'Hint text goes here',
+        controller: controller,
+        isEnabled: true,
+        height: MediaQuery.of(context).size.height,
+        textStyle: _editorTextStyle,
+        hintTextStyle: _hintTextStyle,
+        hintTextAlign: TextAlign.start,
+        padding: const EdgeInsets.only(left: 10, top: 5),
+        hintTextPadding: EdgeInsets.zero,
+        backgroundColor: _backgroundColor,
+        onFocusChanged: (hasFocus) => debugPrint('has focus $hasFocus'),
+        onTextChanged: (text) => debugPrint('widget text change $text'),
+    ),
 ```
 **onTextChanged** can be used to listen to the text changes, as defined below
 ```dart
     controller.onTextChanged((text) {
-	debugPrint('listening to $text');
+	  debugPrint('listening to $text');
     });
 ```
 Define **ToolBar** widget and pass the same **controller** created for **QuillHtmlEditor**
@@ -76,10 +92,10 @@ Define **ToolBar** widget and pass the same **controller** created for **QuillHt
 **Note**: *toolBarConfig*, if not passed to **ToolBar**, it will show all the Toolbar Buttons. To show only required buttons, please specify the types in the list as show below.
 ```dart
     final customToolBarList = [	
-    	ToolBarStyle.bold,
-	    ToolBarStyle.italic,
-	    ToolBarStyle.align,
-	    ToolBarStyle.color,
+        ToolBarStyle.bold,
+        ToolBarStyle.italic,
+        ToolBarStyle.align,
+        ToolBarStyle.color,
 	];
 	
    ToolBar(
@@ -91,8 +107,8 @@ Define **ToolBar** widget and pass the same **controller** created for **QuillHt
 We can also add custom buttons to our **ToolBar** as shown below
 ```dart
     final customButtons =  [
-      InkWell(onTap: () {}, child: const Icon(Icons.favorite)),
-      InkWell(onTap: () {}, child: const Icon(Icons.add_circle)),
+          InkWell(onTap: () {}, child: const Icon(Icons.favorite)),
+          InkWell(onTap: () {}, child: const Icon(Icons.add_circle)),
     ];
 
     ToolBar(
@@ -135,7 +151,7 @@ String? htmlText = await controller.getText();
 - Image button should support custom async upload over network and embed url
 - Embed YouTube or video urls
 - Replace selected Text
-- Support for Windows and Mac
+- More examples for each available apis 
 
 ### Credits
 [adrianflutur](https://github.com/adrianflutur/webviewx "adrianflutur") for webviewx package<br>
