@@ -23,6 +23,10 @@ class QuillHtmlEditor extends StatefulWidget {
     this.backgroundColor = Colors.white,
     this.hintText = 'Start typing something amazing',
     this.onFocusChanged,
+    this.onEditorCreated,
+    this.padding = EdgeInsets.zero,
+    this.hintTextPadding = EdgeInsets.zero,
+    this.hintTextAlign = TextAlign.start,
     this.textStyle = const TextStyle(
       fontStyle: FontStyle.normal,
       fontSize: 20.0,
@@ -35,9 +39,6 @@ class QuillHtmlEditor extends StatefulWidget {
       color: Colors.black87,
       fontWeight: FontWeight.normal,
     ),
-    this.padding = EdgeInsets.zero,
-    this.hintTextPadding = EdgeInsets.zero,
-    this.hintTextAlign = TextAlign.start,
   }) : super(key: controller._editorKey);
 
   /// [text] to set initial text to the editor, please use text
@@ -67,6 +68,10 @@ class QuillHtmlEditor extends StatefulWidget {
   ///[onFocusChanged] method returns a boolean value, if the editor has focus,
   ///it will return true; if not, will return false
   final Function(bool)? onFocusChanged;
+
+  ///[onEditorCreated] a callback method triggered once the editor is created
+  ///it will be called only once after editor is loaded completely
+  final VoidCallback? onEditorCreated;
 
   ///[textStyle] optional style for the default editor text,
   ///while all fields in the style are not mapped;Some basic fields like,
@@ -156,6 +161,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
           if (widget.text != null) {
             _setHtmlTextToEditor(htmlText: widget.text!);
           }
+          _requestFocus();
         });
       },
       dartCallBacks: {
@@ -204,6 +210,13 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
                 widget.onFocusChanged!(map?.toString() == 'true');
               }
             }),
+        DartCallback(
+            name: 'EditorLoaded',
+            callBack: (map) {
+              if (widget.onEditorCreated != null) {
+                widget.onEditorCreated!();
+              }
+            }),
       },
       webSpecificParams: const WebSpecificParams(
         printDebugInfo: false,
@@ -238,6 +251,11 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
   /// a private method to set the Html text to the editor
   Future _setHtmlTextToEditor({required String htmlText}) async {
     return await _webviewController.callJsMethod("setHtmlText", [htmlText]);
+  }
+
+  /// a private method to set the Html text to the editor
+  Future _requestFocus() async {
+    return await _webviewController.callJsMethod("requestFocus", []);
   }
 
   /// a private method to insert the Html text to the editor
@@ -296,18 +314,18 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
            margin:0px !important;
         }
         .ql-editor.ql-blank::before{
-          padding-left:${widget.hintTextPadding!.left}px;
-          padding-right:${widget.hintTextPadding!.right}px;
-          padding-top:${widget.hintTextPadding!.top}px;
-          padding-bottom:${widget.hintTextPadding!.bottom}px;
+          padding-left:${widget.hintTextPadding?.left ?? '0'}px;
+          padding-right:${widget.hintTextPadding?.right ?? '0'}px;
+          padding-top:${widget.hintTextPadding?.top ?? '0'}px;
+          padding-bottom:${widget.hintTextPadding?.bottom ?? '0'}px;
           position: center;
           right: 15px;
           text-align: ${StringUtil.getCssTextAlign(widget.hintTextAlign)};
-          font-size: ${widget.hintTextStyle!.fontSize}px;
-          color:${widget.hintTextStyle!.color!.toHex()};
+          font-size: ${widget.hintTextStyle?.fontSize ?? '14'}px;
+          color:${(widget.hintTextStyle?.color ?? Colors.black87).toHex()};
           background-color:${widget.backgroundColor.toHex()};
-          font-style: ${StringUtil.getCssFontStyle(widget.hintTextStyle!.fontStyle)};
-          font-weight: ${StringUtil.getCssFontWeight(widget.hintTextStyle!.fontWeight)};
+          font-style: ${StringUtil.getCssFontStyle(widget.hintTextStyle?.fontStyle)};
+          font-weight: ${StringUtil.getCssFontWeight(widget.hintTextStyle?.fontWeight)};
         }
         .ql-container.ql-snow{
           white-space:nowrap !important;
@@ -318,15 +336,15 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
           margin:0px !important;
           width:100%;
           border:none;
-          font-style: ${StringUtil.getCssFontStyle(widget.textStyle!.fontStyle)};
-          font-size: ${widget.textStyle!.fontSize}px;
-          color:${widget.textStyle!.color!.toHex()};
+          font-style: ${StringUtil.getCssFontStyle(widget.textStyle?.fontStyle)};
+          font-size: ${widget.textStyle?.fontSize ?? '14'}px;
+          color:${(widget.textStyle!.color ?? Colors.black87).toHex()};
           background-color:${widget.backgroundColor.toHex()};
-          font-weight: ${StringUtil.getCssFontWeight(widget.textStyle!.fontWeight)};
-          padding-left:${widget.padding!.left}px;
-          padding-right:${widget.padding!.right}px;
-          padding-top:${widget.padding!.top}px;
-          padding-bottom:${widget.padding!.bottom}px;
+          font-weight: ${StringUtil.getCssFontWeight(widget.textStyle?.fontWeight)};
+          padding-left:${widget.padding?.left ?? '0'}px;
+          padding-right:${widget.padding?.right ?? '0'}px;
+          padding-top:${widget.padding?.top ?? '0'}px;
+          padding-bottom:${widget.padding?.bottom ?? '0'}px;
           height: ${height.toInt()}px;
           min-height:100%;
           contenteditable=true !important;
@@ -390,7 +408,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
                 element.style.height = ((height - element.offsetTop) + "px");
               }  
             }
-            
+         
             function applyGoogleKeyboardWorkaround(editor) {
               try {
                 if(editor.applyGoogleKeyboardWorkaround) {
@@ -452,6 +470,19 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
             const table = quilleditor.getModule('table');
             quilleditor.enable($isEnabled);
         
+        
+         let editorLoaded = false;
+          quilleditor.on('editor-change', function(eventName, ...args) {
+
+             if (!editorLoaded) {
+               if($kIsWeb) {
+                  EditorLoaded(true);
+              } else {
+                  EditorLoaded.postMessage(true);
+              }
+                editorLoaded = true;
+              }
+            });
             quilleditor.on('selection-change', function(eventName, ...args) {
               /// console.log('selection changed');
               onRangeChanged();
@@ -565,6 +596,13 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
               return '';
             }
             
+             function requestFocus() {
+              setTimeout(() => {
+                 quilleditor.focus();
+               }, 0);
+              return '';
+            }
+  
              function insertTable(row,column) {
               table.insertTable(row, column);
               return '';
@@ -655,7 +693,7 @@ class QuillEditorController {
   GlobalKey<ToolBarState>? _toolBarKey;
   StreamController<String>? _changeController;
 
-  ///[isEnable] to enable/ disable editor
+  ///[isEnable] to enable/disable editor
   bool isEnable = true;
 
   ///[QuillEditorController] controller constructor to generate editor, toolbar state keys
@@ -691,6 +729,11 @@ class QuillEditorController {
     return await _editorKey?.currentState?._setHtmlTextToEditor(htmlText: text);
   }
 
+  /// [focus] method is used to request focus of the editor
+  Future focus() async {
+    return await _editorKey?.currentState?._requestFocus();
+  }
+
   /// [insertTable] method is used to insert table by row and column to the editor
   Future insertTable(int row, int column) async {
     return await _editorKey?.currentState
@@ -710,8 +753,12 @@ class QuillEditorController {
   }
 
   /// [embedVideo] method is used to embed url of video to the editor
-  Future embedVideo(String text) async {
-    return await _editorKey?.currentState?._embedVideo(videoUrl: text);
+  Future embedVideo(String url) async {
+    String? link = StringUtil.sanitizeVideoUrl(url);
+    if (link == null) {
+      return;
+    }
+    return await _editorKey?.currentState?._embedVideo(videoUrl: link);
   }
 
   /// [embedImage] method is used to insert image to the editor

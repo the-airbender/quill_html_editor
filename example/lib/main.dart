@@ -90,13 +90,15 @@ class _MyAppState extends State<MyApp> {
                 backgroundColor: _backgroundColor,
                 onFocusChanged: (hasFocus) => debugPrint('has focus $hasFocus'),
                 onTextChanged: (text) => debugPrint('widget text change $text'),
+                onEditorCreated: () => debugPrint('Editor has been loaded'),
               ),
             ),
             Visibility(
-              visible: false,
+              visible: true,
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Container(
+                  width: MediaQuery.of(context).size.width,
                   color: _toolbarColor,
                   child: Row(
                     children: [
@@ -107,10 +109,20 @@ class _MyAppState extends State<MyApp> {
                                 "This text is set by the setText method");
                           }),
                       textButton(
-                          text: 'Insert Text',
+                          text: 'Insert Video',
                           onPressed: () {
-                            insertHtmlText(
-                                "This text is set by the insertText method");
+                            ////insert
+                            insertVideoURL(
+                                'https://www.youtube.com/watch?v=4AoFA19gbLo');
+                            insertVideoURL('https://vimeo.com/440421754');
+                            insertVideoURL(
+                                'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4');
+                          }),
+                      textButton(
+                          text: 'Insert Image',
+                          onPressed: () {
+                            insertNetworkImage(
+                                'https://i.imgur.com/0DVAOec.gif');
                           }),
                       textButton(
                           text: 'Insert Index',
@@ -153,6 +165,18 @@ class _MyAppState extends State<MyApp> {
   ///[setHtmlText] to set the html text to editor
   void setHtmlText(String text) async {
     await controller.setText(text);
+  }
+
+  ///[insertNetworkImage] to set the html text to editor
+  void insertNetworkImage(String url) async {
+    await controller.embedImage(url);
+  }
+
+  ///[insertVideoURL] to set the video url to editor
+  ///this method recognises the inserted url and sanitize to make it embeddable url
+  ///eg: converts youtube video to embed video, same for vimeo
+  void insertVideoURL(String url) async {
+    await controller.embedVideo(url);
   }
 
   /// to set the html text to editor
