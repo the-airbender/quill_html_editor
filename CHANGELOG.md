@@ -1,3 +1,10 @@
+## 2.0.8
+- Added [OnEditorCreated] callback function to listen to editor loaded event
+- Fixed a bug in textStyle, hintTextStyle color to css  
+- Support for Youtube, Vimeo embedding, [embedVideo] function now recognizes Youtube, Vimeo links and convert them to embed urls
+- [embedImage] method supports inserting network image urls
+
+
 ## 2.0.7
 - Added [OnFocusChanged] callback function to listen to editor focus changes
 - Updated [webview_flutter] and dependent packages to latest versions in Webviewx

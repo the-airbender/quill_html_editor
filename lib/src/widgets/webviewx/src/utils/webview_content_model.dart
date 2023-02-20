@@ -25,6 +25,7 @@ class WebViewContent {
     this.webPostRequestBody,
   });
 
+  /// copyWith function to copy objects
   WebViewContent copyWith({
     String? source,
     SourceType? sourceType,
