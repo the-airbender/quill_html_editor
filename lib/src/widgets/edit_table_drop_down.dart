@@ -38,6 +38,7 @@ class EditTableDropDown extends StatefulWidget {
 class _EditTableDropDownState extends State<EditTableDropDown> {
   final GlobalKey<ElTooltipState> _editTableETKey =
       GlobalKey<ElTooltipState>(debugLabel: 'fontBgColorKey');
+
   @override
   Widget build(BuildContext context) {
     return Padding(

@@ -1,3 +1,9 @@
+## 2.0.9
+- Added `replaceText` function to replace the selected text
+- Added `getSelectedText` function to get the selected text
+- Added `requestFocus` and `unFocus` functions
+
+
 ## 2.0.8
 - Added [OnEditorCreated] callback function to listen to editor loaded event
 - Fixed a bug in textStyle, hintTextStyle color to css  

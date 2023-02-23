@@ -25,6 +25,7 @@ class _TablePickerState extends State<TablePicker> {
   final Set<_CellBox> _trackTaped = <_CellBox>{};
   int _selectedRow = 0;
   int _selectedColumn = 0;
+
   @override
   initState() {
     super.initState();
@@ -142,5 +143,6 @@ class _CellSelectionWidget extends SingleChildRenderObjectWidget {
 
 class _CellBox extends RenderProxyBox {
   int index;
+
   _CellBox(this.index);
 }

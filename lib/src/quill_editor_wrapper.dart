@@ -253,9 +253,14 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
     return await _webviewController.callJsMethod("setHtmlText", [htmlText]);
   }
 
-  /// a private method to set the Html text to the editor
+  /// a private method to request focus to the editor
   Future _requestFocus() async {
     return await _webviewController.callJsMethod("requestFocus", []);
+  }
+
+  /// a private method to un focus the editor
+  Future _unFocus() async {
+    return await _webviewController.callJsMethod("unFocus", []);
   }
 
   /// a private method to insert the Html text to the editor
@@ -269,7 +274,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
     return await _webviewController.callJsMethod("embedVideo", [videoUrl]);
   }
 
-// a private method to embed the image to the editor
+  /// a private method to embed the image to the editor
   Future _embedImage({required String imgSrc}) async {
     return await _webviewController.callJsMethod("embedImage", [imgSrc]);
   }
@@ -300,6 +305,19 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
         .callJsMethod("modifyTable", [describeEnum(type)]);
   }
 
+  /// a private method to replace selection text in the editor
+  Future _replaceText(
+    String replaceText,
+  ) async {
+    return await _webviewController
+        .callJsMethod("replaceSelection", [replaceText]);
+  }
+
+  /// a private method to get the selected text from editor
+  Future _getSelectedText() async {
+    return await _webviewController.callJsMethod("getSelectedText", []);
+  }
+
   /// This method generated the html code that is required to render the quill js editor
   /// We are rendering this html page with the help of webviewx and using the callbacks to call the quill js apis
   String _getQuillPage({required double height, required double width}) {
@@ -309,6 +327,8 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
         <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">    
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/quill/2.0.0-dev.4/quill.snow.min.css" />
+          <!-- Include the Quill library -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/quill/2.0.0-dev.4/quill.min.js"></script>
         <style>
         body{
            margin:0px !important;
@@ -376,8 +396,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
         <div id="editor" style="min-height:100%; height:${height.toInt()}px;  width:100%;"></div>
         </div>
         </div>
-        <!-- Include the Quill library -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/quill/2.0.0-dev.4/quill.min.js"></script>
+      
         <!-- Initialize Quill editor -->
         <script>
       
@@ -408,6 +427,49 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
                 element.style.height = ((height - element.offsetTop) + "px");
               }  
             }
+            
+            
+          function replaceSelection(replaceText) {
+              try{
+              var range = quilleditor.getSelection(true);
+                    if (range) {
+                      if (range.length == 0) {
+                        console.log('User cursor is at index', range.index);
+                      } else {
+                       quilleditor.deleteText(range.index, range.length);
+                       quilleditor.insertText(range.index, replaceText);
+                       /// replace text with format will be coming in future release
+                      /// quilleditor.insertText(range.index, replaceText, JSON.parse(format));
+                      }
+                    } else {
+                      console.log('User cursor is not in editor');
+                    }
+                }
+                 catch(e) {
+                    console.log(e);
+                  } 
+            }
+            
+            
+            function getSelectedText() {
+            let text = '';
+              try{
+                var range = quilleditor.getSelection(true);
+                    if (range) {
+                      if (range.length == 0) {
+                        console.log('User cursor is at index', range.index);
+                      } else {
+                         text = quilleditor.getText(range.index, range.length);
+                      }
+                    } else {
+                      console.log('User cursor is not in editor');
+                    }
+                }
+                 catch(e) {
+                    console.log(e);
+                  } 
+                return text;  
+            }
          
             function applyGoogleKeyboardWorkaround(editor) {
               try {
@@ -435,7 +497,6 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
                       }
                     }, 30);
                     //onRangeChanged();
-                   
                   }
                 });
                 
@@ -596,14 +657,17 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
               return '';
             }
             
-             function requestFocus() {
-              setTimeout(() => {
-                 quilleditor.focus();
-               }, 0);
+            function requestFocus() {
+              quilleditor.focus();
+              return '';
+            }
+            
+            function unFocus() {
+              quilleditor.root.blur()
               return '';
             }
   
-             function insertTable(row,column) {
+            function insertTable(row,column) {
               table.insertTable(row, column);
               return '';
             }
@@ -626,7 +690,6 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
                 }
               return '';
             }
-            
             
             function insertHtmlText(htmlString, index) {
               if(index == null) {
@@ -752,6 +815,17 @@ class QuillEditorController {
         ?._insertHtmlTextToEditor(htmlText: text, index: index);
   }
 
+  /// [replaceText] method is used to replace the selected text in the editor
+  /// custom format for replaced text will come in future release
+  Future replaceText(String text) async {
+    return await _editorKey?.currentState?._replaceText(text);
+  }
+
+  /// [getSelectedText] method to get the selected text from editor
+  Future getSelectedText() async {
+    return await _editorKey?.currentState?._getSelectedText();
+  }
+
   /// [embedVideo] method is used to embed url of video to the editor
   Future embedVideo(String url) async {
     String? link = StringUtil.sanitizeVideoUrl(url);
@@ -794,9 +868,19 @@ class QuillEditorController {
     return await _editorKey?.currentState?._setSelectionRange(index, length);
   }
 
-  /// This [clear] method is used to clear the editor
+  ///  [clear] method is used to clear the editor
   void clear() async {
     await _editorKey?.currentState?._setHtmlTextToEditor(htmlText: '');
+  }
+
+  /// [requestFocus] method is to request focus of the editor
+  void requestFocus() async {
+    await _editorKey?.currentState?._requestFocus();
+  }
+
+  ///  [unFocus] method is to un focus the editor
+  void unFocus() async {
+    await _editorKey?.currentState?._unFocus();
   }
 
   ///[setFormat]  sets the format to editor either by selection or by cursor position

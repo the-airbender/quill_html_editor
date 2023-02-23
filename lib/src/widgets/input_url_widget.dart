@@ -32,6 +32,7 @@ class InputUrlWidget extends StatefulWidget {
       required this.controller,
       required this.isActive,
       required this.iconWidget});
+
   @override
   State<StatefulWidget> createState() {
     return _InputUrlWidgetState();

@@ -16,6 +16,8 @@ class _MyAppState extends State<MyApp> {
   ///[controller] create a QuillEditorController to access the editor methods
   final QuillEditorController controller = QuillEditorController();
 
+  ///[customToolBarList] pass the custom toolbarList to show only selected styles in the editor
+
   final customToolBarList = [
     ToolBarStyle.bold,
     ToolBarStyle.italic,
@@ -41,6 +43,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void dispose() {
+    /// please do not forget to dispose the controller
     controller.dispose();
     super.dispose();
   }
@@ -62,13 +65,17 @@ class _MyAppState extends State<MyApp> {
               controller: controller,
               customButtons: [
                 InkWell(
-                    onTap: () async {},
+                    onTap: () => unFocusEditor(),
                     child: const Icon(
                       Icons.favorite,
                       color: Colors.black,
                     )),
                 InkWell(
-                    onTap: () {},
+                    onTap: () async {
+                      var selectedText = await controller.getSelectedText();
+                      debugPrint('selectedText $selectedText');
+                      controller.replaceText('Replaced Text');
+                    },
                     child: const Icon(
                       Icons.add_circle,
                       color: Colors.black,
@@ -190,4 +197,7 @@ class _MyAppState extends State<MyApp> {
 
   /// to enable/disable the editor
   void enableEditor(bool enable) => controller.enableEditor(enable);
+
+  /// method to un focus editor
+  void unFocusEditor() => controller.unFocus();
 }

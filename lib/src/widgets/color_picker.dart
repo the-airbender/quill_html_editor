@@ -9,6 +9,7 @@ class ColorPicker extends StatelessWidget {
 
   /// [onColorPicked] callback when a color is picked
   final Function(String) onColorPicked;
+
   @override
   Widget build(BuildContext context) {
     return Container(

@@ -55,6 +55,7 @@ class ToolBar extends StatefulWidget {
   }) : super(
           key: controller.toolBarKey,
         );
+
   @override
   State<ToolBar> createState() => ToolBarState();
 }
@@ -818,6 +819,7 @@ class ToolBarItem extends StatelessWidget {
         ),
       );
 
+  ///toolbar item copyWith function
   ToolBarItem copyWith({
     bool? isActive,
   }) {
@@ -831,78 +833,93 @@ class ToolBarItem extends StatelessWidget {
   }
 }
 
-///[ToolBarConfig] class to configure, toggle toolbar styles
-class ToolBarConfig {
-  bool bold;
-  bool italic;
-  bool underline;
-  bool strike;
-  bool blockQuote;
-  bool codeBlock;
-  bool indentAdd;
-  bool indentMinus;
-  bool directionRtl;
-  bool directLtr;
-  bool size;
-  bool header;
-  bool color;
-  bool font;
-  bool align;
-  bool clean;
-  bool listOrdered;
-  bool listBullet;
-  bool link;
-  bool image;
-  bool video;
-
-  ///[ToolBarConfig] to enable or disable the toolbar styles
-  ToolBarConfig(
-      {this.bold = false,
-      this.italic = false,
-      this.underline = false,
-      this.strike = false,
-      this.blockQuote = false,
-      this.codeBlock = false,
-      this.indentAdd = false,
-      this.indentMinus = false,
-      this.directionRtl = false,
-      this.directLtr = false,
-      this.size = false,
-      this.header = false,
-      this.color = false,
-      this.font = false,
-      this.align = false,
-      this.clean = false,
-      this.listOrdered = false,
-      this.listBullet = false,
-      this.image = false,
-      this.video = false,
-      this.link = false});
-}
-
 ///[ToolBarStyle] an enum with multiple toolbar styles, to define required toolbar styles in custom config
+
 enum ToolBarStyle {
+  ///[bold] sets bold format
   bold,
+
+  /// [italic] sets italic format
+
   italic,
+
+  /// [underline] sets underline to text
+
   underline,
+
+  /// [strike] makes the selected text strikethrough
+
   strike,
+
+  /// [blockQuote] converts text to quote
+
   blockQuote,
+
+  /// [codeBlock] makes selected text code block
+
   codeBlock,
+
+  /// [indentMinus] decreases the indent by given value
+
   indentMinus,
+
+  /// [indentAdd] increases the indent by given value
+
   indentAdd,
+
+  /// [directionRtl] sets the direction of text from Right to Left
+
   directionRtl,
+
+  /// [directionLtr] sets the direction of text from Left to Right
+
   directionLtr,
+
+  /// [headerOne] makes the text H1
+
   headerOne,
+
+  /// [headerTwo] makes the text H2
+
   headerTwo,
+
+  /// [color] sets font color
+
   color,
+
+  /// [background] sets background color to text
+
   background,
+
+  /// [align] adds alignment to text, left, right, center, justify
+
   align,
+
+  /// [listOrdered] adds numbered/alphabets list to the text
+
   listOrdered,
+
+  /// [listBullet] makes text as bullet points
+
   listBullet,
+
+  /// [size] sets fontSize of the text
+
   size,
+
+  /// [link] sets hyperlink to selected text
+
   link,
+
+  /// [image] embeds image to the editor
+
   image,
+
+  /// [video] embeds Youtube, Vimeo or other network videos to editor
+
   video,
+
+  /// [clean] clears all formats of editor, (for internal use case)
   clean,
 
   ///font - later releases
