@@ -232,6 +232,11 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
     return await _webviewController.callJsMethod("getHtmlText", []);
   }
 
+  /// a private method to get the Plain text from the editor
+  Future<String> _getPlainTextFromEditor() async {
+    return await _webviewController.callJsMethod("getPlainText", []);
+  }
+
   /// a private method to check if editor has focus
   Future<int> _getSelectionCount() async {
     return await _webviewController.callJsMethod("getSelection", []);
@@ -627,6 +632,23 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
             function getHtmlText() {
               return quilleditor.root.innerHTML;
             }
+            function getPlainText() {
+              var text = "";
+              try{
+                 text =  toPlaintext(quilleditor.getContents());
+              }catch(e){
+                 text = "";
+              }
+              return text; 
+            }
+            
+            function toPlaintext(delta) {
+              return delta.reduce(function (text, op) {
+                if (!op.insert) throw new TypeError('only `insert` operations can be transformed!');
+                if (typeof op.insert !== 'string') return text + ' ';
+                return text + op.insert;
+              }, '');
+            };
             
             function getSelection() {
               var range = quilleditor.getSelection(true);
@@ -786,6 +808,20 @@ class QuillEditorController {
     }
   }
 
+  /// [getPlainText] method is used to get the plain text  from the editor
+  Future<String> getPlainText() async {
+    try {
+      String? text = await _editorKey?.currentState?._getPlainTextFromEditor();
+      if (text == null) {
+        return "";
+      } else {
+        return text;
+      }
+    } catch (e) {
+      return "";
+    }
+  }
+
   /// [setText] method is used to set the html text to the editor
   /// it will override the existing text in the editor with the new one
   Future setText(String text) async {
@@ -857,14 +893,13 @@ class QuillEditorController {
   /// [getSelectionRange] to get the text selection range from editor
   Future<SelectionModel> getSelectionRange() async {
     var selection = await _editorKey?.currentState?._getSelectionRange();
-
     return selection != null
         ? SelectionModel.fromJson(jsonDecode(selection))
         : SelectionModel(index: 0, length: 0);
   }
 
   /// [setSelectionRange] to select the text in the editor by index
-  Future<dynamic> setSelectionRange(int index, int length) async {
+  Future setSelectionRange(int index, int length) async {
     return await _editorKey?.currentState?._setSelectionRange(index, length);
   }
 
@@ -888,11 +923,6 @@ class QuillEditorController {
     _editorKey?.currentState?._setFormat(format: format, value: value);
   }
 
-  /// it is a regex method to remove the tags and replace them with empty space
-  static String _stripHtmlIfNeeded(String text) {
-    return text.replaceAll(RegExp(r'<[^>]*>|&[^;]+;'), ' ');
-  }
-
   ///[onTextChanged] method is used to listen to editor text changes
   void onTextChanged(Function(String) data) {
     try {
@@ -914,6 +944,11 @@ class QuillEditorController {
   ///[dispose] dispose function to close the stream
   void dispose() {
     _changeController?.close();
+  }
+
+  /// it is a regex method to remove the tags and replace them with empty space
+  static String _stripHtmlIfNeeded(String text) {
+    return text.replaceAll(RegExp(r'<[^>]*>|&[^;]+;'), ' ');
   }
 }
 

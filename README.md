@@ -1,20 +1,18 @@
 ![Pub Version](https://img.shields.io/pub/v/quill_html_editor) ![GitHub](https://img.shields.io/github/license/the-airbender/quill_html_editor) ![Pub Points](https://img.shields.io/pub/points/quill_html_editor)
-### Quill Html Editor
+# quill_html_editor
 
 Quill Html Editor is a HTML rich text editor for Android, iOS, and Web, it is built with the powerful QuillJs library, an open source WYSIWYG editor for the modern web.
 
-------------
 
-### 📸 Features
+## Features
 - Highly customizable **Editor** and **Toolbar** widgets
 - Supports copy pasting the RichText from other files or webpages
 - Because the Toolbar is completely detached from editor, it can be placed anywhere in the page, as per the requirement
 - We can also add custom buttons to the toolbar
 - Supports Embedding Images, Videos, Inserting Tables
 
-------------
 
-### 📸 Screenshots
+## Screenshots
 
 <img
 style="display: block;  margin-left: auto;  margin-right: auto;"
@@ -40,12 +38,22 @@ width="600" alt="1" src="https://i.imgur.com/3PrFsZU.png">
     </table>
 </div> </p>
 
-------------
-#### Quill Html Editor Demo
+
+## Quill Html Editor Demo
 Please go to [Demo Page](https://the-airbender.github.io/) to try out the Quill Editor on Web
 
-------------
-#### Usage
+
+## Documentation
+See the API documentation for details on the following topics:
+
+- [Getting started](https://github.com/the-airbender/quill_html_editor/tree/main/doc/get-started.md)
+- [Quill Html Editor Usage](https://github.com/the-airbender/quill_html_editor/tree/main/doc/quill-html-editor-setup.md)
+- [Quill Controller Usage](https://github.com/the-airbender/quill_html_editor/tree/main/doc/quill-editor-controller-setup.md)
+- [ToolBar Usage](https://github.com/the-airbender/quill_html_editor/tree/main/doc/toolbar-setup.md)
+
+
+
+## Usage
 
 Define a **QuillEditorController** to access the editor methods, pass the controller to **QuillHtmlEditor** Widget
 ```dart
@@ -69,12 +77,7 @@ Define a **QuillEditorController** to access the editor methods, pass the contro
         onTextChanged: (text) => debugPrint('widget text change $text'),
     ),
 ```
-**onTextChanged** can be used to listen to the text changes, as defined below
-```dart
-    controller.onTextChanged((text) {
-	  debugPrint('listening to $text');
-    });
-```
+
 Define **ToolBar** widget and pass the same **controller** created for **QuillHtmlEditor**
 ```dart
    ToolBar(
@@ -145,13 +148,16 @@ String? htmlText = await controller.getText();
   controller.enableEditor(false);
 ```
 
-#### Todo
+## Todo
 
-- Custom Font Styles
-- Image button should support custom async upload over network and embed url
-- Embed YouTube or video urls
-- Replace selected Text
-- More examples for each available apis 
+-  **CustomStyleButton** - Let the user add own icons to toolbar styles
+-  **Custom Color** - Let the user add more Colors to the Color Picker
+-  **Custom FontSize** - Let the user add custom font sizes, instead of just Small, Normal, Large & Huge
+-  **AsyncImagePickerButton** -  To share picked file to user, to upload it asynchronously and inserts the returned link into the editor
+-  **Custom FontStyles** -  Let the user choose the supported font styles of the editor
+- **Editor History** - Provides option to undo or redo text
+- More examples for each available apis
+
 
 ### Credits
 [adrianflutur](https://github.com/adrianflutur/webviewx "adrianflutur") for webviewx package<br>
@@ -182,4 +188,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-

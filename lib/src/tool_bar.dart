@@ -77,7 +77,7 @@ class ToolBarState extends State<ToolBar> {
     if (widget.padding != null) {
       _buttonPadding = widget.padding!;
     }
-    if (widget.toolBarConfig == null) {
+    if (widget.toolBarConfig == null || widget.toolBarConfig!.isEmpty) {
       for (var style in ToolBarStyle.values) {
         _toolbarList.add(ToolBarItem(
           activeIconColor: widget.activeIconColor!,
@@ -379,7 +379,6 @@ class ToolBarState extends State<ToolBar> {
             if (_formatMap['direction'] == 'rtl') {
               widget.controller.setFormat(format: 'align', value: 'right');
             }
-
             setState(() {});
           },
         ));

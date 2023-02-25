@@ -1,3 +1,10 @@
+## 2.1.3
+- Added Documentation and Updated ReadMe
+- Added `getPlainText` method
+
+### 2.0.10 - 2.1.2
+- Added Documentation
+
 ## 2.0.9
 - Added `replaceText` function to replace the selected text
 - Added `getSelectedText` function to get the selected text
