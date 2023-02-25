@@ -80,5 +80,5 @@ For a complete sample, see the [Getting started sample][] in the example directo
 For more on how to configure [QuillHtmlEditor] and [Toolbar].
 
 [Getting started sample]: https://github.com/the-airbender/quill_html_editor/blob/main/example/lib/main.dart
-[QuillHtmlEditor]: https://pub.dev/documentation/quil_html_editor/latest/topics/QuillHtmlEditor.html
-[Toolbar]: https://pub.dev/documentation/quil_html_editor/latest/topics/ToolBar.html
+[QuillHtmlEditor]: https://github.com/the-airbender/quill_html_editor/tree/main/doc/quill-html-editor-setup.md
+[Toolbar]: https://github.com/the-airbender/quill_html_editor/tree/main/doc/toolbar-setup.md

@@ -28,6 +28,9 @@ For a complete sample, see the [Getting started sample][] in the example directo
 
 [Getting started sample]: https://github.com/the-airbender/quill_html_editor/blob/main/example/lib/main.dart
 
-[Getting Started]: https://pub.dev/documentation/quill_html_editor/latest/topics/Get%20started-topic.html
 
-[QuillEditorController]: https://pub.dev/documentation/quill_html_editor/latest/topics/QuillEditorController-topic.html
+[QuillEditorController]: https://github.com/the-airbender/quill_html_editor/tree/main/doc/quill-editor-controller-setup.md
+
+
+[Getting Started]: https://github.com/the-airbender/quill_html_editor/tree/main/doc/get-started.md
+

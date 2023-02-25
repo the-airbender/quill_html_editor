@@ -186,6 +186,6 @@ For a complete sample, see the [Getting started sample][] in the example directo
 
 [Getting started sample]: https://github.com/the-airbender/quill_html_editor/blob/main/example/lib/main.dart
 
-[Getting Started]: https://pub.dev/documentation/quill_html_editor/latest/topics/Get%20started-topic.html
+[Getting Started]: https://github.com/the-airbender/quill_html_editor/tree/main/doc/get-started.md
 
-[QuillHtmlEditor]: https://pub.dev/documentation/quill_html_editor/latest/topics/QuillHtmlEditor-topic.html
+[QuillHtmlEditor]:  https://github.com/the-airbender/quill_html_editor/tree/main/doc/quill-html-editor-setup.md
