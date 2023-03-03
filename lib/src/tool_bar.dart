@@ -238,6 +238,10 @@ class ToolBarState extends State<ToolBar> {
         case ToolBarStyle.link:
           _formatMap['link'] = formatMap['link'];
           break;
+        case ToolBarStyle.undo:
+        case ToolBarStyle.redo:
+        case ToolBarStyle.clearHistory:
+          break;
       }
     }
     setState(() {});
@@ -339,7 +343,13 @@ class ToolBarState extends State<ToolBar> {
           style: toolbarItem.style,
           isActive: toolbarItem.isActive,
           onTap: () async {
-            if (toolbarItem.style == ToolBarStyle.image) {
+            if (toolbarItem.style == ToolBarStyle.clearHistory) {
+              widget.controller.clearHistory();
+            } else if (toolbarItem.style == ToolBarStyle.undo) {
+              widget.controller.undo();
+            } else if (toolbarItem.style == ToolBarStyle.redo) {
+              widget.controller.redo();
+            } else if (toolbarItem.style == ToolBarStyle.image) {
               await ImageSelector(onImagePicked: (value) {
                 _formatMap['image'] = value;
                 widget.controller.embedImage(value);
@@ -441,6 +451,10 @@ class ToolBarState extends State<ToolBar> {
         return {'format': 'background', 'value': 'red'};
       case ToolBarStyle.link:
         return {'format': 'link', 'value': ''};
+      case ToolBarStyle.undo:
+      case ToolBarStyle.redo:
+      case ToolBarStyle.clearHistory:
+        return {'format': 'undo', 'value': ''};
     }
   }
 
@@ -800,6 +814,12 @@ class ToolBarItem extends StatelessWidget {
       case ToolBarStyle.video:
       case ToolBarStyle.size:
         return const SizedBox();
+      case ToolBarStyle.undo:
+        return _getIconWidget(Icons.undo_sharp);
+      case ToolBarStyle.redo:
+        return _getIconWidget(Icons.redo_sharp);
+      case ToolBarStyle.clearHistory:
+        return _getIconWidget(Icons.layers_clear_sharp);
     }
   }
 
@@ -920,6 +940,15 @@ enum ToolBarStyle {
 
   /// [clean] clears all formats of editor, (for internal use case)
   clean,
+
+  /// [undo] to undo the editor change
+  undo,
+
+  /// [redo] to undo the editor change
+  redo,
+
+  /// [clearHistory] to undo the editor change
+  clearHistory
 
   ///font - later releases
 }

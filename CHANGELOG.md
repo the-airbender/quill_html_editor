@@ -1,3 +1,10 @@
+## 2.1.4
+- Added `undo` `redo` and `clearHistory` methods
+- Added `onSelectionChanged` callback to return index and length on text selection
+- Fixed bug #23
+- Updated Documentation and  ReadMe
+
+
 ## 2.1.3
 - Added Documentation and Updated ReadMe
 - Added `getPlainText` method

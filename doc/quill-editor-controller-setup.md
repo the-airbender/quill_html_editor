@@ -9,7 +9,7 @@ We need to pass `QuillEditorController` to both Editor and the Toolbar to bind t
 
 ### Quill Controller Methods
 
-As showin the getting started sample, please define a `QuillEditorController`
+As shown in the getting started sample, please define a `QuillEditorController`
 
 ```dart 
   final QuillEditorController controller = QuillEditorController();
@@ -71,12 +71,36 @@ Method is used to remove focus of the editor. This method, will also dismiss the
    controller.unFocus();
 ```
 
+
+#### `undo`
+
+Method to undo the entered text
+```dart 
+    controller.undo();
+```
+
+#### `redo`
+
+Method to redo the entered text
+```dart 
+    controller.redo();
+```
+
+#### `clearHistory`
+
+Method to clear the editor history stack
+```dart 
+    controller.clearHistory();
+```
+
+
+
 #### `onTextChanged`
 Can be used to listen to the text changes, as defined below
 ```dart
    controller.onTextChanged((text) {
-     debugPrint('listening to $text');
-    });
+debugPrint('listening to $text');
+});
 ```
 
 #### `getSelectionRange`

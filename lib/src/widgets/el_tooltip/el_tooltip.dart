@@ -83,6 +83,8 @@ class ElTooltipState extends State<ElTooltip> with WidgetsBindingObserver {
   OverlayEntry? _overlayEntry;
   OverlayEntry? _overlayEntryHidden;
   final GlobalKey _widgetKey = GlobalKey();
+  OverlayState? _overlayStateHidden = OverlayState();
+  OverlayState? _overlayState = OverlayState();
 
   /// Automatically hide the overlay when the screen dimension changes
   /// or when the user scrolls. This is done to avoid displacement.
@@ -127,7 +129,7 @@ class ElTooltipState extends State<ElTooltip> with WidgetsBindingObserver {
 
   /// Loads the tooltip without opacity to measure the rendered size
   void _loadHiddenOverlay(_) {
-    OverlayState? overlayStateHidden = Overlay.of(context);
+    _overlayStateHidden = Overlay.of(context);
     _overlayEntryHidden = OverlayEntry(
       builder: (context) {
         WidgetsBinding.instance
@@ -147,7 +149,7 @@ class ElTooltipState extends State<ElTooltip> with WidgetsBindingObserver {
     );
 
     if (_overlayEntryHidden != null) {
-      overlayStateHidden.insert(_overlayEntryHidden!);
+      _overlayStateHidden?.insert(_overlayEntryHidden!);
     }
   }
 
@@ -177,7 +179,7 @@ class ElTooltipState extends State<ElTooltip> with WidgetsBindingObserver {
 
   /// Loads the tooltip into view
   void _showOverlay(BuildContext context) async {
-    OverlayState? overlayState = Overlay.of(context);
+    _overlayState = Overlay.of(context);
 
     /// By calling [PositionManager.load()] we get returned the position
     /// of the tooltip, the arrow and the trigger.
@@ -243,10 +245,10 @@ class ElTooltipState extends State<ElTooltip> with WidgetsBindingObserver {
     );
 
     if (_overlayEntry != null) {
-      overlayState.insert(_overlayEntry!);
+      _overlayState?.insert(_overlayEntry!);
     }
 
-    // Add timeout for the tooltip to disapear after a few seconds
+    // Add timeout for the tooltip to disappear after a few seconds
     if (widget.timeout > 0) {
       await Future.delayed(Duration(seconds: widget.timeout))
           .whenComplete(() => hideOverlay());

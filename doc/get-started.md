@@ -39,6 +39,8 @@ import 'package:quill_html_editor/quill_html_editor.dart';
      onFocusChanged: (hasFocus) => debugPrint('has focus $hasFocus'),
      onTextChanged: (text) => debugPrint('widget text change $text'),
      onEditorCreated: () => debugPrint('Editor has been loaded'),),
+     onSelectionChanged: (sel) =>
+               debugPrint('index ${sel.index}, range ${sel.length}'),
   );
 ```
 

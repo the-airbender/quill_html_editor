@@ -24,6 +24,7 @@ class QuillHtmlEditor extends StatefulWidget {
     this.hintText = 'Start typing something amazing',
     this.onFocusChanged,
     this.onEditorCreated,
+    this.onSelectionChanged,
     this.padding = EdgeInsets.zero,
     this.hintTextPadding = EdgeInsets.zero,
     this.hintTextAlign = TextAlign.start,
@@ -68,6 +69,10 @@ class QuillHtmlEditor extends StatefulWidget {
   ///[onFocusChanged] method returns a boolean value, if the editor has focus,
   ///it will return true; if not, will return false
   final Function(bool)? onFocusChanged;
+
+  ///[onSelectionChanged] method returns SelectionModel, which has index and
+  ///length of the selected text
+  final Function(SelectionModel)? onSelectionChanged;
 
   ///[onEditorCreated] a callback method triggered once the editor is created
   ///it will be called only once after editor is loaded completely
@@ -211,6 +216,15 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
               }
             }),
         DartCallback(
+            name: 'OnSelectionChanged',
+            callBack: (selection) {
+              if (widget.onSelectionChanged != null) {
+                widget.onSelectionChanged!(selection != null
+                    ? SelectionModel.fromJson(jsonDecode(selection))
+                    : SelectionModel(index: 0, length: 0));
+              }
+            }),
+        DartCallback(
             name: 'EditorLoaded',
             callBack: (map) {
               if (widget.onEditorCreated != null) {
@@ -256,6 +270,11 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
   /// a private method to set the Html text to the editor
   Future _setHtmlTextToEditor({required String htmlText}) async {
     return await _webviewController.callJsMethod("setHtmlText", [htmlText]);
+  }
+
+  /// a private method to set the Delta  text to the editor
+  Future _setDeltaToEditor({required Map deltaMap}) async {
+    return await _webviewController.callJsMethod("setDeltaContent", [deltaMap]);
   }
 
   /// a private method to request focus to the editor
@@ -321,6 +340,21 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
   /// a private method to get the selected text from editor
   Future _getSelectedText() async {
     return await _webviewController.callJsMethod("getSelectedText", []);
+  }
+
+  /// a private method to undo the history
+  Future _undo() async {
+    return await _webviewController.callJsMethod("undo", []);
+  }
+
+  /// a private method to redo the history
+  Future _redo() async {
+    return await _webviewController.callJsMethod("redo", []);
+  }
+
+  /// a private method to clear the history stack
+  Future _clearHistory() async {
+    return await _webviewController.callJsMethod("clearHistory", []);
   }
 
   /// This method generated the html code that is required to render the quill js editor
@@ -452,7 +486,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
                 }
                  catch(e) {
                     console.log(e);
-                  } 
+                 } 
             }
             
             
@@ -525,7 +559,12 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
             var quilleditor = new Quill('#editor', {
               modules: {
                 toolbar: '#toolbar-container',
-                 table: true,
+                table: true,
+                history: {
+                  delay: 2000,
+                  maxStack: 500,
+                  userOnly: false
+                }
               },
               theme: 'snow',
               placeholder: '${widget.hintText ?? "Description"}',
@@ -537,8 +576,8 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
             quilleditor.enable($isEnabled);
         
         
-         let editorLoaded = false;
-          quilleditor.on('editor-change', function(eventName, ...args) {
+            let editorLoaded = false;
+            quilleditor.on('editor-change', function(eventName, ...args) {
 
              if (!editorLoaded) {
                if($kIsWeb) {
@@ -549,9 +588,15 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
                 editorLoaded = true;
               }
             });
+            
             quilleditor.on('selection-change', function(eventName, ...args) {
               /// console.log('selection changed');
               onRangeChanged();
+              if($kIsWeb){
+              OnSelectionChanged(getSelectionRange());
+              }else{
+              OnSelectionChanged.postMessage(getSelectionRange());
+              }
             });
             
             quilleditor.on('text-change', function(eventName, ...args) {
@@ -582,6 +627,18 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
               ///  console.log(e);
               }
             }
+            
+             function redo(){
+              quilleditor.history.redo();
+             }
+             
+             function undo(){
+              quilleditor.history.undo();
+             }
+             function clearHistory(){
+               quilleditor.history.clear();
+             }
+            
             
             function formatParser(format) {
               var formatMap = {};
@@ -675,10 +732,15 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
             }
             
             function setHtmlText(htmlString) {
-              quilleditor.clipboard.dangerouslyPasteHTML(htmlString);
+              quilleditor.clipboard.dangerouslyPasteHTML(htmlString);         
               return '';
             }
             
+            function setDeltaContent(deltaMap) {
+              quilleditor.setContents(deltaMap);
+              return '';
+            }
+
             function requestFocus() {
               quilleditor.focus();
               return '';
@@ -828,6 +890,13 @@ class QuillEditorController {
     return await _editorKey?.currentState?._setHtmlTextToEditor(htmlText: text);
   }
 
+  /// [setDelta] method is used to set the html text to the editor
+  /// it will override the existing text in the editor with the new one
+  Future setDelta(String text) async {
+    return await _editorKey?.currentState
+        ?._setDeltaToEditor(deltaMap: jsonDecode(text));
+  }
+
   /// [focus] method is used to request focus of the editor
   Future focus() async {
     return await _editorKey?.currentState?._requestFocus();
@@ -949,6 +1018,21 @@ class QuillEditorController {
   /// it is a regex method to remove the tags and replace them with empty space
   static String _stripHtmlIfNeeded(String text) {
     return text.replaceAll(RegExp(r'<[^>]*>|&[^;]+;'), ' ');
+  }
+
+  ///  [undo] method to undo the changes in editor
+  void undo() async {
+    await _editorKey?.currentState?._undo();
+  }
+
+  ///  [redo] method to redo the changes in editor
+  void redo() async {
+    await _editorKey?.currentState?._redo();
+  }
+
+  ///  [clearHistory] method to clear the history stack of editor
+  void clearHistory() async {
+    await _editorKey?.currentState?._clearHistory();
   }
 }
 

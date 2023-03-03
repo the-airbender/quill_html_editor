@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:quill_html_editor/quill_html_editor.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MaterialApp(debugShowCheckedModeBanner: false, home: MyApp()));
 }
 
@@ -53,7 +54,7 @@ class _MyAppState extends State<MyApp> {
     return SafeArea(
       child: Scaffold(
         resizeToAvoidBottomInset: true,
-        backgroundColor: Colors.black45,
+        backgroundColor: Colors.white70,
         body: Column(
           children: [
             ToolBar(
@@ -82,13 +83,13 @@ class _MyAppState extends State<MyApp> {
                     )),
               ],
             ),
-            Expanded(
+            Flexible(
               child: QuillHtmlEditor(
                 text: "<h1>Hello</h1>This is a quill html editor example 😊",
                 hintText: 'Hint text goes here',
                 controller: controller,
                 isEnabled: true,
-                height: MediaQuery.of(context).size.height,
+                height: 600,
                 textStyle: _editorTextStyle,
                 hintTextStyle: _hintTextStyle,
                 hintTextAlign: TextAlign.start,
@@ -98,51 +99,63 @@ class _MyAppState extends State<MyApp> {
                 onFocusChanged: (hasFocus) => debugPrint('has focus $hasFocus'),
                 onTextChanged: (text) => debugPrint('widget text change $text'),
                 onEditorCreated: () => debugPrint('Editor has been loaded'),
+                onSelectionChanged: (sel) =>
+                    debugPrint('index ${sel.index}, range ${sel.length}'),
               ),
             ),
             Visibility(
               visible: true,
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Container(
-                  width: MediaQuery.of(context).size.width,
-                  color: _toolbarColor,
-                  child: Row(
-                    children: [
-                      textButton(
-                          text: 'Set Text',
-                          onPressed: () {
-                            setHtmlText(
-                                "This text is set by the setText method");
-                          }),
-                      textButton(
-                          text: 'Insert Video',
-                          onPressed: () {
-                            ////insert
-                            insertVideoURL(
-                                'https://www.youtube.com/watch?v=4AoFA19gbLo');
-                            insertVideoURL('https://vimeo.com/440421754');
-                            insertVideoURL(
-                                'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4');
-                          }),
-                      textButton(
-                          text: 'Insert Image',
-                          onPressed: () {
-                            insertNetworkImage(
-                                'https://i.imgur.com/0DVAOec.gif');
-                          }),
-                      textButton(
-                          text: 'Insert Index',
-                          onPressed: () {
-                            insertHtmlText(
-                                "This text is set by the insertText method",
-                                index: 10);
-                          }),
-                    ],
-                  ),
+              child: Container(
+                width: double.maxFinite,
+                color: _toolbarColor,
+                child: Wrap(
+                  children: [
+                    textButton(
+                        text: 'Set Text',
+                        onPressed: () {
+                          setHtmlText("This text is set by the setText method");
+                        }),
+                    textButton(
+                        text: 'Insert Video',
+                        onPressed: () {
+                          ////insert
+                          insertVideoURL(
+                              'https://www.youtube.com/watch?v=4AoFA19gbLo');
+                          insertVideoURL('https://vimeo.com/440421754');
+                          insertVideoURL(
+                              'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4');
+                        }),
+                    textButton(
+                        text: 'Insert Image',
+                        onPressed: () {
+                          insertNetworkImage('https://i.imgur.com/0DVAOec.gif');
+                        }),
+                    textButton(
+                        text: 'Insert Index',
+                        onPressed: () {
+                          insertHtmlText(
+                              "This text is set by the insertText method",
+                              index: 10);
+                        }),
+                    textButton(
+                        text: 'Undo',
+                        onPressed: () {
+                          controller.undo();
+                        }),
+                    textButton(
+                        text: 'Redo',
+                        onPressed: () {
+                          controller.redo();
+                        }),
+                    textButton(
+                        text: 'Clear History',
+                        onPressed: () {
+                          controller.clearHistory();
+                        }),
+                  ],
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),
