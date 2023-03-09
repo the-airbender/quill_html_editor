@@ -158,11 +158,24 @@ class _EditTableDropDownState extends State<EditTableDropDown> {
 
 ///[EditTableEnum] enum options for edit table dropdown
 enum EditTableEnum {
+  /// to insert a row above the cursor in the table
   insertRowAbove,
+
+  /// to insert a row below cursor in the table
   insertRowBelow,
+
+  /// to insert a column left side of cursor in the  table
   insertColumnLeft,
+
+  /// to insert a column right side of cursor in the  table
   insertColumnRight,
+
+  /// to delete a row where the cursor is placed in the table
   deleteRow,
+
+  /// to delete a column where the cursor is placed in the table
   deleteColumn,
+
+  /// to delete the whole table where the cursor is currently in
   deleteTable
 }

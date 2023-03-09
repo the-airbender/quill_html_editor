@@ -11,6 +11,9 @@ Quill Html Editor is a HTML rich text editor for Android, iOS, and Web, it is bu
 - We can also add custom buttons to the toolbar
 - Supports Embedding Images, Videos, Inserting Tables
 
+## Quill Html Editor Demo
+Please go to [Demo Page](https://the-airbender.github.io/) to try out the Quill Editor on Web
+
 
 ## Screenshots
 
@@ -39,10 +42,6 @@ width="600" alt="1" src="https://i.imgur.com/3PrFsZU.png">
 </div> </p>
 
 
-## Quill Html Editor Demo
-Please go to [Demo Page](https://the-airbender.github.io/) to try out the Quill Editor on Web
-
-
 ## Documentation
 See the API documentation for details on the following topics:
 
@@ -61,21 +60,22 @@ Define a **QuillEditorController** to access the editor methods, pass the contro
 ```
 ```dart
      QuillHtmlEditor(
-        text:
-        "<h1>Hello</h1>This is a quill html editor example 😊",
-        hintText: 'Hint text goes here',
-        controller: controller,
-        isEnabled: true,
-        height: MediaQuery.of(context).size.height,
-        textStyle: _editorTextStyle,
-        hintTextStyle: _hintTextStyle,
-        hintTextAlign: TextAlign.start,
-        padding: const EdgeInsets.only(left: 10, top: 5),
-        hintTextPadding: EdgeInsets.zero,
-        backgroundColor: _backgroundColor,
-        onFocusChanged: (hasFocus) => debugPrint('has focus $hasFocus'),
-        onTextChanged: (text) => debugPrint('widget text change $text'),
-    ),
+       text: "<h1>Hello</h1>This is a quill html editor example 😊",
+       hintText: 'Hint text goes here',
+       controller: controller,
+       isEnabled: true,
+       minHeight: 300,
+       textStyle: _editorTextStyle,
+       hintTextStyle: _hintTextStyle,
+       hintTextAlign: TextAlign.start,
+       padding: const EdgeInsets.only(left: 10, top: 5),
+       hintTextPadding: EdgeInsets.zero,
+       backgroundColor: _backgroundColor,
+       onFocusChanged: (hasFocus) => debugPrint('has focus $hasFocus'),
+       onTextChanged: (text) => debugPrint('widget text change $text'),
+       onEditorCreated: () => debugPrint('Editor has been loaded'),
+       onSelectionChanged: (sel) =>
+                    debugPrint('${sel.index},${sel.length}')),
 ```
 
 Define **ToolBar** widget and pass the same **controller** created for **QuillHtmlEditor**
@@ -148,14 +148,13 @@ String? htmlText = await controller.getText();
   controller.enableEditor(false);
 ```
 
-## Todo
+### Todo
 
 -  **CustomStyleButton** - Let the user add own icons to toolbar styles
 -  **Custom Color** - Let the user add more Colors to the Color Picker
 -  **Custom FontSize** - Let the user add custom font sizes, instead of just Small, Normal, Large & Huge
 -  **AsyncImagePickerButton** -  To share picked file to user, to upload it asynchronously and inserts the returned link into the editor
 -  **Custom FontStyles** -  Let the user choose the supported font styles of the editor
-- **Editor History** - Provides option to undo or redo text
 - More examples for each available apis
 
 

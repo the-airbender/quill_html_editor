@@ -56,6 +56,8 @@ class _MyAppState extends State<MyApp> {
         resizeToAvoidBottomInset: true,
         backgroundColor: Colors.white70,
         body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             ToolBar(
               toolBarColor: _toolbarColor,
@@ -84,12 +86,13 @@ class _MyAppState extends State<MyApp> {
               ],
             ),
             Flexible(
+              fit: FlexFit.tight,
               child: QuillHtmlEditor(
                 text: "<h1>Hello</h1>This is a quill html editor example 😊",
                 hintText: 'Hint text goes here',
                 controller: controller,
                 isEnabled: true,
-                height: 600,
+                minHeight: 300,
                 textStyle: _editorTextStyle,
                 hintTextStyle: _hintTextStyle,
                 hintTextAlign: TextAlign.start,
@@ -103,60 +106,65 @@ class _MyAppState extends State<MyApp> {
                     debugPrint('index ${sel.index}, range ${sel.length}'),
               ),
             ),
-            Visibility(
-              visible: true,
-              child: Container(
-                width: double.maxFinite,
-                color: _toolbarColor,
-                child: Wrap(
-                  children: [
-                    textButton(
-                        text: 'Set Text',
-                        onPressed: () {
-                          setHtmlText("This text is set by the setText method");
-                        }),
-                    textButton(
-                        text: 'Insert Video',
-                        onPressed: () {
-                          ////insert
-                          insertVideoURL(
-                              'https://www.youtube.com/watch?v=4AoFA19gbLo');
-                          insertVideoURL('https://vimeo.com/440421754');
-                          insertVideoURL(
-                              'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4');
-                        }),
-                    textButton(
-                        text: 'Insert Image',
-                        onPressed: () {
-                          insertNetworkImage('https://i.imgur.com/0DVAOec.gif');
-                        }),
-                    textButton(
-                        text: 'Insert Index',
-                        onPressed: () {
-                          insertHtmlText(
-                              "This text is set by the insertText method",
-                              index: 10);
-                        }),
-                    textButton(
-                        text: 'Undo',
-                        onPressed: () {
-                          controller.undo();
-                        }),
-                    textButton(
-                        text: 'Redo',
-                        onPressed: () {
-                          controller.redo();
-                        }),
-                    textButton(
-                        text: 'Clear History',
-                        onPressed: () {
-                          controller.clearHistory();
-                        }),
-                  ],
-                ),
-              ),
-            ),
           ],
+        ),
+        bottomNavigationBar: Visibility(
+          visible: true,
+          child: Container(
+            width: double.maxFinite,
+            color: _toolbarColor,
+            child: Wrap(
+              children: [
+                textButton(
+                    text: 'Set Text',
+                    onPressed: () {
+                      setHtmlText("This text is set by the setText method");
+                    }),
+                textButton(
+                    text: 'Insert Video',
+                    onPressed: () {
+                      ////insert
+                      insertVideoURL(
+                          'https://www.youtube.com/watch?v=4AoFA19gbLo');
+                      insertVideoURL('https://vimeo.com/440421754');
+                      insertVideoURL(
+                          'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4');
+                    }),
+                textButton(
+                    text: 'Insert Image',
+                    onPressed: () {
+                      insertNetworkImage('https://i.imgur.com/0DVAOec.gif');
+                    }),
+                textButton(
+                    text: 'Insert Index',
+                    onPressed: () {
+                      insertHtmlText(
+                          "This text is set by the insertText method",
+                          index: 10);
+                    }),
+                textButton(
+                    text: 'Undo',
+                    onPressed: () {
+                      controller.undo();
+                    }),
+                textButton(
+                    text: 'Redo',
+                    onPressed: () {
+                      controller.redo();
+                    }),
+                textButton(
+                    text: 'Clear History',
+                    onPressed: () {
+                      controller.clearHistory();
+                    }),
+                textButton(
+                    text: 'Clear Editor',
+                    onPressed: () {
+                      controller.clear();
+                    }),
+              ],
+            ),
+          ),
         ),
       ),
     );

@@ -17,7 +17,7 @@ class QuillHtmlEditor extends StatefulWidget {
   QuillHtmlEditor({
     this.text,
     required this.controller,
-    required this.height,
+    required this.minHeight,
     this.isEnabled = true,
     this.onTextChanged,
     this.backgroundColor = Colors.white,
@@ -46,8 +46,8 @@ class QuillHtmlEditor extends StatefulWidget {
   /// We can also use the setText method for the same
   final String? text;
 
-  /// [height] to define the height of the editor
-  final double height;
+  /// [minHeight] to define the minimum height of the editor
+  final double minHeight;
 
   /// [hintText] is a placeholder, by default, the hint will be 'Description'
   /// We can override the placeholder text by passing hintText to the editor
@@ -118,9 +118,12 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
   /// When it is set to false, the user cannot edit or type in the editor
   bool isEnabled = true;
 
+  late double _currentHeight;
+
   @override
   void initState() {
     isEnabled = widget.isEnabled;
+    _currentHeight = widget.minHeight;
     super.initState();
   }
 
@@ -133,30 +136,20 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
-      double screenHeight = widget.height;
-      _initialContent =
-          _getQuillPage(height: screenHeight, width: constraints.maxWidth);
-
-      return Center(
-        child: _buildEditorView(
-            context: context,
-            height: screenHeight,
-            width: constraints.maxWidth),
-      );
+      _initialContent = _getQuillPage(width: constraints.maxWidth);
+      return _buildEditorView(context: context, width: constraints.maxWidth);
     });
   }
 
   Widget _buildEditorView(
-      {required BuildContext context,
-      required double height,
-      required double width}) {
-    _initialContent = _getQuillPage(height: height, width: width);
+      {required BuildContext context, required double width}) {
+    _initialContent = _getQuillPage(width: width);
 
     return WebViewX(
       key: ValueKey(widget.key.hashCode.toString()),
       initialContent: _initialContent,
       initialSourceType: SourceType.html,
-      height: height,
+      height: _currentHeight,
       ignoreAllGestures: false,
       width: width,
       onWebViewCreated: (controller) => _webviewController = controller,
@@ -170,6 +163,20 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
         });
       },
       dartCallBacks: {
+        DartCallback(
+            name: 'EditorResizeCallback',
+            callBack: (height) {
+              try {
+                _currentHeight = double.tryParse(height.toString()) ?? 0;
+                if (_currentHeight < widget.minHeight) {
+                  _currentHeight = widget.minHeight;
+                }
+              } catch (e) {
+                _currentHeight = widget.minHeight;
+              } finally {
+                setState(() => _currentHeight);
+              }
+            }),
         DartCallback(
             name: 'UpdateFormat',
             callBack: (map) {
@@ -359,7 +366,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
 
   /// This method generated the html code that is required to render the quill js editor
   /// We are rendering this html page with the help of webviewx and using the callbacks to call the quill js apis
-  String _getQuillPage({required double height, required double width}) {
+  String _getQuillPage({required double width}) {
     return '''
    <!DOCTYPE html>
         <html>
@@ -388,8 +395,6 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
         }
         .ql-container.ql-snow{
           white-space:nowrap !important;
-          overflow-x:auto !important;
-          overflow: auto !important;
           margin-top:0px !important;
           margin-bottom:0px !important;
           margin:0px !important;
@@ -404,7 +409,6 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
           padding-right:${widget.padding?.right ?? '0'}px;
           padding-top:${widget.padding?.top ?? '0'}px;
           padding-bottom:${widget.padding?.bottom ?? '0'}px;
-          height: ${height.toInt()}px;
           min-height:100%;
           contenteditable=true !important;
         }
@@ -421,19 +425,37 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
         #toolbar-container{
          display:none;
         }     
+        #scrolling-container {
+          height: 100%;
+          min-height: 100%;
+          overflow-y: auto;
+         }
         </style>
    
         </head>
         <body>
+         <script>
+           const resizeObserver = new ResizeObserver(entries =>{
+            ///console.log("Offset height has changed:", (entries[0].target.clientHeight).toString())
+                if($kIsWeb) {
+                  EditorResizeCallback((entries[0].target.clientHeight).toString());
+                } else {
+                  EditorResizeCallback.postMessage((entries[0].target.clientHeight).toString());
+                }            
+            })
+            resizeObserver.observe(document.body)
+          </script>
         
         <!-- Create the toolbar container -->
+        <div id="scrolling-container">
         <div id="toolbar-container"></div>
         
         <!-- Create the editor container -->
         <div style="position:relative;margin-top:0em;">
-        <div id="editorcontainer" style="height:${height.toInt()}px; min-height:100%; overflow-y:auto;margin-top:0em;">
-        <div id="editor" style="min-height:100%; height:${height.toInt()}px;  width:100%;"></div>
+        <div id="editorcontainer" style= "min-height:0%; overflow-y:auto;margin-top:0em;">
+        <div id="editor" style="min-height:0%; width:100%;"></div>
         </div>
+        </div> 
         </div>
       
         <!-- Initialize Quill editor -->
@@ -538,8 +560,6 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
                     //onRangeChanged();
                   }
                 });
-                
-            
               } catch(e) {
                 console.log(e);
               } 
@@ -567,6 +587,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
                 }
               },
               theme: 'snow',
+             scrollingContainer: '#scrolling-container', 
               placeholder: '${widget.hintText ?? "Description"}',
               clipboard: {
                 matchVisual: true
@@ -580,13 +601,13 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
             quilleditor.on('editor-change', function(eventName, ...args) {
 
              if (!editorLoaded) {
-               if($kIsWeb) {
-                  EditorLoaded(true);
-              } else {
-                  EditorLoaded.postMessage(true);
-              }
-                editorLoaded = true;
-              }
+                if($kIsWeb) {
+                    EditorLoaded(true);
+                } else {
+                    EditorLoaded.postMessage(true);
+                }
+                  editorLoaded = true;
+                }
             });
             
             quilleditor.on('selection-change', function(eventName, ...args) {
@@ -601,6 +622,11 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
             
             quilleditor.on('text-change', function(eventName, ...args) {
                /// console.log('text changed');
+                var height = 0;
+          
+              height = document.querySelector('#editor').offsetHeight;
+                console.log('editor current height')
+                console.log(height)
               if($kIsWeb) {
                 OnTextChanged(quilleditor.root.innerHTML);
               } else {
