@@ -27,10 +27,10 @@ class _MyAppState extends State<MyApp> {
   ];
 
   final _toolbarColor = Colors.greenAccent.shade100;
-  final _backgroundColor = Colors.white70;
+  final _backgroundColor = Colors.transparent;
   final _toolbarIconColor = Colors.black87;
   final _editorTextStyle = const TextStyle(
-      fontSize: 18, color: Colors.black54, fontWeight: FontWeight.normal);
+      fontSize: 18, color: Colors.black, fontWeight: FontWeight.normal);
   final _hintTextStyle = const TextStyle(
       fontSize: 18, color: Colors.teal, fontWeight: FontWeight.normal);
 
@@ -96,12 +96,14 @@ class _MyAppState extends State<MyApp> {
                 textStyle: _editorTextStyle,
                 hintTextStyle: _hintTextStyle,
                 hintTextAlign: TextAlign.start,
-                padding: const EdgeInsets.only(left: 10, top: 5),
+                padding: const EdgeInsets.only(left: 0, top: 0),
                 hintTextPadding: EdgeInsets.zero,
                 backgroundColor: _backgroundColor,
                 onFocusChanged: (hasFocus) => debugPrint('has focus $hasFocus'),
                 onTextChanged: (text) => debugPrint('widget text change $text'),
                 onEditorCreated: () => debugPrint('Editor has been loaded'),
+                onEditorResized: (height) =>
+                    debugPrint('Editor resized $height'),
                 onSelectionChanged: (sel) =>
                     debugPrint('index ${sel.index}, range ${sel.length}'),
               ),

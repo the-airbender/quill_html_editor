@@ -1,3 +1,9 @@
+### 2.1.6
+- Added `onEditorResized` callback, returns the size of the editor
+- Fixed transparent color conversion issue 
+- Fixed extra padding to the text area issue
+- Other min bug fixes
+
 ### 2.1.5
 - Added autoHeight, editor will have the dynamic height based on content. Thanks to **B0yma**
 - **Breaking Change:** changed `height` to `minHeight` in `QuillHtmlEditor` widget

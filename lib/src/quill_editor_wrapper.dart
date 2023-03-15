@@ -28,6 +28,7 @@ class QuillHtmlEditor extends StatefulWidget {
     this.padding = EdgeInsets.zero,
     this.hintTextPadding = EdgeInsets.zero,
     this.hintTextAlign = TextAlign.start,
+    this.onEditorResized,
     this.textStyle = const TextStyle(
       fontStyle: FontStyle.normal,
       fontSize: 20.0,
@@ -73,6 +74,9 @@ class QuillHtmlEditor extends StatefulWidget {
   ///[onSelectionChanged] method returns SelectionModel, which has index and
   ///length of the selected text
   final Function(SelectionModel)? onSelectionChanged;
+
+  ///[onEditorResized] method returns height of the widget on resize,
+  final Function(double)? onEditorResized;
 
   ///[onEditorCreated] a callback method triggered once the editor is created
   ///it will be called only once after editor is loaded completely
@@ -175,6 +179,9 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
                 _currentHeight = widget.minHeight;
               } finally {
                 setState(() => _currentHeight);
+                if (widget.onEditorResized != null) {
+                  widget.onEditorResized!(_currentHeight);
+                }
               }
             }),
         DartCallback(
@@ -388,8 +395,8 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
           right: 15px;
           text-align: ${StringUtil.getCssTextAlign(widget.hintTextAlign)};
           font-size: ${widget.hintTextStyle?.fontSize ?? '14'}px;
-          color:${(widget.hintTextStyle?.color ?? Colors.black87).toHex()};
-          background-color:${widget.backgroundColor.toHex()};
+          color:${(widget.hintTextStyle?.color ?? Colors.black).toRGBA()};
+          background-color:${widget.backgroundColor.toRGBA()};
           font-style: ${StringUtil.getCssFontStyle(widget.hintTextStyle?.fontStyle)};
           font-weight: ${StringUtil.getCssFontWeight(widget.hintTextStyle?.fontWeight)};
         }
@@ -402,8 +409,8 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
           border:none;
           font-style: ${StringUtil.getCssFontStyle(widget.textStyle?.fontStyle)};
           font-size: ${widget.textStyle?.fontSize ?? '14'}px;
-          color:${(widget.textStyle!.color ?? Colors.black87).toHex()};
-          background-color:${widget.backgroundColor.toHex()};
+          color:${(widget.textStyle!.color ?? Colors.black).toRGBA()};
+          background-color:${widget.backgroundColor.toRGBA()};
           font-weight: ${StringUtil.getCssFontWeight(widget.textStyle?.fontWeight)};
           padding-left:${widget.padding?.left ?? '0'}px;
           padding-right:${widget.padding?.right ?? '0'}px;
@@ -412,6 +419,14 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
           min-height:100%;
           contenteditable=true !important;
         }
+        .ql-editor {
+          padding-left:${widget.padding?.left ?? '0'}px;
+          padding-right:${widget.padding?.right ?? '0'}px;
+          padding-top:${widget.padding?.top ?? '0'}px;
+          padding-bottom:${widget.padding?.bottom ?? '0'}px;
+        }
+        
+        
         .ql-toolbar { 
           position: absolute; 
           top: 0;
@@ -622,11 +637,8 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
             
             quilleditor.on('text-change', function(eventName, ...args) {
                /// console.log('text changed');
-                var height = 0;
-          
+              var height = 0;
               height = document.querySelector('#editor').offsetHeight;
-                console.log('editor current height')
-                console.log(height)
               if($kIsWeb) {
                 OnTextChanged(quilleditor.root.innerHTML);
               } else {

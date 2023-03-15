@@ -22,6 +22,11 @@ class HexColor extends Color {
 
     return hex.hasMatch(hexCode.toLowerCase());
   }
+  ////[getRGBA] method to get the list of RGBA code
+
+  List<int> getRGBA(Color c) {
+    return [c.red, c.blue, c.green, c.alpha];
+  }
 }
 
 ///[ToHex] extension method to convert Color to hex code
@@ -29,4 +34,23 @@ extension ToHex on Color {
   ///[toHex] extension method to convert Color to hex code
   String toHex() =>
       '#${(value & 0xFFFFFF).toRadixString(16).padLeft(6, '0').toUpperCase()}';
+}
+
+///[ToRGBA] extension method to convert Color to RGBA
+extension ToRGBA on Color {
+  ///[toRGBA] extension method to convert Color to RGBA
+  String toRGBA() {
+    String rgba = '';
+    try {
+      rgba = 'rgba(${[
+        red,
+        green,
+        blue,
+        double.parse(opacity.toStringAsFixed(1))
+      ].join(',')})';
+    } catch (e) {
+      rgba = 'rgba(0,0,0,0)';
+    }
+    return rgba;
+  }
 }

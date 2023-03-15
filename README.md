@@ -60,64 +60,66 @@ Define a **QuillEditorController** to access the editor methods, pass the contro
 ```
 ```dart
      QuillHtmlEditor(
-       text: "<h1>Hello</h1>This is a quill html editor example 😊",
-       hintText: 'Hint text goes here',
-       controller: controller,
-       isEnabled: true,
-       minHeight: 300,
-       textStyle: _editorTextStyle,
-       hintTextStyle: _hintTextStyle,
-       hintTextAlign: TextAlign.start,
-       padding: const EdgeInsets.only(left: 10, top: 5),
-       hintTextPadding: EdgeInsets.zero,
-       backgroundColor: _backgroundColor,
-       onFocusChanged: (hasFocus) => debugPrint('has focus $hasFocus'),
-       onTextChanged: (text) => debugPrint('widget text change $text'),
-       onEditorCreated: () => debugPrint('Editor has been loaded'),
-       onSelectionChanged: (sel) =>
-                    debugPrint('${sel.index},${sel.length}')),
+text: "<h1>Hello</h1>This is a quill html editor example 😊",
+hintText: 'Hint text goes here',
+controller: controller,
+isEnabled: true,
+minHeight: 300,
+textStyle: _editorTextStyle,
+hintTextStyle: _hintTextStyle,
+hintTextAlign: TextAlign.start,
+padding: const EdgeInsets.only(left: 10, top: 5),
+hintTextPadding: EdgeInsets.zero,
+backgroundColor: _backgroundColor,
+onFocusChanged: (hasFocus) => debugPrint('has focus $hasFocus'),
+onTextChanged: (text) => debugPrint('widget text change $text'),
+onEditorCreated: () => debugPrint('Editor has been loaded'),
+onEditorResized: (height) =>
+debugPrint('Editor resized $height'),
+onSelectionChanged: (sel) =>
+debugPrint('${sel.index},${sel.length}')),
 ```
 
 Define **ToolBar** widget and pass the same **controller** created for **QuillHtmlEditor**
 ```dart
    ToolBar(
-	toolBarColor: Colors.cyan.shade50,
-	activeIconColor: Colors.green,
-	padding: const EdgeInsets.all(8),
-	iconSize: 20,
-	controller: controller,
-	customButtons: [
-		InkWell(onTap: () {}, child: const Icon(Icons.favorite)),
-		InkWell(onTap: () {}, child: const Icon(Icons.add_circle)),
-	],
-   )
+toolBarColor: Colors.cyan.shade50,
+activeIconColor: Colors.green,
+padding: const EdgeInsets.all(8),
+iconSize: 20,
+controller: controller,
+customButtons: [
+InkWell(onTap: () {}, child: const Icon(Icons.favorite)),
+InkWell(onTap: () {}, child: const Icon(Icons.add_circle)),
+],
+)
 ```
 **Note**: *toolBarConfig*, if not passed to **ToolBar**, it will show all the Toolbar Buttons. To show only required buttons, please specify the types in the list as show below.
 ```dart
-    final customToolBarList = [	
-        ToolBarStyle.bold,
-        ToolBarStyle.italic,
-        ToolBarStyle.align,
-        ToolBarStyle.color,
-	];
-	
-   ToolBar(
-   	controller: controller,
-   	toolBarConfig: customToolBarList
-   ),
+    final customToolBarList = [
+  ToolBarStyle.bold,
+  ToolBarStyle.italic,
+  ToolBarStyle.align,
+  ToolBarStyle.color,
+];
+
+ToolBar(
+controller: controller,
+toolBarConfig: customToolBarList
+),
 ```
 
 We can also add custom buttons to our **ToolBar** as shown below
 ```dart
     final customButtons =  [
-          InkWell(onTap: () {}, child: const Icon(Icons.favorite)),
-          InkWell(onTap: () {}, child: const Icon(Icons.add_circle)),
-    ];
+  InkWell(onTap: () {}, child: const Icon(Icons.favorite)),
+  InkWell(onTap: () {}, child: const Icon(Icons.add_circle)),
+];
 
-    ToolBar(
-      controller: controller,
-      customButtons:customButtons
-    ),
+ToolBar(
+controller: controller,
+customButtons:customButtons
+),
 ```
 
 ##### To get the html string from editor
