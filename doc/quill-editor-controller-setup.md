@@ -48,12 +48,19 @@ Method is used to replace the selected text in the editor, custom format for rep
 
 #### `getSelectedText`
 
-Method to get the selected text from editor
+Method to get the selected text from editor in plain text
 
 ```dart 
    await controller.getSelectedText();
 ```
 
+#### `getSelectedHtmlText`
+
+Method to get the selected text from editor in html format
+
+```dart 
+   await controller.getSelectedHtmlText();
+```
 
 #### `focus`
 

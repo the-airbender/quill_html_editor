@@ -21,6 +21,15 @@ ToolBar widget is optional and is completely isolated from the Editor widget, wh
 | `activeIconColor`    | `Color?`   | `Colors.blue`   | To define the active toolbar icon color |
 | `backgroundColor`    | `Color?`    | `null`    | To set Background Color to the editor   |
 | `padding`    | `EdgeInsets`   | `EdgeInsets.zero`    | To set Padding to the toolbar style widgets    |
+| `direction`    | `Axis`    | `Axis.horizontal`    | The direction to use as the main axis   |
+| `alignment`    | `WrapAlignment`    | `WrapAlignment.start`    | How the children within a run should be placed in the main axis   |
+| `spacing`    | `double`    | `0.0`    | How much space to place between children in a run in the main axis   |
+| `runAlignment`   | `WrapAlignment`    | `WrapAlignment.start`    | How the runs themselves should be placed in the cross axis   |
+| `runSpacing`   | `double`    | `0.0`    | How much space to place between the runs themselves in the cross axis    |
+| `crossAxisAlignment`   | `WrapAlignment`    | `WrapAlignment.start`    | How the children within a run should be aligned relative to each other in the cross axis.   |
+| `textDirection`   | `TextDirection`    | `null`   | Determines the order to lay children out horizontally and how to interpret `start` and `end` in the horizontal direction. |
+| `verticalDirection`   | `VerticalDirection`    | `VerticalDirection.down`   | Determines the order to lay children out vertically and how to interpret `start` and `end` in the vertical direction. |
+| `clipBehavior`    | `Clip`    | `Clip.none`    | Controls how the contents of the dialog are clipped (or not) to the given shape.   |
 
 
 

@@ -356,6 +356,11 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
     return await _webviewController.callJsMethod("getSelectedText", []);
   }
 
+  /// a private method to get the selected html text from editor
+  Future _getSelectedHtmlText() async {
+    return await _webviewController.callJsMethod("getSelectionHtml", []);
+  }
+
   /// a private method to undo the history
   Future _undo() async {
     return await _webviewController.callJsMethod("undo", []);
@@ -510,7 +515,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
               var range = quilleditor.getSelection(true);
                     if (range) {
                       if (range.length == 0) {
-                        console.log('User cursor is at index', range.index);
+                       // console.log('User cursor is at index', range.index);
                       } else {
                        quilleditor.deleteText(range.index, range.length);
                        quilleditor.insertText(range.index, replaceText);
@@ -518,7 +523,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
                       /// quilleditor.insertText(range.index, replaceText, JSON.parse(format));
                       }
                     } else {
-                      console.log('User cursor is not in editor');
+                     // console.log('User cursor is not in editor');
                     }
                 }
                  catch(e) {
@@ -533,12 +538,12 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
                 var range = quilleditor.getSelection(true);
                     if (range) {
                       if (range.length == 0) {
-                        console.log('User cursor is at index', range.index);
+                       // console.log('User cursor is at index', range.index);
                       } else {
                          text = quilleditor.getText(range.index, range.length);
                       }
                     } else {
-                      console.log('User cursor is not in editor');
+                    //  console.log('User cursor is not in editor');
                     }
                 }
                  catch(e) {
@@ -659,7 +664,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
                     formatParser(format);
                   }
                 } else {
-                  console.log('Cursor not in the editor');
+                 // console.log('Cursor not in the editor');
                 }
               } catch(e) {
               ///  console.log(e);
@@ -668,13 +673,16 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
             
              function redo(){
               quilleditor.history.redo();
+              return '';
              }
              
              function undo(){
               quilleditor.history.undo();
+              return '';
              }
              function clearHistory(){
                quilleditor.history.clear();
+               return '';
              }
             
             
@@ -751,6 +759,18 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
                 return range.length;
               }
               return -1;
+            }
+            
+            function getSelectionHtml() {
+              var selection = quilleditor.getSelection(true);
+              if(selection){
+              var selectedContent = quilleditor.getContents(selection.index, selection.length);
+              var tempContainer = document.createElement('div')
+              var tempQuill = new Quill(tempContainer);
+              tempQuill.setContents(selectedContent);
+              return tempContainer.querySelector('.ql-editor').innerHTML;
+              }
+              return '';
             }
             
             function getSelectionRange() {
@@ -967,6 +987,11 @@ class QuillEditorController {
   /// [getSelectedText] method to get the selected text from editor
   Future getSelectedText() async {
     return await _editorKey?.currentState?._getSelectedText();
+  }
+
+  /// [getSelectedHtmlText] method to get the selected html text from editor
+  Future getSelectedHtmlText() async {
+    return await _editorKey?.currentState?._getSelectedHtmlText();
   }
 
   /// [embedVideo] method is used to embed url of video to the editor

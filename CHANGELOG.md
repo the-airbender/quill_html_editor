@@ -1,3 +1,9 @@
+### 2.1.7
+- Fixed redo button throwing exception bug
+- Added more customizing options to toolbar alignment
+- Added `getSelectedHtmlText` that returns selected text in html format
+- Other min bug fixes
+
 ### 2.1.6
 - Added `onEditorResized` callback, returns the size of the editor
 - Fixed transparent color conversion issue 

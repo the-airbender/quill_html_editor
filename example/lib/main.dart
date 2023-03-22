@@ -54,7 +54,6 @@ class _MyAppState extends State<MyApp> {
     return SafeArea(
       child: Scaffold(
         resizeToAvoidBottomInset: true,
-        backgroundColor: Colors.white70,
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
@@ -66,6 +65,8 @@ class _MyAppState extends State<MyApp> {
               iconColor: _toolbarIconColor,
               activeIconColor: Colors.purple.shade300,
               controller: controller,
+              alignment: WrapAlignment.start,
+              crossAxisAlignment: WrapCrossAlignment.center,
               customButtons: [
                 InkWell(
                     onTap: () => unFocusEditor(),
@@ -77,7 +78,9 @@ class _MyAppState extends State<MyApp> {
                     onTap: () async {
                       var selectedText = await controller.getSelectedText();
                       debugPrint('selectedText $selectedText');
-                      controller.replaceText('Replaced Text');
+                      var selectedHtmlText =
+                          await controller.getSelectedHtmlText();
+                      debugPrint('selectedHtmlText $selectedHtmlText');
                     },
                     child: const Icon(
                       Icons.add_circle,
