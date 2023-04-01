@@ -3,6 +3,7 @@
 - Fixed bug:getText() returns empty string if QuillEditor contains only <img> or <iframe> tags
 - Fixed bug: Multiple widgets used the same GlobalKey
 - Fixed bug: `hintText` padding is not applying properly
+- Updated `webview_flutter` and dependant packages to latest version
 
 ### 2.1.7
 - Fixed redo button throwing exception bug

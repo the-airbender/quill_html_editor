@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:quill_html_editor/src/widgets/webviewx/src/webviewx_plus.dart';
 
-
-
 ///[TablePicker] a widget to interactively selected the number of rows and columns to insert in editor
 class TablePicker extends StatefulWidget {
   ///[TablePicker] a widget to interactively selected the number of rows and columns to insert in editor

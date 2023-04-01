@@ -56,12 +56,9 @@ class _InputUrlWidgetState extends State<InputUrlWidget> {
 
   @override
   void initState() {
-    _toolTipKey=  GlobalKey<ElTooltipState>(debugLabel: widget.controller.hashCode.toString());
+    _toolTipKey = GlobalKey<ElTooltipState>(
+        debugLabel: widget.controller.hashCode.toString());
     super.initState();
-  }
-
-  getSelection() async {
-    selection = await widget.controller.hasFocus();
   }
 
   @override
