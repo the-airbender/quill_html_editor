@@ -172,6 +172,22 @@ Method is used to enable/ disable the editor. We can also enable or disable the 
 ```
 
 
+
+#### `setDetla`
+
+Method is used to set delta to the editor, it will override the existing text in the editor with the new one.
+Please pass the data in Map format.
+```dart 
+     controller.setDelta(map);
+```
+
+#### `getDelta`
+
+Method is used to get delta from editor, it will return the delta in Map format
+```dart 
+   var deltaMap =  await controller.getDelta();
+```
+
 ### Table Methods
 
 

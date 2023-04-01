@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:quill_html_editor/quill_html_editor.dart';
 
@@ -15,7 +17,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   ///[controller] create a QuillEditorController to access the editor methods
-  final QuillEditorController controller = QuillEditorController();
+  late QuillEditorController controller;
 
   ///[customToolBarList] pass the custom toolbarList to show only selected styles in the editor
 
@@ -27,7 +29,7 @@ class _MyAppState extends State<MyApp> {
   ];
 
   final _toolbarColor = Colors.greenAccent.shade100;
-  final _backgroundColor = Colors.transparent;
+  final _backgroundColor = Colors.white70;
   final _toolbarIconColor = Colors.black87;
   final _editorTextStyle = const TextStyle(
       fontSize: 18, color: Colors.black, fontWeight: FontWeight.normal);
@@ -36,6 +38,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void initState() {
+    controller = QuillEditorController();
     controller.onTextChanged((text) {
       debugPrint('listening to $text');
     });
@@ -54,6 +57,7 @@ class _MyAppState extends State<MyApp> {
     return SafeArea(
       child: Scaffold(
         resizeToAvoidBottomInset: true,
+        backgroundColor: Colors.white70,
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
@@ -100,7 +104,7 @@ class _MyAppState extends State<MyApp> {
                 hintTextStyle: _hintTextStyle,
                 hintTextAlign: TextAlign.start,
                 padding: const EdgeInsets.only(left: 0, top: 0),
-                hintTextPadding: EdgeInsets.zero,
+                hintTextPadding: const EdgeInsets.only(left: 20),
                 backgroundColor: _backgroundColor,
                 onFocusChanged: (hasFocus) => debugPrint('has focus $hasFocus'),
                 onTextChanged: (text) => debugPrint('widget text change $text'),
@@ -123,7 +127,13 @@ class _MyAppState extends State<MyApp> {
                 textButton(
                     text: 'Set Text',
                     onPressed: () {
-                      setHtmlText("This text is set by the setText method");
+                      setHtmlText(
+                          '<iframe src="https://www.youtube.com/embed/JCDfh5bs1xc" width="100%" height="315"</iframe>');
+                    }),
+                textButton(
+                    text: 'Get Text',
+                    onPressed: () {
+                      getHtmlText();
                     }),
                 textButton(
                     text: 'Insert Video',
@@ -159,13 +169,53 @@ class _MyAppState extends State<MyApp> {
                     }),
                 textButton(
                     text: 'Clear History',
-                    onPressed: () {
+                    onPressed: () async {
                       controller.clearHistory();
                     }),
                 textButton(
                     text: 'Clear Editor',
                     onPressed: () {
                       controller.clear();
+                    }),
+                textButton(
+                    text: 'Get Delta',
+                    onPressed: () async {
+                      var delta = await controller.getDelta();
+                      debugPrint('delta');
+                      debugPrint(jsonEncode(delta));
+                    }),
+                textButton(
+                    text: 'Set Delta',
+                    onPressed: () {
+                      final Map<dynamic, dynamic> deltaMap = {
+                        "ops": [
+                          {
+                            "insert": {
+                              "video":
+                                  "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+                            }
+                          },
+                          {
+                            "insert": {
+                              "video":
+                                  "https://player.vimeo.com/video/440421754"
+                            }
+                          },
+                          {
+                            "insert": {
+                              "video":
+                                  "https://www.youtube.com/embed/4AoFA19gbLo"
+                            }
+                          },
+                          {"insert": "Hello"},
+                          {
+                            "attributes": {"header": 1},
+                            "insert": "\n"
+                          },
+                          {"insert": "You just set the Delta text 😊\n"}
+                        ]
+                      };
+                      controller.setDelta(deltaMap);
                     }),
               ],
             ),
@@ -192,7 +242,7 @@ class _MyAppState extends State<MyApp> {
   ///[getHtmlText] to get the html text from editor
   void getHtmlText() async {
     String? htmlText = await controller.getText();
-    debugPrint(htmlText.toString());
+    debugPrint(htmlText);
   }
 
   ///[setHtmlText] to set the html text to editor

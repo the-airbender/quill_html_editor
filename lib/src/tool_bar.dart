@@ -210,16 +210,20 @@ class ToolBar extends StatefulWidget {
 class ToolBarState extends State<ToolBar> {
   List<ToolBarItem> _toolbarList = [];
   Map<String, dynamic> _formatMap = {};
-  final GlobalKey<ElTooltipState> _fontBgColorKey =
-      GlobalKey<ElTooltipState>(debugLabel: 'fontBgColorKey');
-  final GlobalKey<ElTooltipState> _fontColorKey =
-      GlobalKey<ElTooltipState>(debugLabel: 'fontColorKey');
-  final GlobalKey<ElTooltipState> _tablePickerKey =
-      GlobalKey<ElTooltipState>(debugLabel: '_tablePickerKey');
+  late GlobalKey<ElTooltipState> _fontBgColorKey;
+  late GlobalKey<ElTooltipState> _fontColorKey;
+  late GlobalKey<ElTooltipState> _tablePickerKey;
   EdgeInsetsGeometry _buttonPadding = const EdgeInsets.all(6);
 
   @override
   void initState() {
+    _fontBgColorKey = GlobalKey<ElTooltipState>(
+        debugLabel: 'fontBgColorKey${widget.controller.hashCode.toString()}');
+    _fontColorKey = GlobalKey<ElTooltipState>(
+        debugLabel: 'fontColorKey${widget.controller.hashCode.toString()}');
+    _tablePickerKey = GlobalKey<ElTooltipState>(
+        debugLabel: '_tablePickerKey${widget.controller.hashCode.toString()}');
+
     if (widget.padding != null) {
       _buttonPadding = widget.padding!;
     }

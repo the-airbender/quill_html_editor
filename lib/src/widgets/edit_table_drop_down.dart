@@ -36,8 +36,14 @@ class EditTableDropDown extends StatefulWidget {
 }
 
 class _EditTableDropDownState extends State<EditTableDropDown> {
-  final GlobalKey<ElTooltipState> _editTableETKey =
-      GlobalKey<ElTooltipState>(debugLabel: 'fontBgColorKey');
+  late GlobalKey<ElTooltipState> _editTableETKey;
+
+  @override
+  void initState() {
+    _editTableETKey = GlobalKey<ElTooltipState>(
+        debugLabel: 'fontBgColorKey${widget.key.toString()}');
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

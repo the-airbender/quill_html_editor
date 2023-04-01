@@ -78,6 +78,54 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_keyboard_visibility:
+    dependency: transitive
+    description:
+      name: flutter_keyboard_visibility
+      sha256: "86b71bbaffa38e885f5c21b1182408b9be6951fd125432cf6652c636254cef2d"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.4.0"
+  flutter_keyboard_visibility_linux:
+    dependency: transitive
+    description:
+      name: flutter_keyboard_visibility_linux
+      sha256: "6fba7cd9bb033b6ddd8c2beb4c99ad02d728f1e6e6d9b9446667398b2ac39f08"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
+  flutter_keyboard_visibility_macos:
+    dependency: transitive
+    description:
+      name: flutter_keyboard_visibility_macos
+      sha256: c5c49b16fff453dfdafdc16f26bdd8fb8d55812a1d50b0ce25fc8d9f2e53d086
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
+  flutter_keyboard_visibility_platform_interface:
+    dependency: transitive
+    description:
+      name: flutter_keyboard_visibility_platform_interface
+      sha256: e43a89845873f7be10cb3884345ceb9aebf00a659f479d1c8f4293fcb37022a4
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.0"
+  flutter_keyboard_visibility_web:
+    dependency: transitive
+    description:
+      name: flutter_keyboard_visibility_web
+      sha256: d3771a2e752880c79203f8d80658401d0c998e4183edca05a149f5098ce6e3d1
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.0"
+  flutter_keyboard_visibility_windows:
+    dependency: transitive
+    description:
+      name: flutter_keyboard_visibility_windows
+      sha256: fc4b0f0b6be9b93ae527f3d527fb56ee2d918cd88bbca438c478af7bcfd0ef73
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -190,7 +238,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "2.1.4"
+    version: "2.1.7"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -272,34 +320,34 @@ packages:
     dependency: transitive
     description:
       name: webview_flutter
-      sha256: b6cd42db3ced5411f3d01599906156885b18e4188f7065a8a351eb84bee347e0
+      sha256: "47663d51a9061451aa3880a214ee9a65dcbb933b77bc44388e194279ab3ccaf6"
       url: "https://pub.dev"
     source: hosted
-    version: "4.0.6"
+    version: "4.0.7"
   webview_flutter_android:
     dependency: transitive
     description:
       name: webview_flutter_android
-      sha256: "5dd3f32b5c2d8f4bf9d05a349e4a65fa718eb137f396f336c3893d558a58fe84"
+      sha256: "9e223788e1954087dac30d813dc151f8e12f09f1139f116ce20b5658893f3627"
       url: "https://pub.dev"
     source: hosted
-    version: "3.3.2"
+    version: "3.4.4"
   webview_flutter_platform_interface:
     dependency: transitive
     description:
       name: webview_flutter_platform_interface
-      sha256: df6472164b3f4eaf3280422227f361dc8424b106726b7f21d79a8656ba53f71f
+      sha256: "1939c39e2150fb4d30fd3cc59a891a49fed9935db53007df633ed83581b6117b"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.2"
+    version: "2.1.0"
   webview_flutter_wkwebview:
     dependency: transitive
     description:
       name: webview_flutter_wkwebview
-      sha256: "87b6353b40e04f04d5f895a484ad6d92d682d9cce4d2d5b32d2d8aca2448d46e"
+      sha256: d601aba11ad8d4481e17a34a76fa1d30dee92dcbbe2c58b0df3120e9453099c7
       url: "https://pub.dev"
     source: hosted
-    version: "3.2.0"
+    version: "3.2.3"
   win32:
     dependency: transitive
     description:

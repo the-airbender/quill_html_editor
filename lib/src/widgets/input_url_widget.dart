@@ -47,7 +47,7 @@ class _InputUrlWidgetState extends State<InputUrlWidget> {
   String? _inputValue = '';
 
   ///[_toolTipKey] key to access tooltip methods
-  final GlobalKey<ElTooltipState> _toolTipKey = GlobalKey<ElTooltipState>();
+  late GlobalKey<ElTooltipState> _toolTipKey;
 
   ///[selection] selected text length to perform validations
   int selection = -1;
@@ -56,6 +56,7 @@ class _InputUrlWidgetState extends State<InputUrlWidget> {
 
   @override
   void initState() {
+    _toolTipKey=  GlobalKey<ElTooltipState>(debugLabel: widget.controller.hashCode.toString());
     super.initState();
   }
 

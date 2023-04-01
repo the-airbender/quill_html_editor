@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -148,9 +149,8 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
   Widget _buildEditorView(
       {required BuildContext context, required double width}) {
     _initialContent = _getQuillPage(width: width);
-
     return WebViewX(
-      key: ValueKey(widget.key.hashCode.toString()),
+      key: ValueKey(widget.controller.toolBarKey.hashCode.toString()),
       initialContent: _initialContent,
       initialSourceType: SourceType.html,
       height: _currentHeight,
@@ -163,7 +163,6 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
           if (widget.text != null) {
             _setHtmlTextToEditor(htmlText: widget.text!);
           }
-          _requestFocus();
         });
       },
       dartCallBacks: {
@@ -265,6 +264,11 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
     return await _webviewController.callJsMethod("getPlainText", []);
   }
 
+  /// a private method to get the delta  from the editor
+  Future<String> _getDeltaFromEditor() async {
+    return await _webviewController.callJsMethod("getDelta", []);
+  }
+
   /// a private method to check if editor has focus
   Future<int> _getSelectionCount() async {
     return await _webviewController.callJsMethod("getSelection", []);
@@ -287,8 +291,9 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
   }
 
   /// a private method to set the Delta  text to the editor
-  Future _setDeltaToEditor({required Map deltaMap}) async {
-    return await _webviewController.callJsMethod("setDeltaContent", [deltaMap]);
+  Future _setDeltaToEditor({required Map<dynamic, dynamic> deltaMap}) async {
+    return await _webviewController
+        .callJsMethod("setDeltaContent", [jsonEncode(deltaMap)]);
   }
 
   /// a private method to request focus to the editor
@@ -392,12 +397,12 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
            margin:0px !important;
         }
         .ql-editor.ql-blank::before{
-          padding-left:${widget.hintTextPadding?.left ?? '0'}px;
-          padding-right:${widget.hintTextPadding?.right ?? '0'}px;
-          padding-top:${widget.hintTextPadding?.top ?? '0'}px;
-          padding-bottom:${widget.hintTextPadding?.bottom ?? '0'}px;
+          padding-left:${widget.hintTextPadding?.left ?? '0'}px !important;
+          padding-right:${widget.hintTextPadding?.right ?? '0'}px !important;
+          padding-top:${widget.hintTextPadding?.top ?? '0'}px !important;
+          padding-bottom:${widget.hintTextPadding?.bottom ?? '0'}px !important;
           position: center;
-          right: 15px;
+          left:0px;
           text-align: ${StringUtil.getCssTextAlign(widget.hintTextAlign)};
           font-size: ${widget.hintTextStyle?.fontSize ?? '14'}px;
           color:${(widget.hintTextStyle?.color ?? Colors.black).toRGBA()};
@@ -424,11 +429,12 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
           min-height:100%;
           contenteditable=true !important;
         }
-        .ql-editor {
-          padding-left:${widget.padding?.left ?? '0'}px;
-          padding-right:${widget.padding?.right ?? '0'}px;
-          padding-top:${widget.padding?.top ?? '0'}px;
-          padding-bottom:${widget.padding?.bottom ?? '0'}px;
+        .ql-editor { 
+          -webkit-user-select: text;
+          padding-left:${widget.padding?.left ?? '0'}px !important;
+          padding-right:${widget.padding?.right ?? '0'}px !important;
+          padding-top:${widget.padding?.top ?? '0'}px !important;
+          padding-bottom:${widget.padding?.bottom ?? '0'}px !important;
         }
         
         
@@ -630,7 +636,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
                 }
             });
             
-            quilleditor.on('selection-change', function(eventName, ...args) {
+            quilleditor.on('selection-change', function(range, oldRange, source)  {
               /// console.log('selection changed');
               onRangeChanged();
               if($kIsWeb){
@@ -641,9 +647,9 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
             });
             
             quilleditor.on('text-change', function(eventName, ...args) {
-               /// console.log('text changed');
-              var height = 0;
-              height = document.querySelector('#editor').offsetHeight;
+               
+              // console.log('text changed');
+          
               if($kIsWeb) {
                 OnTextChanged(quilleditor.root.innerHTML);
               } else {
@@ -735,6 +741,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
             function getHtmlText() {
               return quilleditor.root.innerHTML;
             }
+ 
             function getPlainText() {
               var text = "";
               try{
@@ -794,9 +801,18 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
               return '';
             }
             
-            function setDeltaContent(deltaMap) {
-              quilleditor.setContents(deltaMap);
+            function setDeltaContent(deltaMap) {   
+              try{
+               const obj = JSON.parse(deltaMap);
+                quilleditor.setContents(obj);
+              }catch(e){
+                console.log(e);
+              }
               return '';
+            }
+            
+            function getDelta() {
+              return JSON.stringify(quilleditor.getContents()); 
             }
 
             function requestFocus() {
@@ -883,8 +899,6 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
               }
               return '';
             } 
-
-       
         </script>
         </body>
         </html>
@@ -903,8 +917,9 @@ class QuillEditorController {
 
   ///[QuillEditorController] controller constructor to generate editor, toolbar state keys
   QuillEditorController() {
-    _editorKey = GlobalKey<QuillHtmlEditorState>();
-    _toolBarKey = GlobalKey<ToolBarState>();
+    _editorKey =
+        GlobalKey<QuillHtmlEditorState>(debugLabel: _getRandomString(15));
+    _toolBarKey = GlobalKey<ToolBarState>(debugLabel: _getRandomString(15));
     _changeController = StreamController<String>();
   }
 
@@ -917,12 +932,10 @@ class QuillEditorController {
   Future<String> getText() async {
     try {
       String? text = await _editorKey?.currentState?._getHtmlFromEditor();
-      String parsedText = _stripHtmlIfNeeded(text!);
-      if (parsedText.trim() == "") {
-        return "";
-      } else {
-        return text;
+      if (text == '<p><br></p>') {
+        return text!.replaceAll('<p><br></p>', '');
       }
+      return text ?? '';
     } catch (e) {
       return "";
     }
@@ -948,11 +961,16 @@ class QuillEditorController {
     return await _editorKey?.currentState?._setHtmlTextToEditor(htmlText: text);
   }
 
-  /// [setDelta] method is used to set the html text to the editor
+  /// [setDelta] method is used to set delta to the editor
   /// it will override the existing text in the editor with the new one
-  Future setDelta(String text) async {
-    return await _editorKey?.currentState
-        ?._setDeltaToEditor(deltaMap: jsonDecode(text));
+  Future setDelta(Map delta) async {
+    return await _editorKey?.currentState?._setDeltaToEditor(deltaMap: delta);
+  }
+
+  /// [getDelta] method is used to get the delta map from editor
+  Future<Map> getDelta() async {
+    var text = await _editorKey?.currentState?._getDeltaFromEditor();
+    return jsonDecode(text.toString());
   }
 
   /// [focus] method is used to request focus of the editor
@@ -1016,6 +1034,9 @@ class QuillEditorController {
     isEnable = enable;
     await _editorKey?.currentState?._enableTextEditor(isEnabled: enable);
   }
+
+  @Deprecated(
+      'Please use onFocusChanged method in the QuillHtmlEditor widget for focus')
 
   /// [hasFocus]checks if the editor has focus, returns the selection string length
   Future<int> hasFocus() async {
@@ -1122,3 +1143,9 @@ void _printWrapper(bool showPrint, String text) {
     debugPrint(text);
   }
 }
+
+const _chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
+Random _rnd = Random();
+
+String _getRandomString(int length) => String.fromCharCodes(Iterable.generate(
+    length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));

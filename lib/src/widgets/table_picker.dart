@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:quill_html_editor/src/widgets/webviewx/src/webviewx_plus.dart';
 
-final _cellKey = GlobalKey();
+
 
 ///[TablePicker] a widget to interactively selected the number of rows and columns to insert in editor
 class TablePicker extends StatefulWidget {
@@ -25,7 +25,7 @@ class _TablePickerState extends State<TablePicker> {
   final Set<_CellBox> _trackTaped = <_CellBox>{};
   int _selectedRow = 0;
   int _selectedColumn = 0;
-
+  final _cellKey = GlobalKey();
   @override
   initState() {
     super.initState();

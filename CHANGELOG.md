@@ -1,3 +1,9 @@
+### 2.1.8
+- Added `setDelta` & `getDelta` methods,
+- Fixed bug:getText() returns empty string if QuillEditor contains only <img> or <iframe> tags
+- Fixed bug: Multiple widgets used the same GlobalKey
+- Fixed bug: `hintText` padding is not applying properly
+
 ### 2.1.7
 - Fixed redo button throwing exception bug
 - Added more customizing options to toolbar alignment

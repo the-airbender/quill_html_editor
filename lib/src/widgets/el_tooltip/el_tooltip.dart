@@ -82,7 +82,7 @@ class ElTooltipState extends State<ElTooltip> with WidgetsBindingObserver {
   ElementBox _overlayBox = const ElementBox(h: 0.0, w: 0.0);
   OverlayEntry? _overlayEntry;
   OverlayEntry? _overlayEntryHidden;
-  final GlobalKey _widgetKey = GlobalKey();
+  late GlobalKey _widgetKey;
   OverlayState? _overlayStateHidden = OverlayState();
   OverlayState? _overlayState = OverlayState();
 
@@ -104,6 +104,7 @@ class ElTooltipState extends State<ElTooltip> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    _widgetKey = GlobalKey(debugLabel: widget.key.toString());
     WidgetsBinding.instance
         .addPostFrameCallback((_) => _loadHiddenOverlay(context));
     WidgetsBinding.instance.addObserver(this);
