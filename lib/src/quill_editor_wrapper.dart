@@ -393,7 +393,8 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
           <!-- Include the Quill library -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/quill/2.0.0-dev.4/quill.min.js"></script>
         <style>
-        body{
+        body,html {
+           background-color:${widget.backgroundColor.toRGBA()};
            margin:0px !important;
         }
         .ql-editor.ql-blank::before{
