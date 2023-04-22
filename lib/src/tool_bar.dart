@@ -1,5 +1,6 @@
 import 'dart:core';
 
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:quill_html_editor/quill_html_editor.dart';
@@ -213,6 +214,10 @@ class ToolBarState extends State<ToolBar> {
   late GlobalKey<ElTooltipState> _fontBgColorKey;
   late GlobalKey<ElTooltipState> _fontColorKey;
   late GlobalKey<ElTooltipState> _tablePickerKey;
+  late GlobalKey _sizeDDKey;
+  bool _sizeDDOpened = false;
+  bool _alignDDOpened = false;
+  late GlobalKey _alignDDKey;
   EdgeInsetsGeometry _buttonPadding = const EdgeInsets.all(6);
 
   @override
@@ -223,6 +228,10 @@ class ToolBarState extends State<ToolBar> {
         debugLabel: 'fontColorKey${widget.controller.hashCode.toString()}');
     _tablePickerKey = GlobalKey<ElTooltipState>(
         debugLabel: '_tablePickerKey${widget.controller.hashCode.toString()}');
+    _sizeDDKey = GlobalKey(
+        debugLabel: '_sizeDDKey${widget.controller.hashCode.toString()}');
+    _alignDDKey = GlobalKey(
+        debugLabel: '_alignDDKey${widget.controller.hashCode.toString()}');
 
     if (widget.padding != null) {
       _buttonPadding = widget.padding!;
@@ -272,6 +281,27 @@ class ToolBarState extends State<ToolBar> {
         children: _generateToolBar(context),
       ),
     );
+  }
+
+  /// [closeDDs] method to close the dropdown programtically
+  void closeDDs() {
+    void closeDD(
+      GlobalKey keyToHandle,
+      bool predicate,
+      VoidCallback callback,
+    ) {
+      if (keyToHandle.currentContext != null) {
+        final keyNavigatorState = Navigator.of(keyToHandle.currentContext!);
+
+        if (keyNavigatorState.canPop() && predicate) {
+          keyNavigatorState.pop();
+          callback();
+        }
+      }
+    }
+
+    closeDD(_sizeDDKey, _sizeDDOpened, () => _sizeDDOpened = false);
+    closeDD(_alignDDKey, _alignDDOpened, () => _alignDDOpened = false);
   }
 
   ///[updateToolBarFormat] method to update the toolbar state in sync with editor formats
@@ -621,32 +651,38 @@ class ToolBarState extends State<ToolBar> {
         child: ButtonTheme(
           alignedDropdown: true,
           padding: EdgeInsets.zero,
-          child: DropdownButton(
-              dropdownColor: widget.toolBarColor,
-              alignment: Alignment.centerLeft,
-              selectedItemBuilder: (context) {
-                return [
-                  _fontSelectionTextItem(type: 'Small'),
-                  _fontSelectionTextItem(type: 'Normal'),
-                  _fontSelectionTextItem(type: 'Large'),
-                  _fontSelectionTextItem(type: 'Huge'),
-                ];
-              },
-              isDense: true,
-              value: _formatMap['size'] ?? 'normal',
-              style: TextStyle(fontSize: 12, color: widget.iconColor!),
-              items: [
-                _fontSizeItem(type: 'Small', fontSize: 8),
-                _fontSizeItem(type: 'Normal', fontSize: 12),
-                _fontSizeItem(type: 'Large', fontSize: 16),
-                _fontSizeItem(type: 'Huge', fontSize: 20),
-              ],
-              onChanged: (value) {
-                _formatMap['size'] = value;
-                widget.controller.setFormat(
-                    format: 'size', value: value == 'normal' ? '' : value);
-                setState(() {});
-              }),
+          child: DropdownButton2(
+            key: _sizeDDKey,
+            // dropdownColor: widget.toolBarColor,
+            onMenuStateChange: (isOpen) => _sizeDDOpened = isOpen,
+            selectedItemBuilder: (context) {
+              return [
+                _fontSelectionTextItem(type: 'Small'),
+                _fontSelectionTextItem(type: 'Normal'),
+                _fontSelectionTextItem(type: 'Large'),
+                _fontSelectionTextItem(type: 'Huge'),
+              ];
+            },
+            menuItemStyleData: const MenuItemStyleData(
+              padding: EdgeInsets.all(0.0),
+              height: 42.0,
+            ),
+            isDense: true,
+            value: _formatMap['size'] ?? 'normal',
+            style: TextStyle(fontSize: 12, color: widget.iconColor!),
+            items: [
+              _fontSizeItem(type: 'Small', fontSize: 8),
+              _fontSizeItem(type: 'Normal', fontSize: 12),
+              _fontSizeItem(type: 'Large', fontSize: 16),
+              _fontSizeItem(type: 'Huge', fontSize: 20),
+            ],
+            onChanged: (value) {
+              _formatMap['size'] = value;
+              widget.controller.setFormat(
+                  format: 'size', value: value == 'normal' ? '' : value);
+              setState(() {});
+            },
+          ),
         ),
       ),
     );
@@ -657,13 +693,21 @@ class ToolBarState extends State<ToolBar> {
     return DropdownMenuItem(
         value: type.toLowerCase(),
         child: WebViewAware(
-          child: Text(type,
-              style: TextStyle(
-                  fontSize: fontSize,
-                  color: _formatMap['size'] == type.toLowerCase()
-                      ? widget.activeIconColor
-                      : widget.iconColor!,
-                  fontWeight: FontWeight.bold)),
+          child: SizedBox(
+            height: 42.0,
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Text(type,
+                    style: TextStyle(
+                        fontSize: fontSize,
+                        color: _formatMap['size'] == type.toLowerCase()
+                            ? widget.activeIconColor
+                            : widget.iconColor!,
+                        fontWeight: FontWeight.bold)),
+              ],
+            ),
+          ),
         ));
   }
 
@@ -685,34 +729,72 @@ class ToolBarState extends State<ToolBar> {
     return DropdownButtonHideUnderline(
       child: ButtonTheme(
         padding: EdgeInsets.zero,
-        child: DropdownButton<String>(
-            dropdownColor: widget.toolBarColor,
-            icon: const SizedBox(
-              width: 0,
-            ),
-            focusColor: Colors.transparent,
-            alignment: Alignment.bottomCenter,
-            isDense: true,
-            value: (_formatMap['align'] == '' || _formatMap['align'] == null)
-                ? 'left'
-                : _formatMap['align'],
-            items: [
-              _getAlignDDItem('left'),
-              _getAlignDDItem('center'),
-              _getAlignDDItem('right'),
-              _getAlignDDItem('justify'),
-            ],
-            onChanged: (value) {
-              _formatMap['align'] = value == 'left' ? '' : value;
-              widget.controller
-                  .setFormat(format: 'align', value: _formatMap['align']);
-              setState(() {});
-            }),
+        child: DropdownButton2<String>(
+          key: _alignDDKey,
+          iconStyleData: const IconStyleData(iconSize: 0.0),
+          // dropdownColor: widget.toolBarColor,
+          // focusColor: Colors.transparent,
+          onMenuStateChange: (isOpen) => _alignDDOpened = isOpen,
+          isDense: true,
+          value: (_formatMap['align'] == '' || _formatMap['align'] == null)
+              ? 'left'
+              : _formatMap['align'],
+          menuItemStyleData: const MenuItemStyleData(
+            // Disable the padding in the selected item
+            padding: EdgeInsets.all(0.0),
+            height: 42.0,
+          ),
+          dropdownStyleData: const DropdownStyleData(
+            width: 64.0,
+          ),
+          buttonStyleData: const ButtonStyleData(
+            width: 64.0,
+          ),
+          selectedItemBuilder: (context) {
+            return [
+              _alignSelectionItem(type: 'left'),
+              _alignSelectionItem(type: 'center'),
+              _alignSelectionItem(type: 'right'),
+              _alignSelectionItem(type: 'justify'),
+            ];
+          },
+          items: [
+            _getAlignDDItem('left'),
+            _getAlignDDItem('center'),
+            _getAlignDDItem('right'),
+            _getAlignDDItem('justify'),
+          ],
+          onChanged: (value) {
+            _formatMap['align'] = value == 'left' ? '' : value;
+            widget.controller
+                .setFormat(format: 'align', value: _formatMap['align']);
+            setState(() {
+              _alignDDOpened = false;
+            });
+          },
+        ),
       ),
     );
   }
 
+  /// The wrapper to the _alignSelectionItem in menu
   DropdownMenuItem<String> _getAlignDDItem(String type) {
+    return DropdownMenuItem<String>(
+      value: type,
+      child: WebViewAware(
+        child: SizedBox(
+          height: 42.0,
+          width: 64.0,
+          child: _alignSelectionItem(type: type),
+        ),
+      ),
+    );
+  }
+
+  /// The inner icon of the alignments
+  Widget _alignSelectionItem({
+    required String type,
+  }) {
     IconData icon = Icons.format_align_left;
     if (type == 'center') {
       icon = Icons.format_align_center;
@@ -721,17 +803,13 @@ class ToolBarState extends State<ToolBar> {
     } else if (type == 'justify') {
       icon = Icons.format_align_justify;
     }
-    return DropdownMenuItem<String>(
-      value: type,
-      child: WebViewAware(
-        child: Icon(
-          icon,
-          color: _formatMap['align'] == type
-              ? widget.activeIconColor
-              : widget.iconColor,
-          size: widget.iconSize,
-        ),
-      ),
+
+    return Icon(
+      icon,
+      color: _formatMap['align'] == type
+          ? widget.activeIconColor
+          : widget.iconColor,
+      size: widget.iconSize,
     );
   }
 
