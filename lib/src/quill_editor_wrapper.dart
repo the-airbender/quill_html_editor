@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:quill_html_editor/quill_html_editor.dart';
 import 'package:quill_html_editor/src/utils/hex_color.dart';
 import 'package:quill_html_editor/src/utils/string_util.dart';
@@ -124,26 +125,47 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
   bool isEnabled = true;
 
   late double _currentHeight;
-
+  late StreamSubscription<bool> _keyboardSubscription;
+  bool _isKeyboardVisible = false;
+  bool _hasFocus = false;
+  bool _editorLoaded = false;
   @override
   void initState() {
     isEnabled = widget.isEnabled;
     _currentHeight = widget.minHeight;
+
+    var keyboardVisibilityController = KeyboardVisibilityController();
+
+    _keyboardSubscription =
+        keyboardVisibilityController.onChange.listen((bool visible) {
+      _isKeyboardVisible = visible;
+      if (!kIsWeb) {
+        if (!_isKeyboardVisible) {
+          _unFocus();
+        }
+        if (widget.onFocusChanged != null) {
+          widget.onFocusChanged!(_hasFocus && _isKeyboardVisible);
+        }
+      }
+    });
     super.initState();
   }
 
   @override
   void dispose() {
+    _keyboardSubscription.cancel();
     _webviewController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, constraints) {
-      _initialContent = _getQuillPage(width: constraints.maxWidth);
-      return _buildEditorView(context: context, width: constraints.maxWidth);
-    });
+    return KeyboardVisibilityProvider(
+      child: LayoutBuilder(builder: (context, constraints) {
+        _initialContent = _getQuillPage(width: constraints.maxWidth);
+        return _buildEditorView(context: context, width: constraints.maxWidth);
+      }),
+    );
   }
 
   Widget _buildEditorView(
@@ -162,6 +184,9 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
           widget.controller.enableEditor(isEnabled);
           if (widget.text != null) {
             _setHtmlTextToEditor(htmlText: widget.text!);
+          }
+          if (widget.onEditorCreated != null) {
+            widget.onEditorCreated!();
           }
         });
       },
@@ -200,6 +225,12 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
         DartCallback(
             name: 'OnTextChanged',
             callBack: (map) {
+              var tempText = "";
+              if (tempText == map) {
+                return;
+              } else {
+                tempText = map;
+              }
               try {
                 if (widget.controller._changeController != null) {
                   String finalText = "";
@@ -224,26 +255,30 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
         DartCallback(
             name: 'FocusChanged',
             callBack: (map) {
-              if (widget.onFocusChanged != null) {
-                widget.onFocusChanged!(map?.toString() == 'true');
+              _hasFocus = map?.toString() == 'true';
+              if (kIsWeb) {
+                if (widget.onFocusChanged != null) {
+                  widget.onFocusChanged!(_hasFocus);
+                }
               }
             }),
         DartCallback(
             name: 'OnSelectionChanged',
             callBack: (selection) {
               if (widget.onSelectionChanged != null) {
+                if (!_hasFocus) {
+                  if (widget.onFocusChanged != null) {
+                    _hasFocus = true;
+                    widget.onFocusChanged!(_hasFocus);
+                  }
+                }
                 widget.onSelectionChanged!(selection != null
                     ? SelectionModel.fromJson(jsonDecode(selection))
                     : SelectionModel(index: 0, length: 0));
               }
             }),
         DartCallback(
-            name: 'EditorLoaded',
-            callBack: (map) {
-              if (widget.onEditorCreated != null) {
-                widget.onEditorCreated!();
-              }
-            }),
+            name: 'EditorLoaded', callBack: (map) => _editorLoaded = map == 'true'),
       },
       webSpecificParams: const WebSpecificParams(
         printDebugInfo: false,
@@ -368,6 +403,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
 
   /// a private method to undo the history
   Future _undo() async {
+    return await _webviewController.callJsMethod("scrollToView", []);
     return await _webviewController.callJsMethod("undo", []);
   }
 
@@ -391,12 +427,16 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
         <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">    
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/quill/2.0.0-dev.4/quill.snow.min.css" />
           <!-- Include the Quill library -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/quill/2.0.0-dev.4/quill.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/quill/2.0.0-dev.4/quill.js"></script>
         <style>
-        body{
-           margin:0px !important;
+        body, html{
+        -webkit-user-select: text !important;
+        margin:0px !important;
+        background-color:${widget.backgroundColor.toRGBA()};
+        color: ${widget.backgroundColor.toRGBA()};
         }
         .ql-editor.ql-blank::before{
+        -webkit-user-select: text !important;
           padding-left:${widget.hintTextPadding?.left ?? '0'}px !important;
           padding-right:${widget.hintTextPadding?.right ?? '0'}px !important;
           padding-top:${widget.hintTextPadding?.top ?? '0'}px !important;
@@ -409,8 +449,10 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
           background-color:${widget.backgroundColor.toRGBA()};
           font-style: ${StringUtil.getCssFontStyle(widget.hintTextStyle?.fontStyle)};
           font-weight: ${StringUtil.getCssFontWeight(widget.hintTextStyle?.fontWeight)};
+          
         }
         .ql-container.ql-snow{
+        -webkit-user-select: text !important;
           white-space:nowrap !important;
           margin-top:0px !important;
           margin-bottom:0px !important;
@@ -427,17 +469,17 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
           padding-top:${widget.padding?.top ?? '0'}px;
           padding-bottom:${widget.padding?.bottom ?? '0'}px;
           min-height:100%;
-          contenteditable=true !important;
+          contenteditable: true !important;
+          data-gramm: false !important;
+         
         }
         .ql-editor { 
-          -webkit-user-select: text;
+          -webkit-user-select: text !important;
           padding-left:${widget.padding?.left ?? '0'}px !important;
           padding-right:${widget.padding?.right ?? '0'}px !important;
           padding-top:${widget.padding?.top ?? '0'}px !important;
           padding-bottom:${widget.padding?.bottom ?? '0'}px !important;
         }
-        
-        
         .ql-toolbar { 
           position: absolute; 
           top: 0;
@@ -448,14 +490,17 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
           display:none; 
         }
         
+        .ql-editor.ql-blank:focus::before {
+          content: '';
+          }
         #toolbar-container{
          display:none;
         }     
-        #scrolling-container {
-          height: 100%;
-          min-height: 100%;
-          overflow-y: auto;
-         }
+        #scrolling-container {  
+          min-height: ${widget.minHeight}px !important;
+          overflow-y: scroll  !important;
+          -webkit-user-select: text !important;
+         } 
         </style>
    
         </head>
@@ -478,8 +523,8 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
         
         <!-- Create the editor container -->
         <div style="position:relative;margin-top:0em;">
-        <div id="editorcontainer" style= "min-height:0%; overflow-y:auto;margin-top:0em;">
-        <div id="editor" style="min-height:0%; width:100%;"></div>
+        <div id="editorcontainer" style= "min-height:${widget.minHeight}px; overflow-y:scroll;margin-top:0em;">
+        <div id="editor" style="min-height:${widget.minHeight}px; width:100%;"></div>
         </div>
         </div> 
         </div>
@@ -590,6 +635,35 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
                 console.log(e);
               } 
             }
+            
+            /// observer to listen to the editor div changes 
+            // select the target node
+            var target = document.querySelector('#editor');
+            
+            // create an observer instance
+            var tempText = "";
+            var observer = new MutationObserver(function(mutations) {
+                 var text = quilleditor.root.innerHTML; 
+                 if(text != tempText){
+                      tempText = text;
+                     if($kIsWeb) {
+                      OnTextChanged(text);
+                    } else {
+                      OnTextChanged.postMessage(text);
+                    }
+                     onRangeChanged(); 
+                     quilleditor.focus();
+                 }
+            });
+
+            // configuration of the observer:
+            var config = { attributes: true, childList: true, characterData: true, subtree: true };
+
+            // pass in the target node, as well as the observer options
+            observer.observe(target, config);
+    
+           // stops the listener
+           // // observer.disconnect();
 
             const Inline = Quill.import('blots/inline');
             class RequirementBlot extends Inline {}
@@ -605,6 +679,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
             var quilleditor = new Quill('#editor', {
               modules: {
                 toolbar: '#toolbar-container',
+                matchVisual: false,
                 table: true,
                 history: {
                   delay: 2000,
@@ -643,21 +718,9 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
               OnSelectionChanged(getSelectionRange());
               }else{
               OnSelectionChanged.postMessage(getSelectionRange());
-              }
+              }            
             });
-            
-            quilleditor.on('text-change', function(eventName, ...args) {
-               
-              // console.log('text changed');
-          
-              if($kIsWeb) {
-                OnTextChanged(quilleditor.root.innerHTML);
-              } else {
-                OnTextChanged.postMessage(quilleditor.root.innerHTML);
-              }
-               onRangeChanged();
-            });
-            
+                  
             function onRangeChanged() { 
               try {
                 var range = quilleditor.getSelection(true);
@@ -723,16 +786,15 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
             quilleditor.root.addEventListener("blur", function() {
                if($kIsWeb) {
                 FocusChanged(false);
-              } else {
-                FocusChanged.postMessage(false);
-              }
+              } 
             });
             
             quilleditor.root.addEventListener("focus", function() {
                if($kIsWeb) {
                 FocusChanged(true);
               } else {
-                FocusChanged.postMessage(true);
+              var focus  = quilleditor.hasFocus();
+                FocusChanged.postMessage(focus);
               }
             });
             
@@ -797,7 +859,8 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
             }
             
             function setHtmlText(htmlString) {
-              quilleditor.clipboard.dangerouslyPasteHTML(htmlString);         
+              quilleditor.clipboard.dangerouslyPasteHTML(htmlString);        
+              setTimeout(() => quilleditor.setSelection(quilleditor.getSelection().index + 100, 0), 10); 
               return '';
             }
             
@@ -805,11 +868,19 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
               try{
                const obj = JSON.parse(deltaMap);
                 quilleditor.setContents(obj);
+                setTimeout(() => quilleditor.setSelection(quilleditor.getSelection().index + 100, 0), 10);
               }catch(e){
                 console.log(e);
               }
               return '';
             }
+            
+            function scrollToView(){
+               var target = document.querySelector('#editor');
+               target.scrollIntoView(false);
+               return '';
+            }
+           
             
             function getDelta() {
               return JSON.stringify(quilleditor.getContents()); 

@@ -120,7 +120,7 @@ class ToolBar extends StatefulWidget {
   ///    relative to each other in the main axis.
   ///  * [runAlignment], which controls how the runs are placed relative to each
   ///    other in the cross axis.
-  final WrapCrossAlignment crossAxisAlignment;
+  final dynamic crossAxisAlignment;
 
   /// Determines the order to lay children out horizontally and how to interpret
   /// `start` and `end` in the horizontal direction.
@@ -179,7 +179,78 @@ class ToolBar extends StatefulWidget {
   /// Defaults to [Clip.none].
   final Clip clipBehavior;
 
-  ///[ToolBar] widget to show the quill toolbar
+  /// How the children should be placed along the main axis.
+  ///
+  /// For example, [MainAxisAlignment.start], the default, places the children
+  /// at the start (i.e., the left for a [Row] or the top for a [Column]) of the
+  /// main axis.
+  final MainAxisAlignment? mainAxisAlignment;
+
+  /// How much space should be occupied in the main axis.
+  ///
+  /// After allocating space to children, there might be some remaining free
+  /// space. This value controls whether to maximize or minimize the amount of
+  /// free space, subject to the incoming layout constraints.
+  ///
+  /// If some children have a non-zero flex factors (and none have a fit of
+  /// [FlexFit.loose]), they will expand to consume all the available space and
+  /// there will be no remaining free space to maximize or minimize, making this
+  /// value irrelevant to the final layout.
+  final MainAxisSize? mainAxisSize;
+
+  /// Determines the order to lay children out horizontally and how to interpret
+  /// `start` and `end` in the horizontal direction.
+  ///
+  /// Defaults to the ambient [Directionality].
+  ///
+  /// If [textDirection] is [TextDirection.rtl], then the direction in which
+  /// text flows starts from right to left. Otherwise, if [textDirection] is
+  /// [TextDirection.ltr], then the direction in which text flows starts from
+  /// left to right.
+  ///
+  /// If the [direction] is [Axis.horizontal], this controls the order in which
+  /// the children are positioned (left-to-right or right-to-left), and the
+  /// meaning of the [mainAxisAlignment] property's [MainAxisAlignment.start] and
+  /// [MainAxisAlignment.end] values.
+  ///
+  /// If the [direction] is [Axis.horizontal], and either the
+  /// [mainAxisAlignment] is either [MainAxisAlignment.start] or
+  /// [MainAxisAlignment.end], or there's more than one child, then the
+  /// [textDirection] (or the ambient [`Directionality]) must not be null.
+  ///
+  /// If the [direction] is [Axis.vertical], this controls the meaning of the
+  /// [crossAxisAlignment] property's [CrossAxisAlignment.start] and
+  /// [CrossAxisAlignment.end] values.
+  ///
+  /// Determines the order to lay children out vertically and how to interpret
+  /// `start` and `end` in the vertical direction.
+  ///
+  /// Defaults to [VerticalDirection.down].
+  ///
+  /// If the [direction] is [Axis.vertical], this controls which order children
+  /// are painted in (down or up), the meaning of the [mainAxisAlignment]
+  /// property's [MainAxisAlignment.start] and [MainAxisAlignment.end] values.
+  ///
+  /// If the [direction] is [Axis.vertical], and either the [mainAxisAlignment]
+  /// is either [MainAxisAlignment.start] or [MainAxisAlignment.end], or there's
+  /// more than one child, then the [verticalDirection] must not be null.
+  ///
+  /// If the [direction] is [Axis.horizontal], this controls the meaning of the
+  /// [crossAxisAlignment] property's [CrossAxisAlignment.start] and
+  /// [CrossAxisAlignment.end] values.
+  ///
+  /// If aligning items according to their baseline, which baseline to use.
+  ///
+  /// This must be set if using baseline alignment. There is no default because there is no
+  /// way for the framework to know the correct baseline _a priori_.
+  final TextBaseline? textBaseline;
+
+  final bool? _isScrollable;
+
+  ///[ToolBar] widget to show the quill
+  /// The toolbar items will be auto aligned based on the screen's width or height
+  /// The behaviour of the widget's alignment is similar to [Wrap] widget
+
   ToolBar({
     this.direction = Axis.horizontal,
     this.alignment = WrapAlignment.start,
@@ -198,10 +269,47 @@ class ToolBar extends StatefulWidget {
     this.iconColor = Colors.black,
     this.activeIconColor = Colors.blue,
     this.toolBarColor = Colors.white,
-  }) : super(
+    this.mainAxisSize,
+  })  : assert(crossAxisAlignment is WrapCrossAlignment,
+            "Please pass WrapCrossAlignment, instead of CrossAxisAlignment"),
+        mainAxisAlignment = MainAxisAlignment.start,
+        textBaseline = TextBaseline.alphabetic,
+        _isScrollable = false,
+        super(
           key: controller.toolBarKey,
         );
 
+  ///[ToolBar.scroll] shows the widget in a single row/column
+  ///Please define the [direction], to make it a row or a column
+  ///the direction defaults to [Axis.horizontal]
+
+  ToolBar.scroll({
+    this.direction = Axis.horizontal,
+    this.textDirection,
+    this.verticalDirection = VerticalDirection.down,
+    this.clipBehavior = Clip.none,
+    this.toolBarConfig,
+    required this.controller,
+    this.customButtons,
+    this.padding,
+    this.iconSize = 25,
+    this.iconColor = Colors.black,
+    this.activeIconColor = Colors.blue,
+    this.toolBarColor = Colors.white,
+    this.crossAxisAlignment = CrossAxisAlignment.start,
+    this.mainAxisAlignment = MainAxisAlignment.start,
+    this.mainAxisSize = MainAxisSize.min,
+    this.textBaseline = TextBaseline.alphabetic,
+  })  : assert(crossAxisAlignment is CrossAxisAlignment,
+            "Please pass CrossAxisAlignment, instead of WrapCrossAlignment"),
+        spacing = 0.0,
+        runSpacing = 0.0,
+        alignment = WrapAlignment.start,
+        runAlignment = WrapAlignment.start,
+        _isScrollable = true,
+        super(
+          key: controller.toolBarKey,
+        );
   @override
   State<ToolBar> createState() => ToolBarState();
 }
@@ -254,6 +362,25 @@ class ToolBarState extends State<ToolBar> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget._isScrollable!) {
+      return Container(
+        width: double.maxFinite,
+        decoration: BoxDecoration(
+          color: widget.toolBarColor,
+        ),
+        child: SingleChildScrollView(
+          scrollDirection: widget.direction,
+          child: Flex(
+            direction: widget.direction,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            textDirection: widget.textDirection,
+            verticalDirection: widget.verticalDirection,
+            clipBehavior: widget.clipBehavior,
+            children: _generateToolBar(context),
+          ),
+        ),
+      );
+    }
     return Container(
       width: double.maxFinite,
       decoration: BoxDecoration(
@@ -397,6 +524,8 @@ class ToolBarState extends State<ToolBar> {
           break;
         case ToolBarStyle.undo:
         case ToolBarStyle.redo:
+        case ToolBarStyle.editTable:
+        case ToolBarStyle.addTable:
         case ToolBarStyle.clearHistory:
           break;
       }
@@ -475,7 +604,7 @@ class ToolBarState extends State<ToolBar> {
               height: widget.iconSize,
               child: _getFontBackgroundColorWidget(i)),
         ));
-
+      } else if (toolbarItem.style == ToolBarStyle.addTable) {
         tempToolBarList.add(Padding(
           padding: _buttonPadding,
           child: SizedBox(
@@ -483,7 +612,7 @@ class ToolBarState extends State<ToolBar> {
               height: widget.iconSize,
               child: _getTablePickerWidget(i)),
         ));
-
+      } else if (toolbarItem.style == ToolBarStyle.editTable) {
         tempToolBarList.add(EditTableDropDown(
           padding: _buttonPadding,
           iconColor: widget.iconColor!,
@@ -611,6 +740,8 @@ class ToolBarState extends State<ToolBar> {
       case ToolBarStyle.undo:
       case ToolBarStyle.redo:
       case ToolBarStyle.clearHistory:
+      case ToolBarStyle.editTable:
+      case ToolBarStyle.addTable:
         return {'format': 'undo', 'value': ''};
     }
   }
@@ -742,7 +873,6 @@ class ToolBarState extends State<ToolBar> {
           _fontColorKey.currentState!.showOverlayOnTap();
         }
       },
-      position: ElTooltipPosition.bottomEnd,
       key: _fontColorKey,
       content: ColorPicker(
         onColorPicked: (color) {
@@ -794,7 +924,6 @@ class ToolBarState extends State<ToolBar> {
 
   Widget _getFontBackgroundColorWidget(int i) {
     return ElTooltip(
-      position: ElTooltipPosition.bottomEnd,
       onTap: () {
         if (_fontBgColorKey.currentState != null) {
           _fontBgColorKey.currentState!.showOverlayOnTap();
@@ -848,7 +977,6 @@ class ToolBarState extends State<ToolBar> {
     return ElTooltip(
       color: widget.toolBarColor!,
       distance: 0,
-      position: ElTooltipPosition.bottomCenter,
       onTap: () {
         if (_tablePickerKey.currentState != null) {
           _tablePickerKey.currentState!.showOverlayOnTap();
@@ -967,16 +1095,18 @@ class ToolBarItem extends StatelessWidget {
         return _getIconWidget(Icons.font_download_sharp);
       case ToolBarStyle.image:
         return _getIconWidget(Icons.image);
-      case ToolBarStyle.link:
-      case ToolBarStyle.video:
-      case ToolBarStyle.size:
-        return const SizedBox();
       case ToolBarStyle.undo:
         return _getIconWidget(Icons.undo_sharp);
       case ToolBarStyle.redo:
         return _getIconWidget(Icons.redo_sharp);
       case ToolBarStyle.clearHistory:
         return _getIconWidget(Icons.layers_clear_sharp);
+      case ToolBarStyle.link:
+      case ToolBarStyle.video:
+      case ToolBarStyle.size:
+      case ToolBarStyle.addTable:
+      case ToolBarStyle.editTable:
+        return const SizedBox();
     }
   }
 
@@ -1105,7 +1235,13 @@ enum ToolBarStyle {
   redo,
 
   /// [clearHistory] to undo the editor change
-  clearHistory
+  clearHistory,
+
+  /// [addTable] to add table to the editor
+  addTable,
+
+  /// [editTable] to edit rows, columns or delete table
+  editTable,
 
   ///font - later releases
 }

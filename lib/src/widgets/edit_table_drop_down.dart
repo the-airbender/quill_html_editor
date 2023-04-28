@@ -54,17 +54,19 @@ class _EditTableDropDownState extends State<EditTableDropDown> {
         height: widget.iconSize,
         child: ElTooltip(
           color: widget.dropDownColor,
-          distance: 0,
-          position: ElTooltipPosition.bottomEnd,
+          // distance: 0,
+          position: ElTooltipPosition.topCenter,
           onTap: () {
             if (_editTableETKey.currentState != null) {
               _editTableETKey.currentState!.showOverlayOnTap();
             }
           },
           key: _editTableETKey,
-          content: SizedBox(
-            width: 180,
+          content: Container(alignment: Alignment.center,
+            width: 200,
+            height: MediaQuery.of(context).size.width<450?350:null,
             child: ListView.builder(
+              padding: EdgeInsets.zero,
               shrinkWrap: true,
               itemCount: EditTableEnum.values.length,
               itemBuilder: (context, i) {

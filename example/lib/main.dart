@@ -26,15 +26,21 @@ class _MyAppState extends State<MyApp> {
     ToolBarStyle.italic,
     ToolBarStyle.align,
     ToolBarStyle.color,
+    ToolBarStyle.background,
+    ToolBarStyle.listBullet,
+    ToolBarStyle.listOrdered,
+    ToolBarStyle.clean,
+    ToolBarStyle.addTable,
+    ToolBarStyle.editTable,
   ];
 
-  final _toolbarColor = Colors.greenAccent.shade100;
+  final _toolbarColor = Colors.grey.shade200;
   final _backgroundColor = Colors.white70;
   final _toolbarIconColor = Colors.black87;
   final _editorTextStyle = const TextStyle(
       fontSize: 18, color: Colors.black, fontWeight: FontWeight.normal);
   final _hintTextStyle = const TextStyle(
-      fontSize: 18, color: Colors.teal, fontWeight: FontWeight.normal);
+      fontSize: 18, color: Colors.black12, fontWeight: FontWeight.normal);
 
   @override
   void initState() {
@@ -56,41 +62,44 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        backgroundColor: Colors.white,
         resizeToAvoidBottomInset: true,
-        backgroundColor: Colors.white70,
-        body: Column(
+        body: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            ToolBar(
-              toolBarColor: _toolbarColor,
-              padding: const EdgeInsets.all(8),
-              iconSize: 25,
-              iconColor: _toolbarIconColor,
-              activeIconColor: Colors.purple.shade300,
-              controller: controller,
-              alignment: WrapAlignment.start,
-              crossAxisAlignment: WrapCrossAlignment.center,
-              customButtons: [
-                InkWell(
-                    onTap: () => unFocusEditor(),
-                    child: const Icon(
-                      Icons.favorite,
-                      color: Colors.black,
-                    )),
-                InkWell(
-                    onTap: () async {
-                      var selectedText = await controller.getSelectedText();
-                      debugPrint('selectedText $selectedText');
-                      var selectedHtmlText =
-                          await controller.getSelectedHtmlText();
-                      debugPrint('selectedHtmlText $selectedHtmlText');
-                    },
-                    child: const Icon(
-                      Icons.add_circle,
-                      color: Colors.black,
-                    )),
-              ],
+            SizedBox(
+              width: 50,
+              child: ToolBar.scroll(
+                toolBarColor: _toolbarColor,
+                padding: const EdgeInsets.all(8),
+                iconSize: 25,
+                iconColor: _toolbarIconColor,
+                activeIconColor: Colors.greenAccent.shade400,
+                controller: controller,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                direction: Axis.vertical,
+                customButtons: [
+                  InkWell(
+                      onTap: () => unFocusEditor(),
+                      child: const Icon(
+                        Icons.favorite,
+                        color: Colors.black,
+                      )),
+                  InkWell(
+                      onTap: () async {
+                        var selectedText = await controller.getSelectedText();
+                        debugPrint('selectedText $selectedText');
+                        var selectedHtmlText =
+                            await controller.getSelectedHtmlText();
+                        debugPrint('selectedHtmlText $selectedHtmlText');
+                      },
+                      child: const Icon(
+                        Icons.add_circle,
+                        color: Colors.black,
+                      )),
+                ],
+              ),
             ),
             Flexible(
               fit: FlexFit.tight,
@@ -99,7 +108,7 @@ class _MyAppState extends State<MyApp> {
                 hintText: 'Hint text goes here',
                 controller: controller,
                 isEnabled: true,
-                minHeight: 300,
+                minHeight: 500,
                 textStyle: _editorTextStyle,
                 hintTextStyle: _hintTextStyle,
                 hintTextAlign: TextAlign.start,
@@ -108,7 +117,10 @@ class _MyAppState extends State<MyApp> {
                 backgroundColor: _backgroundColor,
                 onFocusChanged: (hasFocus) => debugPrint('has focus $hasFocus'),
                 onTextChanged: (text) => debugPrint('widget text change $text'),
-                onEditorCreated: () => debugPrint('Editor has been loaded'),
+                onEditorCreated: () {
+                  debugPrint('Editor has been loaded');
+                  setHtmlText('Testing text on load');
+                },
                 onEditorResized: (height) =>
                     debugPrint('Editor resized $height'),
                 onSelectionChanged: (sel) =>
@@ -127,8 +139,7 @@ class _MyAppState extends State<MyApp> {
                 textButton(
                     text: 'Set Text',
                     onPressed: () {
-                      setHtmlText(
-                          '<iframe src="https://www.youtube.com/embed/JCDfh5bs1xc" width="100%" height="315"</iframe>');
+                      setHtmlText('This text is set by you 🫵');
                     }),
                 textButton(
                     text: 'Get Text',

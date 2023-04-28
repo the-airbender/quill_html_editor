@@ -23,9 +23,9 @@ dependencies:
   pointer_interceptor: ^0.9.3+4
   uuid: ^3.0.7
   webview_flutter: ^4.0.7
-  webview_flutter_android: ^3.4.4
+  webview_flutter_android: ^3.4.5
   webview_flutter_platform_interface: ^2.1.0
-  webview_flutter_wkwebview: ^3.2.3
+  webview_flutter_wkwebview: ^3.2.4
   flutter_keyboard_visibility: ^5.4.0
 
 dev_dependencies:
