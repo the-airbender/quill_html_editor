@@ -27,6 +27,7 @@ dependencies:
   webview_flutter_platform_interface: ^2.1.0
   webview_flutter_wkwebview: ^3.2.3
   flutter_keyboard_visibility: ^5.4.0
+  dropdown_button2: ^2.1.0
 
 dev_dependencies:
   flutter_test:

@@ -188,8 +188,13 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
             callBack: (map) {
               try {
                 if (widget.controller._toolBarKey != null) {
-                  widget.controller._toolBarKey!.currentState
-                      ?.updateToolBarFormat(jsonDecode(map));
+                  final currentToolbarState =
+                      widget.controller._toolBarKey!.currentState;
+                  if (currentToolbarState != null) {
+                    currentToolbarState.updateToolBarFormat(jsonDecode(map));
+                    // Then close the DDL if there is any active
+                    currentToolbarState.closeDDs();
+                  }
                 }
               } catch (e) {
                 if (!kReleaseMode) {
