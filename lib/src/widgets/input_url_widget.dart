@@ -85,7 +85,7 @@ class _InputUrlWidgetState extends State<InputUrlWidget> {
       return InkWell(
         onTap: () async {
           await widget.controller.getSelectionRange().then((selectionModel) {
-            showBottomSheet(
+            showModalBottomSheet(
                 context: context,
                 builder: (context) {
                   return _getTextFieldBytType(false, onDoneLastClicked,
