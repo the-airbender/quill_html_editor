@@ -6,10 +6,12 @@ Quill Html Editor is a HTML rich text editor for Android, iOS, and Web, it is bu
 
 ## Features
 - Highly customizable **Editor** and **Toolbar** widgets
+- Supports `Delta` format, can pass delta with `setDelta`and get with `getDelta` methods.
 - Supports copy pasting the RichText from other files or webpages
 - Because the Toolbar is completely detached from editor, it can be placed anywhere in the page, as per the requirement
 - We can also add custom buttons to the toolbar
 - Supports Embedding Images, Videos, Inserting Tables
+- Set or get text in html/delta formats
 
 ## Quill Html Editor Demo
 Please go to [Demo Page](https://the-airbender.github.io/) to try out the Quill Editor on Web
@@ -131,10 +133,22 @@ We can also add custom buttons to our **ToolBar** as shown below
 ```dart
  await controller.setText(text);
 ```
+
+##### To get the text in delta format
+```dart
+ await controller.getDelta();
+```
+
+##### To set the text in delta format
+```dart
+ controller.setDelta(deltaMap);
+```
+
 ##### To insert the html string to editor
 ```dart
- await controller.insertText(text, index: 10);  /// index is optional
+/// index is optional
 /// If the index is not passed, the text will be inserted at the cursor position
+await controller.insertText(text, index: 10);  
 ```
 ##### To clear the editor
 ```dart

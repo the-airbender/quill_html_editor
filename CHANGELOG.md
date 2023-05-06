@@ -1,3 +1,14 @@
+### 2.1.9
+- Added a customisable option to make toolbar scrollable horizontally or vertically
+- Fixed `onFocusChanged` method not returning focus on iOS properly
+- Fixed text-change method is not returning text properly on Android
+- Fixed moving cursor to end after `setDelta`
+- Fix the white space in theme dark mode after adding minHeight property, thanks to `cabbagelol` for PR
+- Fix Mobile Web- Clicking on toolbar icon does not toggle highlight color, and keyboard loses focus
+- Updated `webview_flutter_android`, `webview_flutter_wkwebview` to latest versions
+- Fix customToolBarList: ToolBarStyle.background adds table items #63
+- Improved `onEditorCreated` callback functionality
+
 ### 2.1.8
 - Added `setDelta` & `getDelta` methods,
 - Fixed bug:getText() returns empty string if QuillEditor contains only <img> or <iframe> tags

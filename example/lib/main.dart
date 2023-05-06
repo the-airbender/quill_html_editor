@@ -112,7 +112,7 @@ class _MyAppState extends State<MyApp> {
                 textStyle: _editorTextStyle,
                 hintTextStyle: _hintTextStyle,
                 hintTextAlign: TextAlign.start,
-                padding: const EdgeInsets.only(left: 0, top: 0),
+                padding: const EdgeInsets.only(left: 10, top: 10),
                 hintTextPadding: const EdgeInsets.only(left: 20),
                 backgroundColor: _backgroundColor,
                 onFocusChanged: (hasFocus) => debugPrint('has focus $hasFocus'),

@@ -610,7 +610,7 @@ class ToolBarState extends State<ToolBar> {
           child: SizedBox(
               width: widget.iconSize,
               height: widget.iconSize,
-              child: _getTablePickerWidget(i)),
+              child: _getTablePickerWidget(i, context)),
         ));
       } else if (toolbarItem.style == ToolBarStyle.editTable) {
         tempToolBarList.add(EditTableDropDown(
@@ -973,13 +973,17 @@ class ToolBarState extends State<ToolBar> {
     );
   }
 
-  Widget _getTablePickerWidget(int i) {
+  Widget _getTablePickerWidget(int i, BuildContext context) {
     return ElTooltip(
       color: widget.toolBarColor!,
       distance: 0,
       onTap: () {
-        if (_tablePickerKey.currentState != null) {
-          _tablePickerKey.currentState!.showOverlayOnTap();
+        if (MediaQuery.of(context).size.width < 480) {
+          _showTablePickerDialog(context);
+        } else {
+          if (_tablePickerKey.currentState != null) {
+            _tablePickerKey.currentState!.showOverlayOnTap();
+          }
         }
       },
       key: _tablePickerKey,
@@ -1003,6 +1007,64 @@ class ToolBarState extends State<ToolBar> {
         ),
       ),
     );
+  }
+
+  void _showTablePickerDialog(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            contentPadding: EdgeInsets.zero,
+            content: WebViewAware(
+              child: Builder(
+                builder: (context) {
+                  return SizedBox(
+                    width: 300,
+                    height: 310,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const SizedBox(
+                              width: 15,
+                            ),
+                            const Expanded(
+                                child: Text(
+                              'Select Rows x Columns',
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.w600),
+                            )),
+                            IconButton(
+                                onPressed: () => Navigator.of(context).pop(),
+                                icon: const Icon(Icons.close))
+                          ],
+                        ),
+                        Expanded(
+                          child: TablePicker(
+                            rowCount: 8,
+                            width: 300,
+                            onTablePicked: (int row, int column) {
+                              widget.controller.insertTable(row, column);
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        )
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+          );
+        });
   }
 }
 

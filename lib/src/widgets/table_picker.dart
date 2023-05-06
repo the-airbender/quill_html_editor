@@ -6,13 +6,19 @@ import 'package:quill_html_editor/src/widgets/webviewx/src/webviewx_plus.dart';
 class TablePicker extends StatefulWidget {
   ///[TablePicker] a widget to interactively selected the number of rows and columns to insert in editor
   const TablePicker(
-      {super.key, this.rowCount = 6, required this.onTablePicked});
+      {super.key,
+      this.rowCount = 6,
+      required this.onTablePicked,
+      this.width = 200});
 
   ///[onTablePicked] a callback function that returns the selected row and column index
   final Function(int row, int column) onTablePicked;
 
   ///[rowCount] to define the table row*column matrix
   final int? rowCount;
+
+  ///[width] to set the min width of the table picker
+  final double? width;
 
   @override
   State<TablePicker> createState() => _TablePickerState();
@@ -69,41 +75,38 @@ class _TablePickerState extends State<TablePicker> {
 
   @override
   Widget build(BuildContext context) {
-    return Listener(
-      onPointerDown: _detectTapedItem,
-      onPointerMove: _detectTapedItem,
-      onPointerUp: _onSelectionDone,
-      child: WebViewAware(
-        child: Container(
-          width: 200,
-          padding: const EdgeInsets.all(4),
-          child: GridView.builder(
-            key: _cellKey,
-            shrinkWrap: true,
-            itemCount: widget.rowCount! * widget.rowCount!,
-            scrollDirection: Axis.horizontal,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: widget.rowCount!),
-            itemBuilder: (context, index) {
-              return _CellSelectionWidget(
-                index: index,
-                child: Container(
-                  margin: const EdgeInsets.all(2),
-                  decoration: BoxDecoration(
+    return WebViewAware(
+      child: Listener(
+        onPointerDown: _detectTapedItem,
+        onPointerMove: _detectTapedItem,
+        onPointerUp: _onSelectionDone,
+        child: GridView.builder(
+          key: _cellKey,
+          shrinkWrap: true,
+          itemCount: widget.rowCount! * widget.rowCount!,
+          scrollDirection: Axis.horizontal,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              childAspectRatio: 1, crossAxisCount: widget.rowCount!),
+          itemBuilder: (context, index) {
+            return _CellSelectionWidget(
+              index: index,
+              child: Container(
+                // width: widget.width! / widget.rowCount!,
+                margin: const EdgeInsets.all(2),
+                decoration: BoxDecoration(
+                    color: _selectedIndexes.contains(index)
+                        ? Colors.lightBlue.shade50
+                        : Colors.transparent,
+                    border: Border.all(
+                      width: _selectedIndexes.contains(index) ? 2 : 1,
                       color: _selectedIndexes.contains(index)
-                          ? Colors.lightBlue.shade50
-                          : Colors.transparent,
-                      border: Border.all(
-                        width: _selectedIndexes.contains(index) ? 2 : 1,
-                        color: _selectedIndexes.contains(index)
-                            ? Colors.lightBlue.shade100
-                            : Colors.black45,
-                      )),
-                ),
-              );
-            },
-          ),
+                          ? Colors.lightBlue.shade100
+                          : Colors.black45,
+                    )),
+              ),
+            );
+          },
         ),
       ),
     );

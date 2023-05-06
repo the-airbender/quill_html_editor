@@ -128,7 +128,6 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
   late StreamSubscription<bool> _keyboardSubscription;
   bool _isKeyboardVisible = false;
   bool _hasFocus = false;
-  bool _editorLoaded = false;
   @override
   void initState() {
     isEnabled = widget.isEnabled;
@@ -277,8 +276,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
                     : SelectionModel(index: 0, length: 0));
               }
             }),
-        DartCallback(
-            name: 'EditorLoaded', callBack: (map) => _editorLoaded = map == 'true'),
+        DartCallback(name: 'EditorLoaded', callBack: (map) {}),
       },
       webSpecificParams: const WebSpecificParams(
         printDebugInfo: false,
@@ -403,7 +401,6 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
 
   /// a private method to undo the history
   Future _undo() async {
-    return await _webviewController.callJsMethod("scrollToView", []);
     return await _webviewController.callJsMethod("undo", []);
   }
 

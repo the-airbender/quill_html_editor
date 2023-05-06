@@ -54,26 +54,18 @@ class _EditTableDropDownState extends State<EditTableDropDown> {
         height: widget.iconSize,
         child: ElTooltip(
           color: widget.dropDownColor,
-          // distance: 0,
-          position: ElTooltipPosition.topCenter,
+          distance: 0,
           onTap: () {
-            if (_editTableETKey.currentState != null) {
-              _editTableETKey.currentState!.showOverlayOnTap();
+            if (MediaQuery.of(context).size.width < 480) {
+              _showEditTableSheet(true, context);
+            } else {
+              if (_editTableETKey.currentState != null) {
+                _editTableETKey.currentState!.showOverlayOnTap();
+              }
             }
           },
           key: _editTableETKey,
-          content: Container(alignment: Alignment.center,
-            width: 200,
-            height: MediaQuery.of(context).size.width<450?350:null,
-            child: ListView.builder(
-              padding: EdgeInsets.zero,
-              shrinkWrap: true,
-              itemCount: EditTableEnum.values.length,
-              itemBuilder: (context, i) {
-                return _getEditTableItem(EditTableEnum.values.toList()[i]);
-              },
-            ),
-          ),
+          content: _editTableListView(false, context),
           child: SizedBox(
             width: widget.iconSize,
             height: widget.iconSize,
@@ -87,7 +79,8 @@ class _EditTableDropDownState extends State<EditTableDropDown> {
     );
   }
 
-  Widget _getEditTableItem(EditTableEnum type) {
+  Widget _getEditTableItem(
+      EditTableEnum type, BuildContext context, bool isMobile) {
     String value = "";
     String imagePath = ImageConstant.kiInsertRowBelowPng;
 
@@ -131,6 +124,7 @@ class _EditTableDropDownState extends State<EditTableDropDown> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 SizedBox(
                     width: widget.iconSize,
@@ -139,14 +133,14 @@ class _EditTableDropDownState extends State<EditTableDropDown> {
                       imagePath,
                       color: widget.iconColor,
                     )),
+                const SizedBox(
+                  width: 8,
+                ),
                 Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      value,
-                      style: TextStyle(
-                          fontWeight: FontWeight.w500, color: widget.iconColor),
-                    ),
+                  child: Text(
+                    value,
+                    style: TextStyle(
+                        fontWeight: FontWeight.w500, color: widget.iconColor),
                   ),
                 ),
               ],
@@ -154,11 +148,109 @@ class _EditTableDropDownState extends State<EditTableDropDown> {
           ),
           onTap: () {
             widget.onOptionSelected(type);
-            if (_editTableETKey.currentState != null) {
-              _editTableETKey.currentState!.hideOverlay();
+            if (isMobile) {
+              Navigator.of(context).pop();
+            } else {
+              if (_editTableETKey.currentState != null) {
+                _editTableETKey.currentState!.hideOverlay();
+              }
             }
           },
         ),
+      ),
+    );
+  }
+
+  void _showEditTableSheet(bool isMobileView, BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return _editTableListView(isMobileView, context);
+        });
+  }
+
+  Widget _editTableListView(bool isMobileView, BuildContext context) {
+    if (isMobileView) {
+      return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          contentPadding: EdgeInsets.zero,
+          content: WebViewAware(
+            child: Builder(builder: (context) {
+              return SizedBox(
+                width: 400,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      children: const [
+                        Expanded(
+                          child: Padding(
+                            padding: EdgeInsets.only(left: 8.0),
+                            child: Text(
+                              'Edit Table',
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ),
+                        CloseButton(),
+                      ],
+                    ),
+                    Flexible(
+                      fit: FlexFit.loose,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: MediaQuery.of(context).size.width < 380
+                            ? ListView.builder(
+                                shrinkWrap: true,
+                                itemCount: EditTableEnum.values.length,
+                                itemBuilder: (context, i) {
+                                  return _getEditTableItem(
+                                      EditTableEnum.values.toList()[i],
+                                      context,
+                                      isMobileView);
+                                })
+                            : GridView.builder(
+                                shrinkWrap: true,
+                                itemCount: EditTableEnum.values.length,
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount:
+                                            MediaQuery.of(context).size.width <
+                                                    380
+                                                ? 1
+                                                : 2,
+                                        childAspectRatio: 1 / .3),
+                                itemBuilder: (context, i) {
+                                  return _getEditTableItem(
+                                      EditTableEnum.values.toList()[i],
+                                      context,
+                                      isMobileView);
+                                }),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    )
+                  ],
+                ),
+              );
+            }),
+          ));
+    }
+
+    return SizedBox(
+      width: 200,
+      height: MediaQuery.of(context).size.width < 450 ? 350 : null,
+      child: ListView.builder(
+        reverse: true,
+        padding: EdgeInsets.zero,
+        shrinkWrap: true,
+        itemCount: EditTableEnum.values.length,
+        itemBuilder: (context, i) {
+          return _getEditTableItem(
+              EditTableEnum.values.toList()[i], context, isMobileView);
+        },
       ),
     );
   }
