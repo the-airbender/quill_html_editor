@@ -521,7 +521,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
         <!-- Create the editor container -->
         <div style="position:relative;margin-top:0em;">
         <div id="editorcontainer" style= "min-height:${widget.minHeight}px; overflow-y:scroll;margin-top:0em;">
-        <div id="editor" style="min-height:${widget.minHeight}px; width:100%;"></div>
+        <div id="editor" style="min-height:${widget.minHeight}px; width:100%; height: ${widget.minHeight}px"></div>
         </div>
         </div> 
         </div>
@@ -685,7 +685,6 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
                 }
               },
               theme: 'snow',
-             scrollingContainer: '#scrolling-container', 
               placeholder: '${widget.hintText ?? "Description"}',
               clipboard: {
                 matchVisual: true
@@ -851,7 +850,8 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
             }
             
             function setSelection(index, length) {
-              setTimeout(() => quilleditor.setSelection(index, length), 1);
+              setTimeout(() => quilleditor.setSelection(index, length), 10);
+              setTimeout(() => quilleditor.focus(), 1000);
               return '';
             }
             
