@@ -495,7 +495,6 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
         }     
         #scrolling-container {  
           min-height: ${widget.minHeight}px !important;
-          overflow-y: scroll  !important;
           -webkit-user-select: text !important;
          } 
         </style>
@@ -520,7 +519,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
         
         <!-- Create the editor container -->
         <div style="position:relative;margin-top:0em;">
-        <div id="editorcontainer" style= "min-height:${widget.minHeight}px; overflow-y:scroll;margin-top:0em;">
+        <div id="editorcontainer" style= "min-height:${widget.minHeight}px; margin-top:0em;">
         <div id="editor" style="min-height:${widget.minHeight}px; width:100%; height: ${widget.minHeight}px"></div>
         </div>
         </div> 
