@@ -527,6 +527,7 @@ class ToolBarState extends State<ToolBar> {
         case ToolBarStyle.editTable:
         case ToolBarStyle.addTable:
         case ToolBarStyle.clearHistory:
+        case ToolBarStyle.separator:
           break;
       }
     }
@@ -620,6 +621,26 @@ class ToolBarState extends State<ToolBar> {
           dropDownColor: widget.toolBarColor!,
           onOptionSelected: (type) => widget.controller.modifyTable(type),
         ));
+      } else if (toolbarItem.style == ToolBarStyle.separator) {
+        if (widget.direction == Axis.horizontal) {
+          tempToolBarList.add(Padding(
+            padding: _buttonPadding,
+            child: Container(
+              height: widget.iconSize,
+              width: 0.8,
+              color: widget.iconColor,
+            ),
+          ));
+        } else {
+          tempToolBarList.add(Padding(
+            padding: _buttonPadding,
+            child: Container(
+              width: widget.iconSize,
+              height: 0.8,
+              color: widget.iconColor,
+            ),
+          ));
+        }
       } else {
         tempToolBarList.add(ToolBarItem(
           activeIconColor: widget.activeIconColor!,
@@ -742,6 +763,7 @@ class ToolBarState extends State<ToolBar> {
       case ToolBarStyle.clearHistory:
       case ToolBarStyle.editTable:
       case ToolBarStyle.addTable:
+      case ToolBarStyle.separator:
         return {'format': 'undo', 'value': ''};
     }
   }
@@ -1168,6 +1190,7 @@ class ToolBarItem extends StatelessWidget {
       case ToolBarStyle.size:
       case ToolBarStyle.addTable:
       case ToolBarStyle.editTable:
+      case ToolBarStyle.separator:
         return const SizedBox();
     }
   }
@@ -1304,6 +1327,9 @@ enum ToolBarStyle {
 
   /// [editTable] to edit rows, columns or delete table
   editTable,
+
+  ///[separator] to add divider between toolbar items
+  separator
 
   ///font - later releases
 }
