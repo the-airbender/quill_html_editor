@@ -38,7 +38,7 @@ class _MyAppState extends State<MyApp> {
   final _backgroundColor = Colors.white70;
   final _toolbarIconColor = Colors.black87;
   final _editorTextStyle = const TextStyle(
-      fontSize: 18, color: Colors.black, fontWeight: FontWeight.normal);
+      fontSize: 18, color: Colors.black, fontWeight: FontWeight.normal, fontFamily: 'Montserrat Alternates');
   final _hintTextStyle = const TextStyle(
       fontSize: 18, color: Colors.black12, fontWeight: FontWeight.normal);
 

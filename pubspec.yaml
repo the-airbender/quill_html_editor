@@ -16,17 +16,17 @@ dependencies:
   flutter_web_plugins:
     sdk: flutter
   ##### For image picker widget
-  file_picker: ^5.2.5
+  file_picker: ^5.3.2
   ##### For webveiwx widget
-  http: ^0.13.5
+  http: ^1.0.0
   path: ^1.8.2
   pointer_interceptor: ^0.9.3+4
   uuid: ^3.0.7
-  webview_flutter: ^4.0.7
-  webview_flutter_android: ^3.4.5
-  webview_flutter_platform_interface: ^2.1.0
-  webview_flutter_wkwebview: ^3.2.4
-  flutter_keyboard_visibility: ^5.4.0
+  webview_flutter: ^4.2.2
+  webview_flutter_android: ^3.8.0
+  webview_flutter_platform_interface: ^2.3.0
+  webview_flutter_wkwebview: ^3.5.0
+  flutter_keyboard_visibility: ^5.4.1
 
 dev_dependencies:
   flutter_test:
@@ -55,3 +55,4 @@ flutter:
       - packages/quill_html_editor/assets/insert_row_above.png
       - packages/quill_html_editor/assets/insert_row_below.png
       - packages/quill_html_editor/assets/insert_column_right.png
+      - packages/quill_html_editor/assets/scripts/quill_2.0.0_4_min.js
