@@ -145,47 +145,6 @@ class _MyAppState extends State<MyApp> {
                 onSelectionChanged: (sel) => debugPrint(
                     'index ${sel.index}, range ${sel.length}'),
               ),
-             /* Container(color: Colors.red,
-                child: Column(
-                  children: [
-                    Flexible(
-                      child: QuillHtmlEditor(
-                        text:
-                        "<h1>Hello</h1>This is a quill html editor example 😊",
-                        hintText: 'Hint text goes here',
-                        controller: controller,
-                        isEnabled: true,
-                        ensureVisible: true,
-                        minHeight: 200,
-                        textStyle: _editorTextStyle,
-                        hintTextStyle: _hintTextStyle,
-                        hintTextAlign: TextAlign.start,
-                        padding: const EdgeInsets.only(left: 10, top: 10),
-                        hintTextPadding: const EdgeInsets.only(left: 20),
-                        backgroundColor: _backgroundColor,
-                        onFocusChanged: (focus) {
-                          debugPrint('has focus $focus');
-                          setState(() {
-                            _hasFocus = focus;
-                          });
-                        },
-                        onTextChanged: (text) =>
-                            debugPrint('widget text change $text'),
-                        onEditorCreated: () {
-                          debugPrint('Editor has been loaded');
-                          setHtmlText('Testing text on load');
-                        },
-                        onEditorResized: (height) =>
-                            debugPrint('Editor resized $height'),
-                        onSelectionChanged: (sel) => debugPrint(
-                            'index ${sel.index}, range ${sel.length}'),
-                      ),
-                    ),
-                    TextField(),
-                    TextField(),
-                  ],
-                ),
-              ),*/
             ),
           ],
         ),
@@ -264,12 +223,6 @@ class _MyAppState extends State<MyApp> {
                             "insert": {
                               "video":
                                   "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
-                            }
-                          },
-                          {
-                            "insert": {
-                              "video":
-                                  "https://player.vimeo.com/video/440421754"
                             }
                           },
                           {

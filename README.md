@@ -10,8 +10,9 @@ Quill Html Editor is a HTML rich text editor for Android, iOS, and Web, it is bu
 - Supports copy pasting the RichText from other files or webpages
 - Because the Toolbar is completely detached from editor, it can be placed anywhere in the page, as per the requirement
 - We can also add custom buttons to the toolbar
-- Supports Embedding Images, Videos, Inserting Tables
+- Supports Embedding **Images**, **Videos**, Inserting **Tables**
 - Set or get text in html/delta formats
+- Supports **Google fonts**
 
 ## Quill Html Editor Demo
 Please go to [Demo Page](https://the-airbender.github.io/) to try out the Quill Editor on Web
@@ -97,32 +98,44 @@ Define **ToolBar** widget and pass the same **controller** created for **QuillHt
   ],
 )
 ```
+`ToolBar.scroll` shows the widget in a single row/column based on the `direction`. The default value is [Axis.horizontal]
+
+
+```dart
+   ToolBar.scroll(
+	toolBarColor: _toolbarColor,
+	controller: controller,
+	direction: Axis.vertical,
+   ),
+
+```
+
 **Note**: *toolBarConfig*, if not passed to **ToolBar**, it will show all the Toolbar Buttons. To show only required buttons, please specify the types in the list as show below.
 ```dart
     final customToolBarList = [
-      ToolBarStyle.bold,
-      ToolBarStyle.italic,
-      ToolBarStyle.align,
-      ToolBarStyle.color,
-    ];
+  ToolBarStyle.bold,
+  ToolBarStyle.italic,
+  ToolBarStyle.align,
+  ToolBarStyle.color,
+];
 
-    ToolBar(
-     controller: controller,
-     toolBarConfig: customToolBarList
-    ),
+ToolBar(
+controller: controller,
+toolBarConfig: customToolBarList
+),
 ```
 
 We can also add custom buttons to our **ToolBar** as shown below
 ```dart
     final customButtons =  [
-     InkWell(onTap: () {}, child: const Icon(Icons.favorite)),
-     InkWell(onTap: () {}, child: const Icon(Icons.add_circle)),
-     ];
+  InkWell(onTap: () {}, child: const Icon(Icons.favorite)),
+  InkWell(onTap: () {}, child: const Icon(Icons.add_circle)),
+];
 
-    ToolBar(
-     controller: controller,
-     customButtons:customButtons
-    ),
+ToolBar(
+controller: controller,
+customButtons:customButtons
+),
 ```
 
 ##### To get the html string from editor
