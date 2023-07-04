@@ -1,3 +1,15 @@
+
+### 2.2.0
+- Removed the CDN dependency of the Scripts and Styling, bundled the Quill js and css files with the package, making the editor supporting offline mode
+- Added Google Font Support for editor styling, refer documentation for examples
+- Added a new `ToolBarStyle.separator`, to add custom separators in the toolbar config
+- Fixed the bug #64
+- Fixed the bug #71
+- Fixed the bug #59 , fixed, the new line is not visible on enter
+- Fixed Match visual error that appears in Flutter web console.
+- Updated dependencies to the latest versions.
+
+
 ### 2.1.9
 - Added a customisable option to make toolbar scrollable horizontally or vertically
 - Fixed `onFocusChanged` method not returning focus on iOS properly
@@ -11,10 +23,11 @@
 
 ### 2.1.8
 - Added `setDelta` & `getDelta` methods,
-- Fixed bug:getText() returns empty string if QuillEditor contains only <img> or <iframe> tags
+- Fixed bug:getText() returns empty string if QuillEditor contains only img or iframe tags
 - Fixed bug: Multiple widgets used the same GlobalKey
-- Fixed bug: `hintText` padding is not applying properly
+- Fixed bug:`hintText` padding is not applying properly
 - Updated `webview_flutter` and dependant packages to latest version
+
 
 ### 2.1.7
 - Fixed redo button throwing exception bug
@@ -24,7 +37,7 @@
 
 ### 2.1.6
 - Added `onEditorResized` callback, returns the size of the editor
-- Fixed transparent color conversion issue 
+- Fixed transparent color conversion issue
 - Fixed extra padding to the text area issue
 - Other min bug fixes
 
