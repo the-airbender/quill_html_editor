@@ -38,10 +38,14 @@ class _MyAppState extends State<MyApp> {
   final _backgroundColor = Colors.white70;
   final _toolbarIconColor = Colors.black87;
   final _editorTextStyle = const TextStyle(
-      fontSize: 18, color: Colors.black, fontWeight: FontWeight.normal, fontFamily: 'Montserrat Alternates');
+      fontSize: 18,
+      color: Colors.black,
+      fontWeight: FontWeight.normal,
+      fontFamily: 'Architects Daughter');
   final _hintTextStyle = const TextStyle(
       fontSize: 18, color: Colors.black12, fontWeight: FontWeight.normal);
 
+  bool _hasFocus = false;
   @override
   void initState() {
     controller = QuillEditorController();
@@ -80,6 +84,13 @@ class _MyAppState extends State<MyApp> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 direction: Axis.vertical,
                 customButtons: [
+                  Container(
+                    width: 25,
+                    height: 25,
+                    decoration: BoxDecoration(
+                        color: _hasFocus ? Colors.green : Colors.grey,
+                        borderRadius: BorderRadius.circular(15)),
+                  ),
                   InkWell(
                       onTap: () => unFocusEditor(),
                       child: const Icon(
@@ -104,28 +115,77 @@ class _MyAppState extends State<MyApp> {
             Flexible(
               fit: FlexFit.tight,
               child: QuillHtmlEditor(
-                text: "<h1>Hello</h1>This is a quill html editor example 😊",
+                text:
+                "<h1>Hello</h1>This is a quill html editor example 😊",
                 hintText: 'Hint text goes here',
                 controller: controller,
                 isEnabled: true,
-                minHeight: 500,
+                ensureVisible: false,
+                minHeight: 200,
                 textStyle: _editorTextStyle,
                 hintTextStyle: _hintTextStyle,
                 hintTextAlign: TextAlign.start,
                 padding: const EdgeInsets.only(left: 10, top: 10),
                 hintTextPadding: const EdgeInsets.only(left: 20),
                 backgroundColor: _backgroundColor,
-                onFocusChanged: (hasFocus) => debugPrint('has focus $hasFocus'),
-                onTextChanged: (text) => debugPrint('widget text change $text'),
+                onFocusChanged: (focus) {
+                  debugPrint('has focus $focus');
+                  setState(() {
+                    _hasFocus = focus;
+                  });
+                },
+                onTextChanged: (text) =>
+                    debugPrint('widget text change $text'),
                 onEditorCreated: () {
                   debugPrint('Editor has been loaded');
                   setHtmlText('Testing text on load');
                 },
                 onEditorResized: (height) =>
                     debugPrint('Editor resized $height'),
-                onSelectionChanged: (sel) =>
-                    debugPrint('index ${sel.index}, range ${sel.length}'),
+                onSelectionChanged: (sel) => debugPrint(
+                    'index ${sel.index}, range ${sel.length}'),
               ),
+             /* Container(color: Colors.red,
+                child: Column(
+                  children: [
+                    Flexible(
+                      child: QuillHtmlEditor(
+                        text:
+                        "<h1>Hello</h1>This is a quill html editor example 😊",
+                        hintText: 'Hint text goes here',
+                        controller: controller,
+                        isEnabled: true,
+                        ensureVisible: true,
+                        minHeight: 200,
+                        textStyle: _editorTextStyle,
+                        hintTextStyle: _hintTextStyle,
+                        hintTextAlign: TextAlign.start,
+                        padding: const EdgeInsets.only(left: 10, top: 10),
+                        hintTextPadding: const EdgeInsets.only(left: 20),
+                        backgroundColor: _backgroundColor,
+                        onFocusChanged: (focus) {
+                          debugPrint('has focus $focus');
+                          setState(() {
+                            _hasFocus = focus;
+                          });
+                        },
+                        onTextChanged: (text) =>
+                            debugPrint('widget text change $text'),
+                        onEditorCreated: () {
+                          debugPrint('Editor has been loaded');
+                          setHtmlText('Testing text on load');
+                        },
+                        onEditorResized: (height) =>
+                            debugPrint('Editor resized $height'),
+                        onSelectionChanged: (sel) => debugPrint(
+                            'index ${sel.index}, range ${sel.length}'),
+                      ),
+                    ),
+                    TextField(),
+                    TextField(),
+                  ],
+                ),
+              ),*/
             ),
           ],
         ),
