@@ -41,7 +41,7 @@ class _MyAppState extends State<MyApp> {
       fontSize: 18,
       color: Colors.black,
       fontWeight: FontWeight.normal,
-      fontFamily: 'Architects Daughter');
+      fontFamily: 'Roboto');
   final _hintTextStyle = const TextStyle(
       fontSize: 18, color: Colors.black12, fontWeight: FontWeight.normal);
 
@@ -51,6 +51,9 @@ class _MyAppState extends State<MyApp> {
     controller = QuillEditorController();
     controller.onTextChanged((text) {
       debugPrint('listening to $text');
+    });
+    controller.onEditorLoaded(() {
+      debugPrint('Editor Loaded :)');
     });
     super.initState();
   }
@@ -115,8 +118,7 @@ class _MyAppState extends State<MyApp> {
             Flexible(
               fit: FlexFit.tight,
               child: QuillHtmlEditor(
-                text:
-                "<h1>Hello</h1>This is a quill html editor example 😊",
+                text: "<h1>Hello</h1>This is a quill html editor example 😊",
                 hintText: 'Hint text goes here',
                 controller: controller,
                 isEnabled: true,
@@ -128,22 +130,27 @@ class _MyAppState extends State<MyApp> {
                 padding: const EdgeInsets.only(left: 10, top: 10),
                 hintTextPadding: const EdgeInsets.only(left: 20),
                 backgroundColor: _backgroundColor,
+                loadingBuilder: (context) {
+                  return const Center(
+                      child: CircularProgressIndicator(
+                    strokeWidth: 0.4,
+                  ));
+                },
                 onFocusChanged: (focus) {
                   debugPrint('has focus $focus');
                   setState(() {
                     _hasFocus = focus;
                   });
                 },
-                onTextChanged: (text) =>
-                    debugPrint('widget text change $text'),
+                onTextChanged: (text) => debugPrint('widget text change $text'),
                 onEditorCreated: () {
                   debugPrint('Editor has been loaded');
                   setHtmlText('Testing text on load');
                 },
                 onEditorResized: (height) =>
                     debugPrint('Editor resized $height'),
-                onSelectionChanged: (sel) => debugPrint(
-                    'index ${sel.index}, range ${sel.length}'),
+                onSelectionChanged: (sel) =>
+                    debugPrint('index ${sel.index}, range ${sel.length}'),
               ),
             ),
           ],

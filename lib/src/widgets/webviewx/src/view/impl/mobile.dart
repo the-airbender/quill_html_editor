@@ -195,7 +195,7 @@ class _WebViewXState extends State<WebViewX> {
     if (err is wf_wk.WebKitWebResourceError) {
       domain = err.domain;
     } else if (err is wf_android.AndroidWebResourceError) {
-      failingUrl = err.failingUrl;
+      failingUrl = err.url;
     }
 
     widget.onWebResourceError?.call(

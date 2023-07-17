@@ -1,22 +1,25 @@
-![Pub Version](https://img.shields.io/pub/v/quill_html_editor) ![GitHub](https://img.shields.io/github/license/the-airbender/quill_html_editor) ![Pub Points](https://img.shields.io/pub/points/quill_html_editor)
-# quill_html_editor
+![Pub Version](https://img.shields.io/pub/v/quill_html_editor) ![GitHub](https://img.shields.io/github/license/the-airbender/quill_html_editor) ![Pub Points](https://img.shields.io/pub/points/quill_html_editor) ![Pub Popularity](https://img.shields.io/pub/popularity/quill_html_editor)
 
-Quill Html Editor is a HTML rich text editor for Android, iOS, and Web, it is built with the powerful QuillJs library, an open source WYSIWYG editor for the modern web.
 
+
+# Quill Html Editor
+
+Quill Html Editor is a powerful HTML rich text editor designed for Android, iOS, and Web platforms. It leverages the capabilities of the QuillJs library, an open-source WYSIWYG editor, to provide a feature-rich editing experience for modern web applications.
 
 ## Features
-- Highly customizable **Editor** and **Toolbar** widgets
-- Supports `Delta` format, can pass delta with `setDelta`and get with `getDelta` methods.
-- Supports copy pasting the RichText from other files or webpages
-- Because the Toolbar is completely detached from editor, it can be placed anywhere in the page, as per the requirement
-- We can also add custom buttons to the toolbar
-- Supports Embedding **Images**, **Videos**, Inserting **Tables**
-- Set or get text in html/delta formats
-- Supports **Google fonts**
 
-## Quill Html Editor Demo
-Please go to [Demo Page](https://the-airbender.github.io/) to try out the Quill Editor on Web
+- Highly customizable **Editor** and **Toolbar** widgets.
+- Supports the `Delta` format, allowing you to set and retrieve content using `setDelta` and `getDelta` methods.
+- Enables seamless copy-pasting of rich text from other files or webpages.
+- The detached Toolbar can be placed anywhere on the page to suit your requirements.
+- Provides the flexibility to add custom buttons to the toolbar.
+- Supports embedding of images, videos, and insertion of tables.
+- Allows setting and retrieving text in both HTML and Delta formats.
+- Supports integration with **Google Fonts** for a wide range of font options.
 
+## Demo
+
+To experience the capabilities of the Quill Html Editor, you can visit our [Demo Page](https://the-airbender.github.io/). Explore the editor's functionalities and see how it can enhance your web editing experience.
 
 ## Screenshots
 
@@ -63,56 +66,72 @@ Define a **QuillEditorController** to access the editor methods, pass the contro
 ```
 ```dart
      QuillHtmlEditor(
-        text: "<h1>Hello</h1>This is a quill html editor example 😊",
-        hintText: 'Hint text goes here',
-        controller: controller,
-        isEnabled: true,
-        minHeight: 300,
-        textStyle: _editorTextStyle,
-        hintTextStyle: _hintTextStyle,
-        hintTextAlign: TextAlign.start,
-        padding: const EdgeInsets.only(left: 10, top: 5),
-        hintTextPadding: EdgeInsets.zero,
-        backgroundColor: _backgroundColor,
-        onFocusChanged: (hasFocus) => debugPrint('has focus $hasFocus'),
-        onTextChanged: (text) => debugPrint('widget text change $text'),
-        onEditorCreated: () => debugPrint('Editor has been loaded'),
-        onEditorResized: (height) =>
-        debugPrint('Editor resized $height'),
-        onSelectionChanged: (sel) =>
-        debugPrint('${sel.index},${sel.length}')
-      ),
+text: "<h1>Hello</h1>This is a quill html editor example 😊",
+hintText: 'Hint text goes here',
+controller: controller,
+isEnabled: true,
+minHeight: 300,
+textStyle: _editorTextStyle,
+hintTextStyle: _hintTextStyle,
+hintTextAlign: TextAlign.start,
+padding: const EdgeInsets.only(left: 10, top: 5),
+hintTextPadding: EdgeInsets.zero,
+backgroundColor: _backgroundColor,
+onFocusChanged: (hasFocus) => debugPrint('has focus $hasFocus'),
+onTextChanged: (text) => debugPrint('widget text change $text'),
+onEditorCreated: () => debugPrint('Editor has been loaded'),
+onEditorResized: (height) =>
+debugPrint('Editor resized $height'),
+onSelectionChanged: (sel) =>
+debugPrint('${sel.index},${sel.length}'),
+loadingBuilder: (context) {
+return const Center(
+child: CircularProgressIndicator(
+strokeWidth: 0.4,
+));
+},
+),
 ```
 
 Define **ToolBar** widget and pass the same **controller** created for **QuillHtmlEditor**
 ```dart
    ToolBar(
-        toolBarColor: Colors.cyan.shade50,
-        activeIconColor: Colors.green,
-        padding: const EdgeInsets.all(8),
-        iconSize: 20,
-        controller: controller,
-        customButtons: [
-        InkWell(onTap: () {}, child: const Icon(Icons.favorite)),
-        InkWell(onTap: () {}, child: const Icon(Icons.add_circle)),
-  ],
+toolBarColor: Colors.cyan.shade50,
+activeIconColor: Colors.green,
+padding: const EdgeInsets.all(8),
+iconSize: 20,
+controller: controller,
+customButtons: [
+InkWell(onTap: () {}, child: const Icon(Icons.favorite)),
+InkWell(onTap: () {}, child: const Icon(Icons.add_circle)),
+],
 )
 ```
-`ToolBar.scroll` shows the widget in a single row/column based on the `direction`. The default value is [Axis.horizontal]
 
+## ToolBar Scroll Configuration
+
+The `ToolBar.scroll` widget allows you to display the toolbar buttons in a single row or column, based on the specified `direction` parameter. By default, the `direction` is set to `Axis.horizontal`, which arranges the buttons in a single row.
+
+To change the direction and display the buttons in a single column, you can provide the `direction` parameter as `Axis.vertical`. Here's an example:
 
 ```dart
-   ToolBar.scroll(
-	toolBarColor: _toolbarColor,
-	controller: controller,
-	direction: Axis.vertical,
-   ),
-
+ToolBar.scroll(
+toolBarColor: _toolbarColor,
+controller: controller,
+direction: Axis.vertical,
+),
 ```
 
-**Note**: *toolBarConfig*, if not passed to **ToolBar**, it will show all the Toolbar Buttons. To show only required buttons, please specify the types in the list as show below.
+In the above example, the `ToolBar.scroll` widget is used to display the toolbar buttons in a vertical arrangement.
+
+## Customizing Toolbar Buttons
+
+The `ToolBar` widget allows you to customize the buttons that are displayed in the toolbar. By default, if the `toolBarConfig` parameter is not provided, all the toolbar buttons will be shown.
+
+If you want to show only specific buttons, you can pass a list of `ToolBarStyle` types to the `toolBarConfig` parameter. For example:
+
 ```dart
-    final customToolBarList = [
+final customToolBarList = [
   ToolBarStyle.bold,
   ToolBarStyle.italic,
   ToolBarStyle.align,
@@ -121,22 +140,52 @@ Define **ToolBar** widget and pass the same **controller** created for **QuillHt
 
 ToolBar(
 controller: controller,
-toolBarConfig: customToolBarList
+toolBarConfig: customToolBarList,
 ),
 ```
 
-We can also add custom buttons to our **ToolBar** as shown below
+In the above example, only the "Bold," "Italic," "Align," and "Color" buttons will be displayed in the toolbar.
+
+Additionally, you can add custom buttons to the toolbar by providing a list of custom widgets to the `customButtons` parameter. Here's an example:
+
 ```dart
-    final customButtons =  [
+final customButtons = [
   InkWell(onTap: () {}, child: const Icon(Icons.favorite)),
   InkWell(onTap: () {}, child: const Icon(Icons.add_circle)),
 ];
 
 ToolBar(
 controller: controller,
-customButtons:customButtons
+customButtons: customButtons,
 ),
 ```
+
+In the above example, custom buttons with heart and add circle icons are added to the toolbar.
+
+Feel free to customize the toolbar configuration and add custom buttons according to your requirements to enhance the editing experience with the Quill Html Editor.
+
+
+
+## Custom Fonts in Quill Html Editor
+
+You can pass custom fonts to the text style in the `quill_html_editor` package by following these steps:
+
+Define your custom font family in your Flutter project. You can use Google Fonts. Let's assume you want to use the 'Roboto' font family.
+
+```dart
+
+final _editorTextStyle = const TextStyle(
+  fontSize: 18,
+  color: Colors.black,
+  fontWeight: FontWeight.normal,
+  fontFamily: 'Roboto',
+);
+
+```
+By following these steps, you can pass custom font styles to the text within the QuillHtmlEditor widget. The fontFamily property of the TextStyle allows you to specify the desired font family, such as 'Roboto' in this example.
+
+
+
 
 ##### To get the html string from editor
 ```dart
@@ -184,7 +233,6 @@ await controller.insertText(text, index: 10);
 -  **Custom Color** - Let the user add more Colors to the Color Picker
 -  **Custom FontSize** - Let the user add custom font sizes, instead of just Small, Normal, Large & Huge
 -  **AsyncImagePickerButton** -  To share picked file to user, to upload it asynchronously and inserts the returned link into the editor
--  **Custom FontStyles** -  Let the user choose the supported font styles of the editor
 -  More examples for each available apis
 
 ------------

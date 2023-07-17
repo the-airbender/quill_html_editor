@@ -110,6 +110,15 @@ debugPrint('listening to $text');
 });
 ```
 
+
+#### `onEditorLoaded`
+/// The [onEditorLoaded] callback function is called when the Quill editor is fully loaded and ready for user interaction.
+```dart
+   controller.onEditorLoaded(() {
+    debugPrint('Editor Loaded :)');
+   });
+```
+
 #### `getSelectionRange`
 
 To get the text selection range from editor. It returns a `SelectionModel` object which has the `index` and `length` of the selection.

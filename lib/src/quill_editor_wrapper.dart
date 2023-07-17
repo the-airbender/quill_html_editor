@@ -1,4 +1,3 @@
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
@@ -12,9 +11,17 @@ import 'package:quill_html_editor/src/utils/string_util.dart';
 import 'package:quill_html_editor/src/widgets/edit_table_drop_down.dart';
 import 'package:quill_html_editor/src/widgets/webviewx/src/webviewx_plus.dart';
 
-///[QuillHtmlEditor] widget to show the quill editor,
+/// A typedef representing a loading builder function.
+///
+/// A [LoadingBuilder] is a function that takes a [BuildContext] as an argument
+/// and returns a [Widget]. It is typically used in conjunction with asynchronous
+/// operations or data fetching, allowing you to display a loading indicator or
+/// any other UI element during the loading process.
+typedef LoadingBuilder = Widget Function(BuildContext context);
+
+///[QuillHtmlEditor] widget to display the quill editor,
 class QuillHtmlEditor extends StatefulWidget {
-  ///[QuillHtmlEditor] widget to show the quill editor,
+  ///[QuillHtmlEditor] widget to display the quill editor,
   ///pass the controller to access the editor methods
   QuillHtmlEditor({
     this.text,
@@ -32,6 +39,7 @@ class QuillHtmlEditor extends StatefulWidget {
     this.hintTextAlign = TextAlign.start,
     this.onEditorResized,
     this.ensureVisible = false,
+    this.loadingBuilder,
     this.textStyle = const TextStyle(
       fontStyle: FontStyle.normal,
       fontSize: 20.0,
@@ -101,8 +109,8 @@ class QuillHtmlEditor extends StatefulWidget {
   ///font family support is not available yet
   final TextStyle? hintTextStyle;
 
-  ////[hintTextAlign] optional style to align the editor's hint text
-  //// default value is hintTextAlign.start
+  ///[hintTextAlign] optional style to align the editor's hint text
+  /// default value is hintTextAlign.start
   final TextAlign? hintTextAlign;
 
   ///[hintTextPadding] optional style to set padding to the editor's text,
@@ -114,6 +122,14 @@ class QuillHtmlEditor extends StatefulWidget {
   /// Note:  Please make sure to wrap the editor with SingleChildScrollView, to make the
   /// editor scrollable.
   final bool? ensureVisible;
+
+  /// A builder function that provides a widget to display while the data is loading.
+  ///
+  /// The [loadingBuilder] is responsible for creating a widget that represents the
+  /// loading state of the custom widget. It is called when the data is being fetched
+  /// or processed, allowing you to display a loading indicator or any other UI element
+  /// that indicates the ongoing operation.
+  final LoadingBuilder? loadingBuilder;
 
   @override
   QuillHtmlEditorState createState() => QuillHtmlEditorState();
@@ -170,11 +186,19 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
                   context: context, width: constraints.maxWidth);
             });
           }
-          return const Center(
-            child: CircularProgressIndicator(
-              strokeWidth: 0.3,
-            ),
-          );
+
+          if (widget.loadingBuilder != null) {
+            return widget.loadingBuilder!(context);
+          } else {
+            return SizedBox(
+              height: widget.minHeight,
+              child: const Center(
+                child: CircularProgressIndicator(
+                  strokeWidth: 0.3,
+                ),
+              ),
+            );
+          }
         });
   }
 
@@ -198,6 +222,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
           if (widget.onEditorCreated != null) {
             widget.onEditorCreated!();
           }
+          widget.controller._editorLoadedController?.add('');
         });
       },
       dartCallBacks: {
@@ -283,16 +308,22 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
         DartCallback(
             name: 'OnSelectionChanged',
             callBack: (selection) {
-              if (widget.onSelectionChanged != null) {
-                if (!_hasFocus) {
-                  if (widget.onFocusChanged != null) {
-                    _hasFocus = true;
-                    widget.onFocusChanged!(_hasFocus);
+              try {
+                if (widget.onSelectionChanged != null) {
+                  if (!_hasFocus) {
+                    if (widget.onFocusChanged != null) {
+                      _hasFocus = true;
+                      widget.onFocusChanged!(_hasFocus);
+                    }
                   }
+                  widget.onSelectionChanged!(selection != null
+                      ? SelectionModel.fromJson(jsonDecode(selection))
+                      : SelectionModel(index: 0, length: 0));
                 }
-                widget.onSelectionChanged!(selection != null
-                    ? SelectionModel.fromJson(jsonDecode(selection))
-                    : SelectionModel(index: 0, length: 0));
+              } catch (e) {
+                if (!kReleaseMode) {
+                  debugPrint(e.toString());
+                }
               }
             }),
 
@@ -692,7 +723,10 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
          
             function applyGoogleKeyboardWorkaround(editor) {
               try {
-                if($kIsWeb){
+              
+                let isIOS = /iPad|iPhone|iPod/.test(navigator.platform) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+
+                if($kIsWeb || isIOS){
                   return;
                 }
                 if(editor.applyGoogleKeyboardWorkaround) {
@@ -712,6 +746,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
                     if( ops[0]["retain"] === undefined || !ops[1] || !ops[1]["insert"] || !ops[1]["insert"] || ops[1]["list"] === "bullet" || ops[1]["list"] === "ordered" || ops[1]["insert"] != "\\n" || oldSelectionLength > 0) {
                       return
                     }
+                 
                     setTimeout(function() {
                       var newPos = editor.getSelection(true).index
                       if(newPos === oldPos) {
@@ -720,7 +755,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
                       }
                     }, 30);
                     //onRangeChanged();
-                  
+                 
                 });
               } catch(e) {
                 console.log(e);
@@ -755,6 +790,15 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
     
            // stops the listener
            //// observer.disconnect();
+          
+        
+           //// to accept all link formats 
+           var Link = Quill.import('formats/link');
+              Link.sanitize = function(url) {
+                // modify url if desired
+                return url;
+              }
+             Quill.register(Link, true);
            
             /// quill custom font import
             var FontStyle = Quill.import('attributors/class/font');
@@ -791,7 +835,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
             const table = quilleditor.getModule('table');
             quilleditor.enable($isEnabled);
         
-             applyGoogleKeyboardWorkaround(quilleditor);
+           applyGoogleKeyboardWorkaround(quilleditor);
             
             let editorLoaded = false;
             quilleditor.on('editor-change', function(eventName, ...args) {
@@ -947,10 +991,12 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
               return '';
             }
             
-            function setHtmlText(htmlString) {
+          async  function setHtmlText(htmlString) {
             try{
-              quilleditor.clipboard.dangerouslyPasteHTML(htmlString);        
-              setTimeout(() => quilleditor.setSelection(quilleditor.getSelection().index + 100, 0), 10); 
+             await quilleditor.clipboard.dangerouslyPasteHTML(htmlString);   
+              //commented for future improvement of selection
+              // setTimeout(() => quilleditor.setSelection(quilleditor.getLength() + 100, 0), 30);
+              setTimeout(() =>  unFocus(), 10);  
               }catch(e){
                 console.log(e);
               }
@@ -961,10 +1007,12 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
               try{
                const obj = JSON.parse(deltaMap);
                 quilleditor.setContents(obj);
-                setTimeout(() => quilleditor.setSelection(quilleditor.getSelection().index + 100, 0), 10);
-              }catch(e){
-                console.log(e);
-              }
+                 //commented for future improvement of selection
+                //setTimeout(() => quilleditor.setSelection(quilleditor.getSelection(true).length + 10, 0), 10);
+                setTimeout(() =>  unFocus(), 10); 
+                }catch(e){
+                  console.log(e);
+                }
               return '';
             }
             
@@ -1058,12 +1106,12 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
                   quilleditor.format('clean');
                 }
               } else {
+                
                 quilleditor.format(format, value);
               }
             }catch(e){
             console.log(e);
             }
-            
               return '';
             } 
         </script>
@@ -1078,16 +1126,22 @@ class QuillEditorController {
   GlobalKey<QuillHtmlEditorState>? _editorKey;
   GlobalKey<ToolBarState>? _toolBarKey;
   StreamController<String>? _changeController;
+  StreamController<String>? _editorLoadedController;
 
   ///[isEnable] to enable/disable editor
   bool isEnable = true;
 
-  ///[QuillEditorController] controller constructor to generate editor, toolbar state keys
+  /// A controller for the Quill editor.
+  ///
+  /// The [QuillEditorController] class provides control over the Quill editor by managing its state
+  /// and providing methods to interact with the editor's content and toolbar.
+  ///
   QuillEditorController() {
     _editorKey =
         GlobalKey<QuillHtmlEditorState>(debugLabel: _getRandomString(15));
     _toolBarKey = GlobalKey<ToolBarState>(debugLabel: _getRandomString(15));
     _changeController = StreamController<String>();
+    _editorLoadedController = StreamController<String>();
   }
 
   /// to access toolbar key from toolbar widget
@@ -1108,7 +1162,12 @@ class QuillEditorController {
     }
   }
 
-  /// [getPlainText] method is used to get the plain text  from the editor
+  /// Retrieves the plain text content from the editor.
+  ///
+  /// The [getPlainText] method is used to extract the plain text content from the editor
+  /// as a [String]. This can be useful when you need to retrieve the editor's content
+  /// without any formatting or HTML tags.
+  ///
   Future<String> getPlainText() async {
     try {
       String? text = await _editorKey?.currentState?._getPlainTextFromEditor();
@@ -1122,48 +1181,74 @@ class QuillEditorController {
     }
   }
 
-  /// [setText] method is used to set the html text to the editor
-  /// it will override the existing text in the editor with the new one
+  /// Sets the HTML text content in the editor.
+  ///
+  /// The [setText] method is used to set the HTML text content in the editor,
+  /// overriding any existing text with the new content.
   Future setText(String text) async {
     return await _editorKey?.currentState?._setHtmlTextToEditor(htmlText: text);
   }
 
-  /// [setDelta] method is used to set delta to the editor
-  /// it will override the existing text in the editor with the new one
+  /// Sets the Delta object in the editor.
+  ///
+  /// The [setDelta] method is used to set the Delta object in the editor,
+  /// overriding any existing text with the new content.
   Future setDelta(Map delta) async {
     return await _editorKey?.currentState?._setDeltaToEditor(deltaMap: delta);
   }
 
-  /// [getDelta] method is used to get the delta map from editor
+  /// Retrieves the Delta map from the editor.
+  ///
+  /// The [getDelta] method is used to retrieve the Delta map from the editor
+  /// as a [Map]. The Delta map represents the content and formatting of the editor.
+  ///
   Future<Map> getDelta() async {
     var text = await _editorKey?.currentState?._getDeltaFromEditor();
     return jsonDecode(text.toString());
   }
 
-  /// [focus] method is used to request focus of the editor
+  /// Requests focus for the editor.
+  ///
+  /// The [focus] method is used to request focus for the editor,
+  /// bringing it into the active input state.
+  ///
   Future focus() async {
     return await _editorKey?.currentState?._requestFocus();
   }
 
-  /// [insertTable] method is used to insert table by row and column to the editor
+  /// Inserts a table into the editor.
+  ///
+  /// The [insertTable] method is used to insert a table into the editor
+  /// with the specified number of rows and columns.
+  ///
   Future insertTable(int row, int column) async {
     return await _editorKey?.currentState
         ?._insertTableToEditor(row: row, column: column);
   }
 
-  /// [modifyTable] method is used to add or remove, rows or columns of the table
+  /// Modifies an existing table in the editor.
+  ///
+  /// The [modifyTable] method is used to add or remove rows or columns of an existing table in the editor.
+  ///
   Future modifyTable(EditTableEnum type) async {
     return await _editorKey?.currentState?._modifyTable(type);
   }
 
-  /// [insertText] method is used to insert the html text to the editor
-  /// if the index is not passed, it will insert the text at cursor position
+  /// Inserts HTML text into the editor.
+  ///
+  /// The [insertText] method is used to insert HTML text into the editor.
+  /// If the [index] parameter is not specified, the text will be inserted at the current cursor position.
+  ///
   Future insertText(String text, {int? index}) async {
     return await _editorKey?.currentState
         ?._insertHtmlTextToEditor(htmlText: text, index: index);
   }
 
-  /// [replaceText] method is used to replace the selected text in the editor
+  /// Replaces the selected text in the editor.
+  ///
+  /// The [replaceText] method is used to replace the currently selected text in the editor
+  /// with the specified HTML text.
+  ///
   /// custom format for replaced text will come in future release
   Future replaceText(String text) async {
     return await _editorKey?.currentState?._replaceText(text);
@@ -1261,9 +1346,32 @@ class QuillEditorController {
     return;
   }
 
+  /// Callback function triggered when the editor is completely loaded.
+  ///
+  /// The [onEditorLoaded] callback function is called when the Quill editor is fully loaded and ready for user interaction.
+  /// It provides an opportunity to perform actions or initialize any additional functionality once the editor is loaded.
+  ///
+  void onEditorLoaded(VoidCallback callback) {
+    try {
+      if (_editorLoadedController != null &&
+          _editorLoadedController?.hasListener == false) {
+        _editorLoadedController?.stream.listen((event) {
+          callback();
+        });
+      }
+    } catch (e) {
+      if (!kReleaseMode) {
+        debugPrint(e.toString());
+      }
+    }
+
+    return;
+  }
+
   ///[dispose] dispose function to close the stream
   void dispose() {
     _changeController?.close();
+    _editorLoadedController?.close();
   }
 
   /// it is a regex method to remove the tags and replace them with empty space

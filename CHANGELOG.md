@@ -1,3 +1,15 @@
+### 2.2.2
+- Added a new feature: Loader Builder with `loadingBuilder` parameter in QuillHTMLEditor widget. 
+- Added a new feature: Editor Loaded Callback with `onEditorLoaded` callback function. 
+- Fixed bug #97 [BUG] Custom Links get changed to "about:blank"
+- Updated dependencies for improved compatibility and stability.
+- Fixed documentation
+
+### 2.2.1
+- Added a new feature: Loader Builder with `loadingBuilder` parameter in QuillHTMLEditor widget.
+- Added a new feature: Editor Loaded Callback with `onEditorLoaded` callback function.
+- Fixed bug #97 [BUG] Custom Links get changed to "about:blank"
+- Updated dependencies for improved compatibility and stability.
 
 ### 2.2.0
 - Removed the CDN dependency of the Scripts and Styling, bundled the Quill js and css files with the package, making the editor supporting offline mode
