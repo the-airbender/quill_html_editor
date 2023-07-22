@@ -87,6 +87,7 @@ class _InputUrlWidgetState extends State<InputUrlWidget> {
           await widget.controller.getSelectionRange().then((selectionModel) {
             showModalBottomSheet(
                 context: context,
+                isScrollControlled: true,
                 builder: (context) {
                   return _getTextFieldBytType(false, onDoneLastClicked,
                       onCloseLastClicked, selectionModel, context);
@@ -106,107 +107,111 @@ class _InputUrlWidgetState extends State<InputUrlWidget> {
       BuildContext context) {
     return WebViewAware(
       child: Form(
-        key: _formKey,
-        child: Container(
-            height: 60,
-            alignment: Alignment.center,
-            child: Row(
-              children: [
-                const SizedBox(
-                  width: 10,
-                ),
-                Flexible(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 4.0, vertical: 0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                          color: HexColor.fromHex('#E7F0FE'),
-                          borderRadius: BorderRadius.circular(10)),
-                      child: TextFormField(
-                        minLines: 1,
-                        onChanged: (v) {
-                          setState(() => _inputValue = v);
-                        },
-                        validator: (text) {
-                          if (text == null || text.isEmpty) {
-                            return 'Can\'t be empty';
-                          } else if (!hasValidUrl(text)) {
-                            return 'Enter valid URL';
-                          }
-                          return null;
-                        },
-                        decoration: const InputDecoration(
-                            contentPadding: EdgeInsets.symmetric(horizontal: 5),
-                            errorBorder: InputBorder.none,
-                            hintText: ' Type URL',
-                            alignLabelWithHint: true,
-                            hintStyle: TextStyle(fontSize: 10),
-                            border: InputBorder.none),
+          key: _formKey,
+          child: Padding(
+            padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom),
+            child: Container(
+                height: 60,
+                alignment: Alignment.center,
+                child: Row(
+                  children: [
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    Flexible(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 4.0, vertical: 0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: HexColor.fromHex('#E7F0FE'),
+                              borderRadius: BorderRadius.circular(10)),
+                          child: TextFormField(
+                            minLines: 1,
+                            onChanged: (v) {
+                              setState(() => _inputValue = v);
+                            },
+                            validator: (text) {
+                              if (text == null || text.isEmpty) {
+                                return 'Can\'t be empty';
+                              } else if (!hasValidUrl(text)) {
+                                return 'Enter valid URL';
+                              }
+                              return null;
+                            },
+                            decoration: const InputDecoration(
+                                contentPadding:
+                                    EdgeInsets.symmetric(horizontal: 5),
+                                errorBorder: InputBorder.none,
+                                hintText: ' Type URL',
+                                alignLabelWithHint: true,
+                                hintStyle: TextStyle(fontSize: 10),
+                                border: InputBorder.none),
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                ),
-                IconButton(
-                  onPressed: () {
-                    final now = DateTime.now().millisecondsSinceEpoch;
-                    if (now - onDoneLastClicked < 500) {
-                      return;
-                    }
-                    onDoneLastClicked = now;
-                    if (_formKey.currentState!.validate()) {
-                      if (selectionModel != null) {
-                        widget.controller.setSelectionRange(
-                            selectionModel.index ?? 0,
-                            selectionModel.length ?? 0);
-                      }
+                    IconButton(
+                      onPressed: () {
+                        final now = DateTime.now().millisecondsSinceEpoch;
+                        if (now - onDoneLastClicked < 500) {
+                          return;
+                        }
+                        onDoneLastClicked = now;
+                        if (_formKey.currentState!.validate()) {
+                          if (selectionModel != null) {
+                            widget.controller.setSelectionRange(
+                                selectionModel.index ?? 0,
+                                selectionModel.length ?? 0);
+                          }
 
-                      Future.delayed(const Duration(milliseconds: 10))
-                          .then((value) {
-                        widget.onSubmit(_inputValue ?? '');
+                          Future.delayed(const Duration(milliseconds: 10))
+                              .then((value) {
+                            widget.onSubmit(_inputValue ?? '');
+                            if (isToolTip) {
+                              _toolTipKey.currentState!.hideOverlay();
+                            } else {
+                              Navigator.pop(context);
+                            }
+                          });
+                        } else {
+                          _inputValue = null;
+                          setState(() {});
+                        }
+                      },
+                      icon: const Icon(
+                        Icons.check_rounded,
+                        color: Colors.green,
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        final now = DateTime.now().millisecondsSinceEpoch;
+                        if (now - onCloseLastClicked < 500) {
+                          return;
+                        }
+                        onCloseLastClicked = now;
                         if (isToolTip) {
                           _toolTipKey.currentState!.hideOverlay();
                         } else {
                           Navigator.pop(context);
                         }
-                      });
-                    } else {
-                      _inputValue = null;
-                      setState(() {});
-                    }
-                  },
-                  icon: const Icon(
-                    Icons.check_rounded,
-                    color: Colors.green,
-                  ),
-                ),
-                const SizedBox(
-                  width: 5,
-                ),
-                IconButton(
-                  onPressed: () {
-                    final now = DateTime.now().millisecondsSinceEpoch;
-                    if (now - onCloseLastClicked < 500) {
-                      return;
-                    }
-                    onCloseLastClicked = now;
-                    if (isToolTip) {
-                      _toolTipKey.currentState!.hideOverlay();
-                    } else {
-                      Navigator.pop(context);
-                    }
-                  },
-                  icon: const Icon(
-                    Icons.close_rounded,
-                    color: Colors.red,
-                  ),
-                ),
-                const SizedBox(
-                  width: 5,
-                ),
-              ],
-            )),
-      ),
+                      },
+                      icon: const Icon(
+                        Icons.close_rounded,
+                        color: Colors.red,
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                  ],
+                )),
+          )),
     );
   }
 }
