@@ -1128,13 +1128,13 @@ class ToolBarItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Tooltip(child: InkWell(
+    return Tooltip(message: style.name, child: InkWell(
       onTap: onTap,
       child: Padding(
         padding: padding,
         child: SizedBox(child: _getIconByStyle(style)),
       ),
-    ), message: style.name);
+    ));
   }
 
   Widget _getIconByStyle(ToolBarStyle style) {
