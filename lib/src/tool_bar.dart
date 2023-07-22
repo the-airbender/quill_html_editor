@@ -540,28 +540,28 @@ class ToolBarState extends State<ToolBar> {
     for (int i = 0; i < _toolbarList.length; i++) {
       var toolbarItem = _toolbarList[i];
       if (toolbarItem.style == ToolBarStyle.size) {
-        tempToolBarList.add(Padding(
+        tempToolBarList.add(Tooltip(message: toolbarItem.style.name, child: Padding(
           padding: _buttonPadding,
           child: _fontSizeDD(),
-        ));
+        )));
       } else if (toolbarItem.style == ToolBarStyle.align) {
-        tempToolBarList.add(Padding(
+        tempToolBarList.add(Tooltip(message: toolbarItem.style.name, child: Padding(
           padding: _buttonPadding,
           child: SizedBox(
               width: widget.iconSize,
               height: widget.iconSize,
               child: _alignDD()),
-        ));
+        )));
       } else if (toolbarItem.style == ToolBarStyle.color) {
-        tempToolBarList.add(Padding(
+        tempToolBarList.add(Tooltip(message: toolbarItem.style.name, child: Padding(
           padding: _buttonPadding,
           child: SizedBox(
               width: widget.iconSize,
               height: widget.iconSize,
               child: _getFontColorWidget(i)),
-        ));
+        )));
       } else if (toolbarItem.style == ToolBarStyle.video) {
-        tempToolBarList.add(Padding(
+        tempToolBarList.add(Tooltip(message: toolbarItem.style.name, child: Padding(
           padding: _buttonPadding,
           child: InputUrlWidget(
             iconWidget: SizedBox(
@@ -579,9 +579,9 @@ class ToolBarState extends State<ToolBar> {
               widget.controller.embedVideo(v);
             },
           ),
-        ));
+        )));
       } else if (toolbarItem.style == ToolBarStyle.link) {
-        tempToolBarList.add(Padding(
+        tempToolBarList.add(Tooltip(message: toolbarItem.style.name, child: Padding(
           padding: _buttonPadding,
           child: InputUrlWidget(
             iconWidget: Icon(
@@ -596,53 +596,53 @@ class ToolBarState extends State<ToolBar> {
               widget.controller.setFormat(format: 'link', value: v);
             },
           ),
-        ));
+        )));
       } else if (toolbarItem.style == ToolBarStyle.background) {
-        tempToolBarList.add(Padding(
+        tempToolBarList.add(Tooltip(message: toolbarItem.style.name, child: Padding(
           padding: _buttonPadding,
           child: SizedBox(
               width: widget.iconSize,
               height: widget.iconSize,
               child: _getFontBackgroundColorWidget(i)),
-        ));
+        )));
       } else if (toolbarItem.style == ToolBarStyle.addTable) {
-        tempToolBarList.add(Padding(
+        tempToolBarList.add(Tooltip(message: toolbarItem.style.name, child: Padding(
           padding: _buttonPadding,
           child: SizedBox(
               width: widget.iconSize,
               height: widget.iconSize,
               child: _getTablePickerWidget(i, context)),
-        ));
+        )));
       } else if (toolbarItem.style == ToolBarStyle.editTable) {
-        tempToolBarList.add(EditTableDropDown(
+        tempToolBarList.add(Tooltip(message: toolbarItem.style.name, child: EditTableDropDown(
           padding: _buttonPadding,
           iconColor: widget.iconColor!,
           iconSize: widget.iconSize!,
           dropDownColor: widget.toolBarColor!,
           onOptionSelected: (type) => widget.controller.modifyTable(type),
-        ));
+        )));
       } else if (toolbarItem.style == ToolBarStyle.separator) {
         if (widget.direction == Axis.horizontal) {
-          tempToolBarList.add(Padding(
+          tempToolBarList.add(Tooltip(message: toolbarItem.style.name, child: Padding(
             padding: _buttonPadding,
             child: Container(
               height: widget.iconSize,
               width: 0.8,
               color: widget.iconColor,
             ),
-          ));
+          )));
         } else {
-          tempToolBarList.add(Padding(
+          tempToolBarList.add(Tooltip(message: toolbarItem.style.name, child: Padding(
             padding: _buttonPadding,
             child: Container(
               width: widget.iconSize,
               height: 0.8,
               color: widget.iconColor,
             ),
-          ));
+          )));
         }
       } else {
-        tempToolBarList.add(ToolBarItem(
+        tempToolBarList.add(Tooltip(message: toolbarItem.style.name, child: ToolBarItem(
           activeIconColor: widget.activeIconColor!,
           iconColor: widget.iconColor!,
           iconSize: widget.iconSize!,
@@ -698,7 +698,7 @@ class ToolBarState extends State<ToolBar> {
             }
             setState(() {});
           },
-        ));
+        )));
       }
     }
     if (widget.customButtons != null && widget.customButtons!.isNotEmpty) {
@@ -1128,13 +1128,13 @@ class ToolBarItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    return Tooltip(child: InkWell(
       onTap: onTap,
       child: Padding(
         padding: padding,
         child: SizedBox(child: _getIconByStyle(style)),
       ),
-    );
+    ), message: style.name);
   }
 
   Widget _getIconByStyle(ToolBarStyle style) {
@@ -1228,110 +1228,113 @@ class ToolBarItem extends StatelessWidget {
 
 enum ToolBarStyle {
   ///[bold] sets bold format
-  bold,
+  bold("Bold"),
 
   /// [italic] sets italic format
 
-  italic,
+  italic("Italic"),
 
   /// [underline] sets underline to text
 
-  underline,
+  underline("Underline"),
 
   /// [strike] makes the selected text strikethrough
 
-  strike,
+  strike("Strikethrough"),
 
   /// [blockQuote] converts text to quote
 
-  blockQuote,
+  blockQuote("Block Quote"),
 
   /// [codeBlock] makes selected text code block
 
-  codeBlock,
+  codeBlock("Code Block"),
 
   /// [indentMinus] decreases the indent by given value
 
-  indentMinus,
+  indentMinus("Decrease the indent"),
 
   /// [indentAdd] increases the indent by given value
 
-  indentAdd,
+  indentAdd("Increase the indent"),
 
   /// [directionRtl] sets the direction of text from Right to Left
 
-  directionRtl,
+  directionRtl("Right to Left"),
 
   /// [directionLtr] sets the direction of text from Left to Right
 
-  directionLtr,
+  directionLtr("Left to Right"),
 
   /// [headerOne] makes the text H1
 
-  headerOne,
+  headerOne("Header H1"),
 
   /// [headerTwo] makes the text H2
 
-  headerTwo,
+  headerTwo("Header H2"),
 
   /// [color] sets font color
 
-  color,
+  color("Font color"),
 
   /// [background] sets background color to text
 
-  background,
+  background("Background color"),
 
   /// [align] adds alignment to text, left, right, center, justify
 
-  align,
+  align("Alignment"),
 
   /// [listOrdered] adds numbered/alphabets list to the text
 
-  listOrdered,
+  listOrdered("Bullet numbers"),
 
   /// [listBullet] makes text as bullet points
 
-  listBullet,
+  listBullet("Bullet points"),
 
   /// [size] sets fontSize of the text
 
-  size,
+  size("Font Size"),
 
   /// [link] sets hyperlink to selected text
 
-  link,
+  link("Hyperlink"),
 
   /// [image] embeds image to the editor
 
-  image,
+  image("Insert image"),
 
   /// [video] embeds Youtube, Vimeo or other network videos to editor
 
-  video,
+  video("Insert Youtube/Url"),
 
   /// [clean] clears all formats of editor, (for internal use case)
-  clean,
+  clean("Clears all formats"),
 
   /// [undo] to undo the editor change
-  undo,
+  undo("Undo"),
 
-  /// [redo] to undo the editor change
-  redo,
+  /// [redo] to redo the editor change
+  redo("Redo"),
 
   /// [clearHistory] to undo the editor change
-  clearHistory,
+  clearHistory("Clear History"),
 
   /// [addTable] to add table to the editor
-  addTable,
+  addTable("Add a table"),
 
   /// [editTable] to edit rows, columns or delete table
-  editTable,
+  editTable("Edit table"),
 
   ///[separator] to add divider between toolbar items
-  separator
+  separator("separator");
 
   ///font - later releases
+  
+  const ToolBarStyle(this.name);
+  final String name;
 }
 
 /***
