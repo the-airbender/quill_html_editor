@@ -2,6 +2,7 @@ import 'package:http/http.dart' as http;
 
 /// Proxy which will be used to fetch page sources in the [SourceType.urlBypass] mode.
 abstract class BypassProxy {
+  /// Creates a new instance of the [BypassProxy].
   const BypassProxy();
 
   /// Builds the proxied url
@@ -16,6 +17,8 @@ abstract class BypassProxy {
     CodeTabsBypassProxy(),
     WeCorsAnyWhereProxy(),
   ];
+
+  /// [fetchPageSource] Asynchronously fetches the page source from the specified URL using the given HTTP method.
 
   Future<String> fetchPageSource({
     required String method,
@@ -40,6 +43,7 @@ abstract class BypassProxy {
 
 /// cors.bridged.cc proxy
 class BridgedBypassProxy extends BypassProxy {
+  /// Creates a new instance of the [BridgedBypassProxy].
   const BridgedBypassProxy();
 
   @override
@@ -55,6 +59,7 @@ class BridgedBypassProxy extends BypassProxy {
 
 /// api.codetabs.com proxy
 class CodeTabsBypassProxy extends BypassProxy {
+  /// Creates a new instance of the [CodeTabsBypassProxy].
   const CodeTabsBypassProxy();
 
   @override
@@ -70,6 +75,7 @@ class CodeTabsBypassProxy extends BypassProxy {
 
 /// we-cors-anywhere.herokuapp.com proxy
 class WeCorsAnyWhereProxy extends BypassProxy {
+  /// Creates a new instance of the [WeCorsAnyWhereProxy].
   const WeCorsAnyWhereProxy();
 
   @override

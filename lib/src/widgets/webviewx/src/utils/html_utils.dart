@@ -8,9 +8,16 @@ import 'package:uuid/uuid.dart';
 
 /// Specifies where to embed ("burn") the javascript inside the HTML source
 enum EmbedPosition {
+  /// Embed the JavaScript code just below the opening <body> tag in the HTML source.
   belowBodyOpenTag,
+
+  /// Embed the JavaScript code just above the closing </body> tag in the HTML source.
   aboveBodyCloseTag,
+
+  /// Embed the JavaScript code just below the opening <head> tag in the HTML source.
   belowHeadOpenTag,
+
+  /// Embed the JavaScript code just above the closing </head> tag in the HTML source.
   aboveHeadCloseTag,
 }
 

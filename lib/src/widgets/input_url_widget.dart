@@ -4,7 +4,6 @@ import 'package:quill_html_editor/src/widgets/webviewx/src/webviewx_plus.dart';
 
 import '../../quill_html_editor.dart';
 import '../utils/hex_color.dart';
-import '../utils/url_validator.dart';
 import 'el_tooltip/el_tooltip.dart';
 
 ///[InputUrlWidget] class to show widget that capture video/hyperlink urls
@@ -135,8 +134,6 @@ class _InputUrlWidgetState extends State<InputUrlWidget> {
                             validator: (text) {
                               if (text == null || text.isEmpty) {
                                 return 'Can\'t be empty';
-                              } else if (!hasValidUrl(text)) {
-                                return 'Enter valid URL';
                               }
                               return null;
                             },

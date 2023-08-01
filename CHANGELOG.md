@@ -1,3 +1,13 @@
+### 2.2.3
+- Added ToolTip to all toolbar formats. Thanks to **anees4ever**
+- Fix [Bug] Make sure the url input above keyboard #102, Thanks to **ChauCM**
+- Fixed [Bug] Avoid focus on `setText`, `setDelta`
+- Fixed [Bug] editor view unwanted reloads on change
+- Fixed [Bug] format options not applied on cursor selection moved away from editor.
+- Fixed [Bug] hyperlink input url, will accept all formats #100
+- Updated dependencies
+- Fixed documentation
+
 ### 2.2.2
 - Added a new feature: Loader Builder with `loadingBuilder` parameter in QuillHTMLEditor widget. 
 - Added a new feature: Editor Loaded Callback with `onEditorLoaded` callback function. 
