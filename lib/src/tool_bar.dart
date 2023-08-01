@@ -540,165 +540,198 @@ class ToolBarState extends State<ToolBar> {
     for (int i = 0; i < _toolbarList.length; i++) {
       var toolbarItem = _toolbarList[i];
       if (toolbarItem.style == ToolBarStyle.size) {
-        tempToolBarList.add(Tooltip(message: toolbarItem.style.name, child: Padding(
-          padding: _buttonPadding,
-          child: _fontSizeDD(),
-        )));
+        tempToolBarList.add(Tooltip(
+            waitDuration: const Duration(milliseconds: 800),
+            message: toolbarItem.style.name,
+            child: Padding(
+              padding: _buttonPadding,
+              child: _fontSizeDD(),
+            )));
       } else if (toolbarItem.style == ToolBarStyle.align) {
-        tempToolBarList.add(Tooltip(message: toolbarItem.style.name, child: Padding(
-          padding: _buttonPadding,
-          child: SizedBox(
-              width: widget.iconSize,
-              height: widget.iconSize,
-              child: _alignDD()),
-        )));
+        tempToolBarList.add(Tooltip(
+            waitDuration: const Duration(milliseconds: 800),
+            message: toolbarItem.style.name,
+            child: Padding(
+              padding: _buttonPadding,
+              child: SizedBox(
+                  width: widget.iconSize,
+                  height: widget.iconSize,
+                  child: _alignDD()),
+            )));
       } else if (toolbarItem.style == ToolBarStyle.color) {
-        tempToolBarList.add(Tooltip(message: toolbarItem.style.name, child: Padding(
-          padding: _buttonPadding,
-          child: SizedBox(
-              width: widget.iconSize,
-              height: widget.iconSize,
-              child: _getFontColorWidget(i)),
-        )));
+        tempToolBarList.add(Tooltip(
+            waitDuration: const Duration(milliseconds: 800),
+            message: toolbarItem.style.name,
+            child: Padding(
+              padding: _buttonPadding,
+              child: SizedBox(
+                  width: widget.iconSize,
+                  height: widget.iconSize,
+                  child: _getFontColorWidget(i)),
+            )));
       } else if (toolbarItem.style == ToolBarStyle.video) {
-        tempToolBarList.add(Tooltip(message: toolbarItem.style.name, child: Padding(
-          padding: _buttonPadding,
-          child: InputUrlWidget(
-            iconWidget: SizedBox(
-              width: widget.iconSize! - 2,
-              height: widget.iconSize! - 2,
-              child: Image.asset(
-                ImageConstant.kiCameraRollPng,
-                color: widget.iconColor,
+        tempToolBarList.add(Tooltip(
+            waitDuration: const Duration(milliseconds: 800),
+            message: toolbarItem.style.name,
+            child: Padding(
+              padding: _buttonPadding,
+              child: InputUrlWidget(
+                iconWidget: SizedBox(
+                  width: widget.iconSize! - 2,
+                  height: widget.iconSize! - 2,
+                  child: Image.asset(
+                    ImageConstant.kiCameraRollPng,
+                    color: widget.iconColor,
+                  ),
+                ),
+                isActive: _formatMap['video'] != null,
+                controller: widget.controller,
+                type: UrlInputType.video,
+                onSubmit: (v) {
+                  widget.controller.embedVideo(v);
+                },
               ),
-            ),
-            isActive: _formatMap['video'] != null,
-            controller: widget.controller,
-            type: UrlInputType.video,
-            onSubmit: (v) {
-              widget.controller.embedVideo(v);
-            },
-          ),
-        )));
+            )));
       } else if (toolbarItem.style == ToolBarStyle.link) {
-        tempToolBarList.add(Tooltip(message: toolbarItem.style.name, child: Padding(
-          padding: _buttonPadding,
-          child: InputUrlWidget(
-            iconWidget: Icon(
-              Icons.link,
-              color: widget.iconColor,
-              size: widget.iconSize,
-            ),
-            isActive: _formatMap['link'] != null,
-            controller: widget.controller,
-            type: UrlInputType.hyperlink,
-            onSubmit: (v) {
-              widget.controller.setFormat(format: 'link', value: v);
-            },
-          ),
-        )));
+        tempToolBarList.add(Tooltip(
+            waitDuration: const Duration(milliseconds: 800),
+            message: toolbarItem.style.name,
+            child: Padding(
+              padding: _buttonPadding,
+              child: InputUrlWidget(
+                iconWidget: Icon(
+                  Icons.link,
+                  color: widget.iconColor,
+                  size: widget.iconSize,
+                ),
+                isActive: _formatMap['link'] != null,
+                controller: widget.controller,
+                type: UrlInputType.hyperlink,
+                onSubmit: (v) {
+                  widget.controller.setFormat(format: 'link', value: v);
+                },
+              ),
+            )));
       } else if (toolbarItem.style == ToolBarStyle.background) {
-        tempToolBarList.add(Tooltip(message: toolbarItem.style.name, child: Padding(
-          padding: _buttonPadding,
-          child: SizedBox(
-              width: widget.iconSize,
-              height: widget.iconSize,
-              child: _getFontBackgroundColorWidget(i)),
-        )));
+        tempToolBarList.add(Tooltip(
+            waitDuration: const Duration(milliseconds: 800),
+            message: toolbarItem.style.name,
+            child: Padding(
+              padding: _buttonPadding,
+              child: SizedBox(
+                  width: widget.iconSize,
+                  height: widget.iconSize,
+                  child: _getFontBackgroundColorWidget(i)),
+            )));
       } else if (toolbarItem.style == ToolBarStyle.addTable) {
-        tempToolBarList.add(Tooltip(message: toolbarItem.style.name, child: Padding(
-          padding: _buttonPadding,
-          child: SizedBox(
-              width: widget.iconSize,
-              height: widget.iconSize,
-              child: _getTablePickerWidget(i, context)),
-        )));
+        tempToolBarList.add(Tooltip(
+            waitDuration: const Duration(milliseconds: 800),
+            message: toolbarItem.style.name,
+            child: Padding(
+              padding: _buttonPadding,
+              child: SizedBox(
+                  width: widget.iconSize,
+                  height: widget.iconSize,
+                  child: _getTablePickerWidget(i, context)),
+            )));
       } else if (toolbarItem.style == ToolBarStyle.editTable) {
-        tempToolBarList.add(Tooltip(message: toolbarItem.style.name, child: EditTableDropDown(
-          padding: _buttonPadding,
-          iconColor: widget.iconColor!,
-          iconSize: widget.iconSize!,
-          dropDownColor: widget.toolBarColor!,
-          onOptionSelected: (type) => widget.controller.modifyTable(type),
-        )));
+        tempToolBarList.add(Tooltip(
+            waitDuration: const Duration(milliseconds: 800),
+            message: toolbarItem.style.name,
+            child: EditTableDropDown(
+              padding: _buttonPadding,
+              iconColor: widget.iconColor!,
+              iconSize: widget.iconSize!,
+              dropDownColor: widget.toolBarColor!,
+              onOptionSelected: (type) => widget.controller.modifyTable(type),
+            )));
       } else if (toolbarItem.style == ToolBarStyle.separator) {
         if (widget.direction == Axis.horizontal) {
-          tempToolBarList.add(Tooltip(message: toolbarItem.style.name, child: Padding(
-            padding: _buttonPadding,
-            child: Container(
-              height: widget.iconSize,
-              width: 0.8,
-              color: widget.iconColor,
-            ),
-          )));
+          tempToolBarList.add(Tooltip(
+              waitDuration: const Duration(milliseconds: 800),
+              message: toolbarItem.style.name,
+              child: Padding(
+                padding: _buttonPadding,
+                child: Container(
+                  height: widget.iconSize,
+                  width: 0.8,
+                  color: widget.iconColor,
+                ),
+              )));
         } else {
-          tempToolBarList.add(Tooltip(message: toolbarItem.style.name, child: Padding(
-            padding: _buttonPadding,
-            child: Container(
-              width: widget.iconSize,
-              height: 0.8,
-              color: widget.iconColor,
-            ),
-          )));
+          tempToolBarList.add(Tooltip(
+              waitDuration: const Duration(milliseconds: 800),
+              message: toolbarItem.style.name,
+              child: Padding(
+                padding: _buttonPadding,
+                child: Container(
+                  width: widget.iconSize,
+                  height: 0.8,
+                  color: widget.iconColor,
+                ),
+              )));
         }
       } else {
-        tempToolBarList.add(Tooltip(message: toolbarItem.style.name, child: ToolBarItem(
-          activeIconColor: widget.activeIconColor!,
-          iconColor: widget.iconColor!,
-          iconSize: widget.iconSize!,
-          padding: _buttonPadding,
-          style: toolbarItem.style,
-          isActive: toolbarItem.isActive,
-          onTap: () async {
-            if (toolbarItem.style == ToolBarStyle.clearHistory) {
-              widget.controller.clearHistory();
-            } else if (toolbarItem.style == ToolBarStyle.undo) {
-              widget.controller.undo();
-            } else if (toolbarItem.style == ToolBarStyle.redo) {
-              widget.controller.redo();
-            } else if (toolbarItem.style == ToolBarStyle.image) {
-              await ImageSelector(onImagePicked: (value) {
-                _formatMap['image'] = value;
-                widget.controller.embedImage(value);
-              }).pickFiles();
-            } else if (toolbarItem.style == ToolBarStyle.clean) {
-              List<ToolBarItem> tempList = [];
-              for (var value in _toolbarList) {
-                value = value.copyWith(isActive: false);
-                tempList.add(value);
-              }
-              _toolbarList = tempList;
-            } else if (toolbarItem.style == ToolBarStyle.headerOne) {
-              for (var element in _toolbarList) {
-                if (element.style == ToolBarStyle.headerTwo) {
-                  element = element.copyWith(isActive: false);
+        tempToolBarList.add(Tooltip(
+            waitDuration: const Duration(milliseconds: 800),
+            message: toolbarItem.style.name,
+            child: ToolBarItem(
+              activeIconColor: widget.activeIconColor!,
+              iconColor: widget.iconColor!,
+              iconSize: widget.iconSize!,
+              padding: _buttonPadding,
+              style: toolbarItem.style,
+              isActive: toolbarItem.isActive,
+              onTap: () async {
+                if (toolbarItem.style == ToolBarStyle.clearHistory) {
+                  widget.controller.clearHistory();
+                } else if (toolbarItem.style == ToolBarStyle.undo) {
+                  widget.controller.undo();
+                } else if (toolbarItem.style == ToolBarStyle.redo) {
+                  widget.controller.redo();
+                } else if (toolbarItem.style == ToolBarStyle.image) {
+                  await ImageSelector(onImagePicked: (value) {
+                    _formatMap['image'] = value;
+                    widget.controller.embedImage(value);
+                  }).pickFiles();
+                } else if (toolbarItem.style == ToolBarStyle.clean) {
+                  List<ToolBarItem> tempList = [];
+                  for (var value in _toolbarList) {
+                    value = value.copyWith(isActive: false);
+                    tempList.add(value);
+                  }
+                  _toolbarList = tempList;
+                } else if (toolbarItem.style == ToolBarStyle.headerOne) {
+                  for (var element in _toolbarList) {
+                    if (element.style == ToolBarStyle.headerTwo) {
+                      element = element.copyWith(isActive: false);
+                    }
+                  }
+                  toolbarItem =
+                      toolbarItem.copyWith(isActive: !toolbarItem.isActive);
+                } else if (toolbarItem.style == ToolBarStyle.headerTwo) {
+                  for (var element in _toolbarList) {
+                    if (element.style == ToolBarStyle.headerOne) {
+                      element = element.copyWith(isActive: false);
+                    }
+                  }
+                  toolbarItem =
+                      toolbarItem.copyWith(isActive: !toolbarItem.isActive);
+                } else {
+                  toolbarItem =
+                      toolbarItem.copyWith(isActive: !toolbarItem.isActive);
                 }
-              }
-              toolbarItem =
-                  toolbarItem.copyWith(isActive: !toolbarItem.isActive);
-            } else if (toolbarItem.style == ToolBarStyle.headerTwo) {
-              for (var element in _toolbarList) {
-                if (element.style == ToolBarStyle.headerOne) {
-                  element = element.copyWith(isActive: false);
-                }
-              }
-              toolbarItem =
-                  toolbarItem.copyWith(isActive: !toolbarItem.isActive);
-            } else {
-              toolbarItem =
-                  toolbarItem.copyWith(isActive: !toolbarItem.isActive);
-            }
-            Map<String, dynamic> getFormat =
-                _getFormatByStyle(toolbarItem.style, toolbarItem.isActive);
-            widget.controller.setFormat(
-                format: getFormat['format'], value: getFormat['value']);
+                Map<String, dynamic> getFormat =
+                    _getFormatByStyle(toolbarItem.style, toolbarItem.isActive);
+                widget.controller.setFormat(
+                    format: getFormat['format'], value: getFormat['value']);
 
-            if (_formatMap['direction'] == 'rtl') {
-              widget.controller.setFormat(format: 'align', value: 'right');
-            }
-            setState(() {});
-          },
-        )));
+                if (_formatMap['direction'] == 'rtl') {
+                  widget.controller.setFormat(format: 'align', value: 'right');
+                }
+                setState(() {});
+              },
+            )));
       }
     }
     if (widget.customButtons != null && widget.customButtons!.isNotEmpty) {
@@ -1128,13 +1161,16 @@ class ToolBarItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Tooltip(message: style.name, child: InkWell(
-      onTap: onTap,
-      child: Padding(
-        padding: padding,
-        child: SizedBox(child: _getIconByStyle(style)),
-      ),
-    ));
+    return Tooltip(
+        waitDuration: const Duration(milliseconds: 800),
+        message: style.name,
+        child: InkWell(
+          onTap: onTap,
+          child: Padding(
+            padding: padding,
+            child: SizedBox(child: _getIconByStyle(style)),
+          ),
+        ));
   }
 
   Widget _getIconByStyle(ToolBarStyle style) {
@@ -1332,8 +1368,11 @@ enum ToolBarStyle {
   separator("separator");
 
   ///font - later releases
-  
+
+  /// Represents the style of a toolbar in the editor.
   const ToolBarStyle(this.name);
+
+  /// The `name` property specifies the name of the toolbar.
   final String name;
 }
 

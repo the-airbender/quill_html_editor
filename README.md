@@ -66,46 +66,45 @@ Define a **QuillEditorController** to access the editor methods, pass the contro
 ```
 ```dart
      QuillHtmlEditor(
-text: "<h1>Hello</h1>This is a quill html editor example 😊",
-hintText: 'Hint text goes here',
-controller: controller,
-isEnabled: true,
-minHeight: 300,
-textStyle: _editorTextStyle,
-hintTextStyle: _hintTextStyle,
-hintTextAlign: TextAlign.start,
-padding: const EdgeInsets.only(left: 10, top: 5),
-hintTextPadding: EdgeInsets.zero,
-backgroundColor: _backgroundColor,
-onFocusChanged: (hasFocus) => debugPrint('has focus $hasFocus'),
-onTextChanged: (text) => debugPrint('widget text change $text'),
-onEditorCreated: () => debugPrint('Editor has been loaded'),
-onEditorResized: (height) =>
-debugPrint('Editor resized $height'),
-onSelectionChanged: (sel) =>
-debugPrint('${sel.index},${sel.length}'),
-loadingBuilder: (context) {
-return const Center(
-child: CircularProgressIndicator(
-strokeWidth: 0.4,
-));
-},
-),
+        text: "<h1>Hello</h1>This is a quill html editor example 😊",
+        hintText: 'Hint text goes here',
+        controller: controller,
+        isEnabled: true,
+        minHeight: 300,
+        textStyle: _editorTextStyle,
+        hintTextStyle: _hintTextStyle,
+        hintTextAlign: TextAlign.start,
+        padding: const EdgeInsets.only(left: 10, top: 5),
+        hintTextPadding: EdgeInsets.zero,
+        backgroundColor: _backgroundColor,
+        onFocusChanged: (hasFocus) => debugPrint('has focus $hasFocus'),
+        onTextChanged: (text) => debugPrint('widget text change $text'),
+        onEditorCreated: () => debugPrint('Editor has been loaded'),
+        onEditorResized: (height) =>
+        debugPrint('Editor resized $height'),
+        onSelectionChanged: (sel) =>
+        debugPrint('${sel.index},${sel.length}'),
+        loadingBuilder: (context) {
+            return const Center(
+            child: CircularProgressIndicator(
+            strokeWidth: 0.4,
+            ));},
+      ),
 ```
 
 Define **ToolBar** widget and pass the same **controller** created for **QuillHtmlEditor**
 ```dart
    ToolBar(
-toolBarColor: Colors.cyan.shade50,
-activeIconColor: Colors.green,
-padding: const EdgeInsets.all(8),
-iconSize: 20,
-controller: controller,
-customButtons: [
-InkWell(onTap: () {}, child: const Icon(Icons.favorite)),
-InkWell(onTap: () {}, child: const Icon(Icons.add_circle)),
-],
-)
+     toolBarColor: Colors.cyan.shade50,
+     activeIconColor: Colors.green,
+     padding: const EdgeInsets.all(8),
+     iconSize: 20,
+     controller: controller,
+     customButtons: [
+     InkWell(onTap: () {}, child: const Icon(Icons.favorite)),
+     InkWell(onTap: () {}, child: const Icon(Icons.add_circle)),
+     ],
+   )
 ```
 
 ## ToolBar Scroll Configuration
@@ -115,11 +114,11 @@ The `ToolBar.scroll` widget allows you to display the toolbar buttons in a singl
 To change the direction and display the buttons in a single column, you can provide the `direction` parameter as `Axis.vertical`. Here's an example:
 
 ```dart
-ToolBar.scroll(
-toolBarColor: _toolbarColor,
-controller: controller,
-direction: Axis.vertical,
-),
+    ToolBar.scroll(
+         toolBarColor: _toolbarColor,
+         controller: controller,
+         direction: Axis.vertical,
+    ),
 ```
 
 In the above example, the `ToolBar.scroll` widget is used to display the toolbar buttons in a vertical arrangement.
@@ -138,10 +137,10 @@ final customToolBarList = [
   ToolBarStyle.color,
 ];
 
-ToolBar(
-controller: controller,
-toolBarConfig: customToolBarList,
-),
+    ToolBar(
+      controller: controller,
+      toolBarConfig: customToolBarList,
+    ),
 ```
 
 In the above example, only the "Bold," "Italic," "Align," and "Color" buttons will be displayed in the toolbar.
@@ -154,10 +153,10 @@ final customButtons = [
   InkWell(onTap: () {}, child: const Icon(Icons.add_circle)),
 ];
 
-ToolBar(
-controller: controller,
-customButtons: customButtons,
-),
+    ToolBar(
+      controller: controller,
+      customButtons: customButtons,
+    ),
 ```
 
 In the above example, custom buttons with heart and add circle icons are added to the toolbar.

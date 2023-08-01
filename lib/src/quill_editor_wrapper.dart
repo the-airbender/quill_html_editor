@@ -162,6 +162,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
     _encodedStyle = Uri.encodeFull(_fontFamily);
     isEnabled = widget.isEnabled;
     _currentHeight = widget.minHeight;
+
     super.initState();
   }
 
@@ -207,7 +208,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
     _initialContent = _getQuillPage(width: width);
     return WebViewX(
       key: ValueKey(widget.controller.toolBarKey.hashCode.toString()),
-      initialContent: _initialContent,
+      initialContent:   _initialContent,
       initialSourceType: SourceType.html,
       height: _currentHeight,
       ignoreAllGestures: false,
@@ -229,11 +230,11 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
         DartCallback(
             name: 'EditorResizeCallback',
             callBack: (height) {
+              if(_currentHeight ==  double.tryParse(height.toString())){
+                return;
+              }
               try {
-                _currentHeight = double.tryParse(height.toString()) ?? 0;
-                if (_currentHeight < widget.minHeight) {
-                  _currentHeight = widget.minHeight;
-                }
+                _currentHeight = double.tryParse(height.toString()) ?? widget.minHeight;
               } catch (e) {
                 _currentHeight = widget.minHeight;
               } finally {
@@ -241,6 +242,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
                 if (widget.onEditorResized != null) {
                   widget.onEditorResized!(_currentHeight);
                 }
+
               }
             }),
         DartCallback(
@@ -334,7 +336,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
         printDebugInfo: false,
       ),
       mobileSpecificParams: const MobileSpecificParams(
-        androidEnableHybridComposition: false,
+        androidEnableHybridComposition: true,
       ),
     );
   }
@@ -534,6 +536,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
           padding-top:${widget.padding?.top ?? '0'}px;
           padding-bottom:${widget.padding?.bottom ?? '0'}px;
           min-height:100%;
+        
           contenteditable: true !important;
           data-gramm: false !important;
          
@@ -566,10 +569,15 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
         overflow-y: scroll  !important;
           min-height: ${widget.minHeight}px !important;
           -webkit-user-select: text !important;
+           scrollbar-width: none !important; 
          } 
          #scroll-container::-webkit-scrollbar {
             display: none !important; /* For Chrome, Safari, and Opera */
           }
+         ::-webkit-scrollbar {
+          width: 0;  /* Remove scrollbar space */
+          background: transparent;  /* Optional: just make scrollbar invisible */
+          } 
         </style>
    
         </head>
@@ -585,7 +593,35 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
             })
             resizeObserver.observe(document.body)
           </script>
-        
+         <script>
+          let isTextSelectionInProgress = false;
+
+          // Event handler for text selection start
+          function handleTextSelectionStart() {
+              isTextSelectionInProgress = true;
+             // console.log("Text selection started.");
+          }
+  
+          // Event handler for text selection end
+          function handleTextSelectionEnd() {
+              isTextSelectionInProgress = false;
+             // console.log("Text selection ended.");
+          }
+  
+          // Check if text is being selected while dragging the mouse
+          function handleMouseMove(event) {
+              if (isTextSelectionInProgress) {
+                  // Do something when the text is being selected (dragging the mouse while text is selected)
+                  window.getSelection();
+              }
+          }
+  
+          // Attach event listeners
+          document.addEventListener("mousedown", handleTextSelectionStart);
+          document.addEventListener("mouseup", handleTextSelectionEnd);
+          document.addEventListener("mousemove", handleMouseMove);
+         
+         </script> 
         <!-- Create the toolbar container -->
         <div id="scrolling-container">
         <div id="toolbar-container"></div>
@@ -639,7 +675,8 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
                       } else {
                        quilleditor.deleteText(range.index, range.length);
                        quilleditor.insertText(range.index, replaceText);
-                       /// replace text with format will be coming in future release
+                      
+                      /// replace text with format will be coming in future release
                       /// quilleditor.insertText(range.index, replaceText, JSON.parse(format));
                       }
                     } else {
@@ -991,28 +1028,26 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
               return '';
             }
             
-          async  function setHtmlText(htmlString) {
+            function setHtmlText(htmlString) {
             try{
-             await quilleditor.clipboard.dangerouslyPasteHTML(htmlString);   
-              //commented for future improvement of selection
-              // setTimeout(() => quilleditor.setSelection(quilleditor.getLength() + 100, 0), 30);
-              setTimeout(() =>  unFocus(), 10);  
-              }catch(e){
-                console.log(e);
-              }
+               quilleditor.enable(false);
+               quilleditor.clipboard.dangerouslyPasteHTML(htmlString);   
+            }catch(e){
+               console.log(e);
+            }
+             setTimeout(() =>   quilleditor.enable(true), 10);  
               return '';
             }
             
             function setDeltaContent(deltaMap) {   
               try{
-               const obj = JSON.parse(deltaMap);
-                quilleditor.setContents(obj);
-                 //commented for future improvement of selection
-                //setTimeout(() => quilleditor.setSelection(quilleditor.getSelection(true).length + 10, 0), 10);
-                setTimeout(() =>  unFocus(), 10); 
+                  quilleditor.enable(false);
+                  const obj = JSON.parse(deltaMap);
+                  quilleditor.setContents(obj);
                 }catch(e){
                   console.log(e);
                 }
+               setTimeout(() =>   quilleditor.enable(true), 10);  
               return '';
             }
             
