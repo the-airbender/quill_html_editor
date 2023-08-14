@@ -38,8 +38,10 @@ class QuillHtmlEditor extends StatefulWidget {
     this.hintTextPadding = EdgeInsets.zero,
     this.hintTextAlign = TextAlign.start,
     this.onEditorResized,
+    this.onEditingComplete,
     this.ensureVisible = false,
     this.loadingBuilder,
+    this.inputAction = InputAction.newline,
     this.textStyle = const TextStyle(
       fontStyle: FontStyle.normal,
       fontSize: 20.0,
@@ -74,6 +76,9 @@ class QuillHtmlEditor extends StatefulWidget {
 
   /// [onTextChanged] callback function that triggers on text changed
   final Function(String)? onTextChanged;
+
+  /// [onEditingComplete] callback function that triggers on editing completed
+  final Function(String)? onEditingComplete;
 
   ///[backgroundColor] to set the background color of the editor
   final Color backgroundColor;
@@ -131,6 +136,12 @@ class QuillHtmlEditor extends StatefulWidget {
   /// that indicates the ongoing operation.
   final LoadingBuilder? loadingBuilder;
 
+  /// Represents an optional input action within a specific context.
+  ///
+  /// An instance of this class holds an optional [InputAction] value, which can be either
+  /// [InputAction.newline] indicating a line break or [InputAction.send] indicating
+  /// that the input content should be sent or submitted.
+  final InputAction? inputAction;
   @override
   QuillHtmlEditorState createState() => QuillHtmlEditorState();
 }
@@ -153,7 +164,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
   late Future _loadScripts;
   late String _fontFamily;
   late String _encodedStyle;
-
+  bool _editorLoaded = false;
   @override
   initState() {
     _loadScripts = rootBundle.loadString(
@@ -206,138 +217,190 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
   Widget _buildEditorView(
       {required BuildContext context, required double width}) {
     _initialContent = _getQuillPage(width: width);
-    return WebViewX(
-      key: ValueKey(widget.controller.toolBarKey.hashCode.toString()),
-      initialContent:   _initialContent,
-      initialSourceType: SourceType.html,
-      height: _currentHeight,
-      ignoreAllGestures: false,
-      width: width,
-      onWebViewCreated: (controller) => _webviewController = controller,
-      onPageFinished: (src) {
-        Future.delayed(const Duration(milliseconds: 100)).then((value) {
-          widget.controller.enableEditor(isEnabled);
-          if (widget.text != null) {
-            _setHtmlTextToEditor(htmlText: widget.text!);
-          }
-          if (widget.onEditorCreated != null) {
-            widget.onEditorCreated!();
-          }
-          widget.controller._editorLoadedController?.add('');
-        });
-      },
-      dartCallBacks: {
-        DartCallback(
-            name: 'EditorResizeCallback',
-            callBack: (height) {
-              if(_currentHeight ==  double.tryParse(height.toString())){
-                return;
+    return Stack(
+      children: [
+        WebViewX(
+          key: ValueKey(widget.controller.toolBarKey.hashCode.toString()),
+          initialContent: _initialContent,
+          initialSourceType: SourceType.html,
+          height: _currentHeight,
+          onPageStarted: (s) {
+            _editorLoaded = false;
+            setState(() {});
+          },
+          ignoreAllGestures: false,
+          width: width,
+          onWebViewCreated: (controller) => _webviewController = controller,
+          onPageFinished: (src) {
+            Future.delayed(const Duration(milliseconds: 100)).then((value) {
+              _editorLoaded = true;
+              setState(() {});
+              widget.controller.enableEditor(isEnabled);
+              if (widget.text != null) {
+                _setHtmlTextToEditor(htmlText: widget.text!);
               }
-              try {
-                _currentHeight = double.tryParse(height.toString()) ?? widget.minHeight;
-              } catch (e) {
-                _currentHeight = widget.minHeight;
-              } finally {
-                setState(() => _currentHeight);
-                if (widget.onEditorResized != null) {
-                  widget.onEditorResized!(_currentHeight);
-                }
-
+              if (widget.onEditorCreated != null) {
+                widget.onEditorCreated!();
               }
-            }),
-        DartCallback(
-            name: 'UpdateFormat',
-            callBack: (map) {
-              try {
-                if (widget.controller._toolBarKey != null) {
-                  widget.controller._toolBarKey!.currentState
-                      ?.updateToolBarFormat(jsonDecode(map));
-                }
-              } catch (e) {
-                if (!kReleaseMode) {
-                  debugPrint(e.toString());
-                }
-              }
-            }),
-        DartCallback(
-            name: 'OnTextChanged',
-            callBack: (map) {
-              var tempText = "";
-              if (tempText == map) {
-                return;
-              } else {
-                tempText = map;
-              }
-              try {
-                if (widget.controller._changeController != null) {
-                  String finalText = "";
-                  String parsedText =
-                      QuillEditorController._stripHtmlIfNeeded(map);
-                  if (parsedText.trim() == "") {
-                    finalText = "";
-                  } else {
-                    finalText = map;
+              widget.controller._editorLoadedController?.add('');
+            });
+          },
+          dartCallBacks: {
+            DartCallback(
+                name: 'EditorResizeCallback',
+                callBack: (height) {
+                  if (_currentHeight == double.tryParse(height.toString())) {
+                    return;
                   }
-                  if (widget.onTextChanged != null) {
-                    widget.onTextChanged!(finalText);
-                  }
-                  widget.controller._changeController!.add(finalText);
-                }
-              } catch (e) {
-                if (!kReleaseMode) {
-                  debugPrint(e.toString());
-                }
-              }
-            }),
-        DartCallback(
-            name: 'FocusChanged',
-            callBack: (map) {
-              _hasFocus = map?.toString() == 'true';
-              if (widget.onFocusChanged != null) {
-                widget.onFocusChanged!(_hasFocus);
-              }
-
-              /// scrolls to the end of the text area, to keep the focus visible
-              if (widget.ensureVisible == true && _hasFocus) {
-                Scrollable.of(context).position.ensureVisible(
-                    context.findRenderObject()!,
-                    duration: const Duration(milliseconds: 300),
-                    alignmentPolicy:
-                        ScrollPositionAlignmentPolicy.keepVisibleAtEnd,
-                    curve: Curves.fastLinearToSlowEaseIn);
-              }
-            }),
-        DartCallback(
-            name: 'OnSelectionChanged',
-            callBack: (selection) {
-              try {
-                if (widget.onSelectionChanged != null) {
-                  if (!_hasFocus) {
-                    if (widget.onFocusChanged != null) {
-                      _hasFocus = true;
-                      widget.onFocusChanged!(_hasFocus);
+                  try {
+                    _currentHeight =
+                        double.tryParse(height.toString()) ?? widget.minHeight;
+                  } catch (e) {
+                    _currentHeight = widget.minHeight;
+                  } finally {
+                    setState(() => _currentHeight);
+                    if (widget.onEditorResized != null) {
+                      widget.onEditorResized!(_currentHeight);
                     }
                   }
-                  widget.onSelectionChanged!(selection != null
-                      ? SelectionModel.fromJson(jsonDecode(selection))
-                      : SelectionModel(index: 0, length: 0));
-                }
-              } catch (e) {
-                if (!kReleaseMode) {
-                  debugPrint(e.toString());
-                }
-              }
-            }),
+                }),
+            DartCallback(
+                name: 'UpdateFormat',
+                callBack: (map) {
+                  try {
+                    if (widget.controller._toolBarKey != null) {
+                      widget.controller._toolBarKey!.currentState
+                          ?.updateToolBarFormat(jsonDecode(map));
+                    }
+                  } catch (e) {
+                    if (!kReleaseMode) {
+                      debugPrint(e.toString());
+                    }
+                  }
+                }),
+            DartCallback(
+                name: 'OnTextChanged',
+                callBack: (map) {
+                  var tempText = "";
+                  if (tempText == map) {
+                    return;
+                  } else {
+                    tempText = map;
+                  }
+                  try {
+                    if (widget.controller._changeController != null) {
+                      String finalText = "";
+                      String parsedText =
+                          QuillEditorController._stripHtmlIfNeeded(map);
+                      if (parsedText.trim() == "") {
+                        finalText = "";
+                      } else {
+                        finalText = map;
+                      }
+                      if (widget.onTextChanged != null) {
+                        widget.onTextChanged!(finalText);
+                      }
+                      widget.controller._changeController!.add(finalText);
+                    }
+                  } catch (e) {
+                    if (!kReleaseMode) {
+                      debugPrint(e.toString());
+                    }
+                  }
+                }),
+            DartCallback(
+                name: 'FocusChanged',
+                callBack: (map) {
+                  _hasFocus = map?.toString() == 'true';
+                  if (widget.onFocusChanged != null) {
+                    widget.onFocusChanged!(_hasFocus);
+                  }
 
-        /// callback to notify once editor is completely loaded
-        DartCallback(name: 'EditorLoaded', callBack: (map) {}),
-      },
-      webSpecificParams: const WebSpecificParams(
-        printDebugInfo: false,
-      ),
-      mobileSpecificParams: const MobileSpecificParams(
-        androidEnableHybridComposition: true,
-      ),
+                  /// scrolls to the end of the text area, to keep the focus visible
+                  if (widget.ensureVisible == true && _hasFocus) {
+                    Scrollable.of(context).position.ensureVisible(
+                        context.findRenderObject()!,
+                        duration: const Duration(milliseconds: 300),
+                        alignmentPolicy:
+                            ScrollPositionAlignmentPolicy.keepVisibleAtEnd,
+                        curve: Curves.fastLinearToSlowEaseIn);
+                  }
+                }),
+            DartCallback(
+                name: 'OnEditingCompleted',
+                callBack: (map) {
+                  var tempText = "";
+                  if (tempText == map) {
+                    return;
+                  } else {
+                    tempText = map;
+                  }
+                  try {
+                    if (widget.controller._changeController != null) {
+                      String finalText = "";
+                      String parsedText =
+                          QuillEditorController._stripHtmlIfNeeded(map);
+                      if (parsedText.trim() == "") {
+                        finalText = "";
+                      } else {
+                        finalText = map;
+                      }
+                      if (widget.onEditingComplete != null) {
+                        widget.onEditingComplete!(finalText);
+                      }
+                      widget.controller._changeController!.add(finalText);
+                    }
+                  } catch (e) {
+                    if (!kReleaseMode) {
+                      debugPrint(e.toString());
+                    }
+                  }
+                }),
+            DartCallback(
+                name: 'OnSelectionChanged',
+                callBack: (selection) {
+                  try {
+                    if (widget.onSelectionChanged != null) {
+                      if (!_hasFocus) {
+                        if (widget.onFocusChanged != null) {
+                          _hasFocus = true;
+                          widget.onFocusChanged!(_hasFocus);
+                        }
+                      }
+                      widget.onSelectionChanged!(selection != null
+                          ? SelectionModel.fromJson(jsonDecode(selection))
+                          : SelectionModel(index: 0, length: 0));
+                    }
+                  } catch (e) {
+                    if (!kReleaseMode) {
+                      debugPrint(e.toString());
+                    }
+                  }
+                }),
+
+            /// callback to notify once editor is completely loaded
+            DartCallback(name: 'EditorLoaded', callBack: (map) {}),
+          },
+          webSpecificParams: const WebSpecificParams(
+            printDebugInfo: false,
+          ),
+          mobileSpecificParams: const MobileSpecificParams(
+            androidEnableHybridComposition: true,
+          ),
+        ),
+        _editorLoaded
+            ? const SizedBox()
+            : widget.loadingBuilder != null
+                ? widget.loadingBuilder!(context)
+                : SizedBox(
+                    height: widget.minHeight,
+                    child: const Center(
+                      child: CircularProgressIndicator(
+                        strokeWidth: 0.3,
+                      ),
+                    ),
+                  )
+      ],
     );
   }
 
@@ -700,7 +763,6 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
             });
             
              quillContainer.addEventListener('focusin', () => {
-             console.log('Quill editor has focus');
                if($kIsWeb) {
                 FocusChanged(true);
               } else {
@@ -714,10 +776,10 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
              /*quilleditor.root.addEventListener("blur", function() {
                if($kIsWeb) {
                 FocusChanged(false);
-              } else {
-              var focus  = quilleditor.hasFocus();
-                FocusChanged.postMessage(isQuillFocused());
-              }
+                } else {
+                var focus  = quilleditor.hasFocus();
+                  FocusChanged.postMessage(isQuillFocused());
+                }
             });
             
             quilleditor.root.addEventListener("focus", function() {
@@ -852,10 +914,42 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
             ResponsibilityBlot.tagName = 'responsibility';
             Quill.register(ResponsibilityBlot);
             
+             ///// quill shift enter key binding      
+              var bindings = {
+                  linebreak: {
+                      key: 13,
+                      shiftKey: true,
+                      handler: function(range) {
+                          this.quill.insertEmbed(range.index, 'breaker', true, Quill.sources.USER);
+                          this.quill.setSelection(range.index + 1, Quill.sources.SILENT);
+                          return false;
+                      }
+                  },
+                  enter: {
+                      key: 'Enter',
+                      handler: () => {
+                         if($kIsWeb) {
+                          OnEditingCompleted(quilleditor.root.innerHTML);
+                          } else {
+                          OnEditingCompleted.postMessage(quilleditor.root.innerHTML);
+                          }
+                      }
+                  }
+              };
+              
+              let Embed = Quill.import('blots/embed');
+              
+              class Breaker extends Embed {
+                  static tagName = 'br';
+                  static blotName = 'breaker';
+              }
+              Quill.register(Breaker);
+
             var quilleditor = new Quill('#editor', {
               modules: {
                 toolbar: '#toolbar-container',
                 table: true,
+                 keyboard:  ${widget.inputAction == InputAction.send ? '{bindings: bindings}' : '{}'},
                 history: {
                   delay: 2000,
                   maxStack: 500,
@@ -869,6 +963,8 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
                 matchVisual: true
               }
             });
+            
+          
             const table = quilleditor.getModule('table');
             quilleditor.enable($isEnabled);
         

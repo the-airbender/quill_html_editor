@@ -124,10 +124,13 @@ class _MyAppState extends State<MyApp> {
                 padding: const EdgeInsets.only(left: 10, top: 10),
                 hintTextPadding: const EdgeInsets.only(left: 20),
                 backgroundColor: _backgroundColor,
+                inputAction: InputAction.send,
+                onEditingComplete: (s) => debugPrint('Editing completed $s'),
                 loadingBuilder: (context) {
                   return const Center(
                       child: CircularProgressIndicator(
-                    strokeWidth: 0.4,
+                    strokeWidth: 1,
+                    color: Colors.red,
                   ));
                 },
                 onFocusChanged: (focus) {
@@ -178,14 +181,12 @@ class _MyAppState extends State<MyApp> {
               textButton(
                   text: 'Insert Image',
                   onPressed: () {
-                    insertNetworkImage(
-                        'https://i.imgur.com/0DVAOec.gif');
+                    insertNetworkImage('https://i.imgur.com/0DVAOec.gif');
                   }),
               textButton(
                   text: 'Insert Index',
                   onPressed: () {
-                    insertHtmlText(
-                        "This text is set by the insertText method",
+                    insertHtmlText("This text is set by the insertText method",
                         index: 10);
                   }),
               textButton(
@@ -223,13 +224,12 @@ class _MyAppState extends State<MyApp> {
                         {
                           "insert": {
                             "video":
-                            "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+                                "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
                           }
                         },
                         {
                           "insert": {
-                            "video":
-                            "https://www.youtube.com/embed/4AoFA19gbLo"
+                            "video": "https://www.youtube.com/embed/4AoFA19gbLo"
                           }
                         },
                         {"insert": "Hello"},
