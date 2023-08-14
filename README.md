@@ -80,6 +80,7 @@ Define a **QuillEditorController** to access the editor methods, pass the contro
         onFocusChanged: (hasFocus) => debugPrint('has focus $hasFocus'),
         onTextChanged: (text) => debugPrint('widget text change $text'),
         onEditorCreated: () => debugPrint('Editor has been loaded'),
+        onEditingComplete: (s) => debugPrint('Editing completed $s'),
         onEditorResized: (height) =>
         debugPrint('Editor resized $height'),
         onSelectionChanged: (sel) =>
