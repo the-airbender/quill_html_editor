@@ -1,3 +1,7 @@
+### 2.2.4
+- Added `InputAction` to the editor, with action types `send` `newline`
+- Improved the `loadingBuilder` functionality
+
 ### 2.2.3
 - Added ToolTip to all toolbar formats. Thanks to **anees4ever**
 - Fix [Bug] Make sure the url input above keyboard #102, Thanks to **ChauCM**
