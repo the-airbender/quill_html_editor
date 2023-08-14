@@ -124,7 +124,7 @@ class _MyAppState extends State<MyApp> {
                 padding: const EdgeInsets.only(left: 10, top: 10),
                 hintTextPadding: const EdgeInsets.only(left: 20),
                 backgroundColor: _backgroundColor,
-                inputAction: InputAction.send,
+                inputAction: InputAction.newline,
                 onEditingComplete: (s) => debugPrint('Editing completed $s'),
                 loadingBuilder: (context) {
                   return const Center(
