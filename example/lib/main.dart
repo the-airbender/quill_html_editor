@@ -118,6 +118,7 @@ class _MyAppState extends State<MyApp> {
                 isEnabled: true,
                 ensureVisible: false,
                 minHeight: 500,
+                autoFocus: false,
                 textStyle: _editorTextStyle,
                 hintTextStyle: _hintTextStyle,
                 hintTextAlign: TextAlign.start,
