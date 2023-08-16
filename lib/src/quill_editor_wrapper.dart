@@ -42,6 +42,7 @@ class QuillHtmlEditor extends StatefulWidget {
     this.ensureVisible = false,
     this.loadingBuilder,
     this.inputAction = InputAction.newline,
+    this.autoFocus = false,
     this.textStyle = const TextStyle(
       fontStyle: FontStyle.normal,
       fontSize: 20.0,
@@ -142,6 +143,16 @@ class QuillHtmlEditor extends StatefulWidget {
   /// [InputAction.newline] indicating a line break or [InputAction.send] indicating
   /// that the input content should be sent or submitted.
   final InputAction? inputAction;
+
+  /// [autoFocus] Whether the widget should automatically request focus when it is inserted
+  /// into the widget tree. If set to `true`, the widget will request focus
+  /// immediately after being built and inserted into the tree. If set to `false`,
+  /// it will not request focus automatically.
+  ///
+  /// The default value is `false`
+  /// **Note** due to limitations of flutter webview at the moment, focus doesn't launch the keyboard in mobile, however, it will set the cursor at the end on focus.
+  final bool? autoFocus;
+
   @override
   QuillHtmlEditorState createState() => QuillHtmlEditorState();
 }
@@ -226,7 +237,6 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
           height: _currentHeight,
           onPageStarted: (s) {
             _editorLoaded = false;
-            setState(() {});
           },
           ignoreAllGestures: false,
           width: width,
@@ -234,10 +244,16 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
           onPageFinished: (src) {
             Future.delayed(const Duration(milliseconds: 100)).then((value) {
               _editorLoaded = true;
-              setState(() {});
+              debugPrint('_editorLoaded $_editorLoaded');
+              if (mounted) {
+                setState(() {});
+              }
               widget.controller.enableEditor(isEnabled);
               if (widget.text != null) {
                 _setHtmlTextToEditor(htmlText: widget.text!);
+              }
+              if (widget.autoFocus == true) {
+                widget.controller.focus();
               }
               if (widget.onEditorCreated != null) {
                 widget.onEditorCreated!();
@@ -258,7 +274,9 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
                   } catch (e) {
                     _currentHeight = widget.minHeight;
                   } finally {
-                    setState(() => _currentHeight);
+                    if (mounted) {
+                      setState(() => _currentHeight);
+                    }
                     if (widget.onEditorResized != null) {
                       widget.onEditorResized!(_currentHeight);
                     }
@@ -379,7 +397,14 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
                 }),
 
             /// callback to notify once editor is completely loaded
-            DartCallback(name: 'EditorLoaded', callBack: (map) {}),
+            DartCallback(
+                name: 'EditorLoaded',
+                callBack: (map) {
+                  _editorLoaded = true;
+                  if (mounted) {
+                    setState(() {});
+                  }
+                }),
           },
           webSpecificParams: const WebSpecificParams(
             printDebugInfo: false,
@@ -388,9 +413,9 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
             androidEnableHybridComposition: true,
           ),
         ),
-        _editorLoaded
-            ? const SizedBox()
-            : widget.loadingBuilder != null
+        Visibility(
+            visible: !_editorLoaded,
+            child: widget.loadingBuilder != null
                 ? widget.loadingBuilder!(context)
                 : SizedBox(
                     height: widget.minHeight,
@@ -399,7 +424,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
                         strokeWidth: 0.3,
                       ),
                     ),
-                  )
+                  ))
       ],
     );
   }
@@ -747,7 +772,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
                     }
                 }
                  catch(e) {
-                    console.log(e);
+                    console.log('replaceSelection', e);
                  } 
             }
             // Retrieve the Quill editor container element by its ID
@@ -814,7 +839,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
                     }
                 }
                  catch(e) {
-                    console.log(e);
+                    console.log('getSelectedText', e);
                   } 
                 return text;  
             }
@@ -857,7 +882,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
                  
                 });
               } catch(e) {
-                console.log(e);
+                console.log('applyGoogleKeyboardWorkaround', e);
               } 
             }
             
@@ -1087,7 +1112,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
                 return range.length;
               }
                 }catch(e){
-                console.log(e);
+                console.log('getSelection', e);
               }
               return -1;
             }
@@ -1119,7 +1144,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
             try{
               setTimeout(() => quilleditor.setSelection(index, length), 1);
               }catch(e){
-                console.log(e);
+                console.log('setSelection', e);
               }
               return '';
             }
@@ -1129,19 +1154,20 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
                quilleditor.enable(false);
                quilleditor.clipboard.dangerouslyPasteHTML(htmlString);   
             }catch(e){
-               console.log(e);
+               console.log('setHtmlText', e);
             }
              setTimeout(() =>   quilleditor.enable(true), 10);  
               return '';
             }
             
+          
             function setDeltaContent(deltaMap) {   
               try{
                   quilleditor.enable(false);
                   const obj = JSON.parse(deltaMap);
                   quilleditor.setContents(obj);
                 }catch(e){
-                  console.log(e);
+                  console.log('setDeltaContent', e);
                 }
                setTimeout(() =>   quilleditor.enable(true), 10);  
               return '';
@@ -1153,9 +1179,13 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
 
             function requestFocus() {
               try{
-                quilleditor.focus();
+              var htmlString = quilleditor.root.innerHTML;
+               setTimeout(() => {
+                    quilleditor.setSelection(htmlString.length + 1, htmlString.length + 1);
+                    quilleditor.focus();
+               }, 600);
               }catch(e){
-                console.log(e);
+                console.log('requestFocus',e);
               }
             
               return '';
@@ -1241,7 +1271,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
                 quilleditor.format(format, value);
               }
             }catch(e){
-            console.log(e);
+            console.log('setFormat',e);
             }
               return '';
             } 

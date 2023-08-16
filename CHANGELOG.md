@@ -1,3 +1,7 @@
+### 2.2.5
+- Added `autoFocus` functionality
+- Fixed bugs related to loadingBuilder
+
 ### 2.2.4
 - Added `InputAction` to the editor, with action types `send` `newline`
 - Improved the `loadingBuilder` functionality
