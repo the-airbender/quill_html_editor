@@ -149,6 +149,15 @@ class _MyAppState extends State<MyApp> {
                     debugPrint('Editor resized $height'),
                 onSelectionChanged: (sel) =>
                     debugPrint('index ${sel.index}, range ${sel.length}'),
+                customModuleConfig: """
+ blotFormatter: {},
+ """,
+                customQuillRegister: """
+  Quill.register('modules/blotFormatter', QuillBlotFormatter.default);
+""",
+                customScriptTag: """
+  <script src="https://cdn.jsdelivr.net/npm/quill-blot-formatter@1.0.5/dist/quill-blot-formatter.min.js"></script>
+""",
               ),
             ),
           ],
