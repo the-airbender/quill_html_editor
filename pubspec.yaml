@@ -16,16 +16,16 @@ dependencies:
   flutter_web_plugins:
     sdk: flutter
   ##### For image picker widget
-  file_picker: ^5.3.2
+  file_picker: 5.3.3
   ##### For webveiwx widget
   http: ^1.0.0
   path: ^1.8.2
-  pointer_interceptor: ^0.9.3+4
-  uuid: ^3.0.7
-  webview_flutter: ^4.2.2
-  webview_flutter_android: ^3.9.2
-  webview_flutter_platform_interface: ^2.4.0
-  webview_flutter_wkwebview: ^3.7.2
+  pointer_interceptor: ^0.9.3+6
+  uuid: ^4.0.0
+  webview_flutter: ^4.2.4
+  webview_flutter_android: ^3.10.0
+  webview_flutter_platform_interface: ^2.6.0
+  webview_flutter_wkwebview: ^3.7.4
 
 dev_dependencies:
   flutter_test:
