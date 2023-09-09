@@ -55,6 +55,9 @@ class QuillHtmlEditor extends StatefulWidget {
       color: Colors.black87,
       fontWeight: FontWeight.normal,
     ),
+    this.customScriptTag,
+    this.customQuillRegister,
+    this.customModuleConfig,
   }) : super(key: controller._editorKey);
 
   /// [text] to set initial text to the editor, please use text
@@ -152,6 +155,78 @@ class QuillHtmlEditor extends StatefulWidget {
   /// The default value is `false`
   /// **Note** due to limitations of flutter webview at the moment, focus doesn't launch the keyboard in mobile, however, it will set the cursor at the end on focus.
   final bool? autoFocus;
+
+  /// # Use for custom libraries
+  /// <br>
+  /// [customScriptTag]<br>
+  /// [customQuillRegister]<br>
+  /// [customQuillRegister]<br>
+  /// <br>
+  /// [customScriptTag] to set custom script tag for custom libraries
+  ///
+  /// Ex:
+  /// For Quill Blot Formatter library https://github.com/Fandom-OSS/quill-blot-formatter
+  /// <br/>
+  /// `<script src="https://cdn.jsdelivr.net/npm/quill-blot-formatter@1.0.5/dist/quill-blot-formatter.min.js"></script>`
+  /// 
+  /// Use in flutter like:
+  /// ```
+  /// customScriptTag: """
+  ///   <script src="https://cdn.jsdelivr.net/npm/quill-blot-formatter@1.0.5/dist/quill-blot-formatter.min.js"></script>
+  /// """
+  /// ```
+  /// You can use multiple libraries
+  ///
+  final String? customScriptTag;
+
+  /// # Use for custom libraries
+  /// <br>
+  /// [customScriptTag]<br>
+  /// [customQuillRegister]<br>
+  /// [customQuillRegister]<br>
+  /// <br>
+  /// [customQuillRegister] to resister custom libraries
+  ///
+  /// Ex:
+  /// For Quill Blot Formatter library https://github.com/Fandom-OSS/quill-blot-formatter
+  /// <br/>
+  /// `Quill.register('modules/blotFormatter', QuillBlotFormatter.default);`
+  /// 
+  /// Use in flutter like:
+  /// ```
+  /// customQuillRegister: """
+  ///   Quill.register('modules/blotFormatter', QuillBlotFormatter.default);
+  /// """
+  /// ```
+  /// You can use multiple libraries
+  ///
+  final String? customQuillRegister;
+
+  /// # Use for custom libraries
+  /// <br>
+  /// [customScriptTag]<br>
+  /// [customQuillRegister]<br>
+  /// [customQuillRegister]<br>
+  /// <br>
+  /// [customQuillRegister] to config the custom module
+  ///
+  /// Ex:
+  /// For Quill Blot Formatter library https://github.com/Fandom-OSS/quill-blot-formatter
+  /// <br/>
+  /// ```
+  /// blotFormatter: {
+  ///  },
+  /// ```
+  /// Use in flutter like:
+  /// ```
+  /// customModuleConfig: """
+  ///   blotFormatter: {
+  ///   },
+  /// """
+  /// ```
+  /// You can use multiple libraries
+  ///
+  final String? customModuleConfig;
 
   @override
   QuillHtmlEditorState createState() => QuillHtmlEditorState();
@@ -570,6 +645,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
         <script>
         $_quillJsScript
         </script>
+        ${widget.customScriptTag ?? ""}
         <style>
         /*!
        * Quill Editor v2.0.0-dev.3
@@ -970,6 +1046,8 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
               }
               Quill.register(Breaker);
 
+            ${widget.customQuillRegister ?? ""}
+
             var quilleditor = new Quill('#editor', {
               modules: {
                 toolbar: '#toolbar-container',
@@ -979,7 +1057,8 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
                   delay: 2000,
                   maxStack: 500,
                   userOnly: false
-                }
+                },
+                ${widget.customModuleConfig ?? ""}
               },
               theme: 'snow',
              scrollingContainer: '#scrolling-container', 
