@@ -55,6 +55,7 @@ class QuillHtmlEditor extends StatefulWidget {
       color: Colors.black87,
       fontWeight: FontWeight.normal,
     ),
+    this.navigationDelegate,
   }) : super(key: controller._editorKey);
 
   /// [text] to set initial text to the editor, please use text
@@ -153,6 +154,10 @@ class QuillHtmlEditor extends StatefulWidget {
   /// **Note** due to limitations of flutter webview at the moment, focus doesn't launch the keyboard in mobile, however, it will set the cursor at the end on focus.
   final bool? autoFocus;
 
+  /// Callback to decide whether to allow navigation to the incoming url
+  final FutureOr<bool> Function(NavigationRequest navigation)?
+      navigationDelegate;
+
   @override
   QuillHtmlEditorState createState() => QuillHtmlEditorState();
 }
@@ -176,6 +181,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
   late String _fontFamily;
   late String _encodedStyle;
   bool _editorLoaded = false;
+
   @override
   initState() {
     _loadScripts = rootBundle.loadString(
@@ -412,6 +418,18 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
           mobileSpecificParams: const MobileSpecificParams(
             androidEnableHybridComposition: true,
           ),
+          navigationDelegate: widget.navigationDelegate == null
+              ? null
+              : (navigation) async {
+                  final consumed =
+                      await widget.navigationDelegate?.call(navigation) ??
+                          false;
+                  if (consumed) {
+                    return NavigationDecision.prevent;
+                  } else {
+                    return NavigationDecision.navigate;
+                  }
+                },
         ),
         Visibility(
             visible: !_editorLoaded,
