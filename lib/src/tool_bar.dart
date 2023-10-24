@@ -363,40 +363,46 @@ class ToolBarState extends State<ToolBar> {
   @override
   Widget build(BuildContext context) {
     if (widget._isScrollable!) {
-      return Container(
-        width: double.maxFinite,
-        decoration: BoxDecoration(
-          color: widget.toolBarColor,
-        ),
-        child: SingleChildScrollView(
-          scrollDirection: widget.direction,
-          child: Flex(
-            direction: widget.direction,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            textDirection: widget.textDirection,
-            verticalDirection: widget.verticalDirection,
-            clipBehavior: widget.clipBehavior,
-            children: _generateToolBar(context),
+      return IgnorePointer(
+        ignoring: !widget.controller.isEnable,
+        child: Container(
+          width: double.maxFinite,
+          decoration: BoxDecoration(
+            color: widget.toolBarColor,
+          ),
+          child: SingleChildScrollView(
+            scrollDirection: widget.direction,
+            child: Flex(
+              direction: widget.direction,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              textDirection: widget.textDirection,
+              verticalDirection: widget.verticalDirection,
+              clipBehavior: widget.clipBehavior,
+              children: _generateToolBar(context),
+            ),
           ),
         ),
       );
     }
-    return Container(
-      width: double.maxFinite,
-      decoration: BoxDecoration(
-        color: widget.toolBarColor,
-      ),
-      child: Wrap(
-        direction: widget.direction,
-        alignment: widget.alignment,
-        spacing: widget.spacing,
-        runAlignment: widget.runAlignment,
-        runSpacing: widget.runSpacing,
-        crossAxisAlignment: widget.crossAxisAlignment,
-        textDirection: widget.textDirection,
-        verticalDirection: widget.verticalDirection,
-        clipBehavior: widget.clipBehavior,
-        children: _generateToolBar(context),
+    return IgnorePointer(
+      ignoring: !widget.controller.isEnable,
+      child: Container(
+        width: double.maxFinite,
+        decoration: BoxDecoration(
+          color: widget.toolBarColor,
+        ),
+        child: Wrap(
+          direction: widget.direction,
+          alignment: widget.alignment,
+          spacing: widget.spacing,
+          runAlignment: widget.runAlignment,
+          runSpacing: widget.runSpacing,
+          crossAxisAlignment: widget.crossAxisAlignment,
+          textDirection: widget.textDirection,
+          verticalDirection: widget.verticalDirection,
+          clipBehavior: widget.clipBehavior,
+          children: _generateToolBar(context),
+        ),
       ),
     );
   }

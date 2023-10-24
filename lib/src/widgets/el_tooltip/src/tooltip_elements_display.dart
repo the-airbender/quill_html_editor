@@ -8,10 +8,13 @@ import 'enum/el_tooltip_position.dart';
 class ToolTipElementsDisplay {
   ///
   final ElementBox bubble;
+
   ///
   final ElementBox arrow;
+
   ///
   final ElTooltipPosition position;
+
   ///
   final BorderRadiusGeometry? radius;
 

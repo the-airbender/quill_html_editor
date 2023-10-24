@@ -160,18 +160,17 @@ class _WebViewXState extends State<WebViewX> {
       widgetParams = wf_android.AndroidWebViewWidgetCreationParams(
         controller: originalWebViewController.platform,
         gestureRecognizers:
-        widget.mobileSpecificParams.mobileGestureRecognizers ?? const {},
+            widget.mobileSpecificParams.mobileGestureRecognizers ?? const {},
         displayWithHybridComposition:
-        widget.mobileSpecificParams.androidEnableHybridComposition,
+            widget.mobileSpecificParams.androidEnableHybridComposition,
       );
     } else if (Platform.isIOS || Platform.isMacOS) {
       widgetParams = wf_wk.WebKitWebViewWidgetCreationParams(
         controller: originalWebViewController.platform,
         gestureRecognizers:
-        widget.mobileSpecificParams.mobileGestureRecognizers ?? const {},
+            widget.mobileSpecificParams.mobileGestureRecognizers ?? const {},
       );
     }
-
 
     if (wf.WebViewPlatform.instance is wf_android.AndroidWebViewPlatform) {
       webViewWidget = wf.WebViewWidget.fromPlatformCreationParams(
@@ -184,13 +183,10 @@ class _WebViewXState extends State<WebViewX> {
         key: widget.key,
       );
     }
-
   }
 
   @override
   Widget build(BuildContext context) {
-
-
     return SizedBox(
       width: widget.width,
       height: widget.height,

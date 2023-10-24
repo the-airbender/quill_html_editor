@@ -1156,7 +1156,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
             }catch(e){
                console.log('setHtmlText', e);
             }
-             setTimeout(() =>   quilleditor.enable(true), 10);  
+             setTimeout(() =>   quilleditor.enable($isEnabled), 10);  
               return '';
             }
             
@@ -1169,7 +1169,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
                 }catch(e){
                   console.log('setDeltaContent', e);
                 }
-               setTimeout(() =>   quilleditor.enable(true), 10);  
+               setTimeout(() =>   quilleditor.enable($isEnabled), 10);  
               return '';
             }
             

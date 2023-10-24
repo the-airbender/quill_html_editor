@@ -26,4 +26,3 @@ class ElementBox {
     this.y = 0.0,
   });
 }
-

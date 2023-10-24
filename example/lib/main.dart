@@ -43,9 +43,10 @@ class _MyAppState extends State<MyApp> {
       fontWeight: FontWeight.normal,
       fontFamily: 'Roboto');
   final _hintTextStyle = const TextStyle(
-      fontSize: 18, color: Colors.black12, fontWeight: FontWeight.normal);
+      fontSize: 18, color: Colors.black38, fontWeight: FontWeight.normal);
 
   bool _hasFocus = false;
+
   @override
   void initState() {
     controller = QuillEditorController();
