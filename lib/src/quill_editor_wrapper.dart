@@ -858,7 +858,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
                 }
                 editor.applyGoogleKeyboardWorkaround = true
                 editor.on('editor-change', function(eventName, ...args) {
-                  
+                  try {
                     // args[0] will be delta
                     var ops = args[0]['ops']
                     if(ops === null) {
@@ -870,7 +870,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
                     if( ops[0]["retain"] === undefined || !ops[1] || !ops[1]["insert"] || !ops[1]["insert"] || ops[1]["list"] === "bullet" || ops[1]["list"] === "ordered" || ops[1]["insert"] != "\\n" || oldSelectionLength > 0) {
                       return
                     }
-                 
+                    
                     setTimeout(function() {
                       var newPos = editor.getSelection(true).index
                       if(newPos === oldPos) {
@@ -879,7 +879,9 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
                       }
                     }, 30);
                     //onRangeChanged();
-                 
+                  } catch(e) {
+                    console.log('applyGoogleKeyboardWorkaround - editor-change', e);
+                  }
                 });
               } catch(e) {
                 console.log('applyGoogleKeyboardWorkaround', e);
