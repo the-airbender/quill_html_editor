@@ -793,6 +793,12 @@ class ToolBarState extends State<ToolBar> {
         return {'format': 'header', 'value': isActive ? 1 : 4};
       case ToolBarStyle.headerTwo:
         return {'format': 'header', 'value': isActive ? 2 : 4};
+      case ToolBarStyle.headerThree:
+        return {'format': 'header', 'value': isActive ? 3 : 4};
+      case ToolBarStyle.headerFour:
+        return {'format': 'header', 'value': isActive ? 4 : 4};
+      case ToolBarStyle.headerFive:
+        return {'format': 'header', 'value': isActive ? 5 : 4};
       case ToolBarStyle.background:
         return {'format': 'background', 'value': 'red'};
       case ToolBarStyle.link:
@@ -1217,6 +1223,12 @@ class ToolBarItem extends StatelessWidget {
         return _getAssetImageWidget(ImageConstant.kiHeaderOneDarkPng);
       case ToolBarStyle.headerTwo:
         return _getAssetImageWidget(ImageConstant.kiHeaderTwoDarkPng);
+      case ToolBarStyle.headerThree:
+        return _getAssetImageWidget(ImageConstant.kiHeaderThreeDarkPng);
+      case ToolBarStyle.headerFour:
+        return _getAssetImageWidget(ImageConstant.kiHeaderFourDarkPng);
+      case ToolBarStyle.headerFive:
+        return _getAssetImageWidget(ImageConstant.kiHeaderFiveDarkPng);
       case ToolBarStyle.background:
         return _getIconWidget(Icons.font_download_sharp);
       case ToolBarStyle.image:
@@ -1315,6 +1327,18 @@ enum ToolBarStyle {
   /// [headerTwo] makes the text H2
 
   headerTwo("Header H2"),
+
+  /// [headerThree] makes the text H3
+
+  headerThree("Header H3"),
+
+  /// [headerFour] makes the text H4
+
+  headerFour("Header H4"),
+
+  /// [headerFive] makes the text H5
+
+  headerFive("Header H5"),
 
   /// [color] sets font color
 

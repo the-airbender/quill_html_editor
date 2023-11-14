@@ -12,6 +12,18 @@ class ImageConstant {
   static const String kiHeaderTwoDarkPng =
       'packages/quill_html_editor/assets/h2_dark.png';
 
+  ///header three dark icon for toolbar
+  static const String kiHeaderThreeDarkPng =
+      'packages/quill_html_editor/assets/h3_dark.png';
+
+  ///header four dark icon for toolbar
+  static const String kiHeaderFourDarkPng =
+      'packages/quill_html_editor/assets/h4_dark.png';
+
+  ///header five dark icon for toolbar
+  static const String kiHeaderFiveDarkPng =
+      'packages/quill_html_editor/assets/h5_dark.png';
+
   ///add table icon for toolbar
   static const String kiInsertTablePng =
       'packages/quill_html_editor/assets/insert_table.png';
