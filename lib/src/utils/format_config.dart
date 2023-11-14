@@ -22,6 +22,9 @@ class FormatConfig {
   /// [superscript] makes selected text superscript
   bool? superscript;
 
+  /// [subscript] makes selected text subscript
+  bool? subscript;
+
   /// [codeBlock] makes selected text code block
   bool? codeBlock;
 
@@ -70,6 +73,7 @@ class FormatConfig {
     this.indentMinus,
     this.fontSize,
     this.superscript,
+    this.subscript,
   });
 
   /// will add the following formats in future release
@@ -83,6 +87,7 @@ class FormatConfig {
       if (strike != null) 'strike': strike ?? false,
       if (blockQuote != null) 'blockqoute': blockQuote ?? false,
       if (superscript != null) 'superscript': superscript ?? false,
+      if (subscript != null) 'subscript': subscript ?? false,
       if (codeBlock != null) 'code-block': codeBlock ?? false,
       if (indentAdd != null || indentMinus != null)
         'indent': indentAdd == true

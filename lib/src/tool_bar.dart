@@ -432,6 +432,10 @@ class ToolBarState extends State<ToolBar> {
           _toolbarList[i] = _toolbarList[i]
               .copyWith(isActive: formatMap['superscript'] == true);
           break;
+        case ToolBarStyle.subscript:
+          _toolbarList[i] = _toolbarList[i]
+              .copyWith(isActive: formatMap['subscript'] == true);
+          break;
         case ToolBarStyle.blockQuote:
           _toolbarList[i] = _toolbarList[i]
               .copyWith(isActive: formatMap['blockquote'] == true);
@@ -769,6 +773,22 @@ class ToolBarState extends State<ToolBar> {
                   }
                   toolbarItem =
                       toolbarItem.copyWith(isActive: !toolbarItem.isActive);
+                } else if (toolbarItem.style == ToolBarStyle.subscript) {
+                  for (var element in _toolbarList) {
+                    if (element.style == ToolBarStyle.superscript) {
+                      element = element.copyWith(isActive: false);
+                    }
+                  }
+                  toolbarItem =
+                      toolbarItem.copyWith(isActive: !toolbarItem.isActive);
+                } else if (toolbarItem.style == ToolBarStyle.superscript) {
+                  for (var element in _toolbarList) {
+                    if (element.style == ToolBarStyle.subscript) {
+                      element = element.copyWith(isActive: false);
+                    }
+                  }
+                  toolbarItem =
+                      toolbarItem.copyWith(isActive: !toolbarItem.isActive);
                 } else {
                   toolbarItem =
                       toolbarItem.copyWith(isActive: !toolbarItem.isActive);
@@ -812,7 +832,9 @@ class ToolBarState extends State<ToolBar> {
       case ToolBarStyle.codeBlock:
         return {'format': 'code-block', 'value': isActive};
       case ToolBarStyle.superscript:
-        return {'format': 'superscript', 'value': isActive};
+        return {'format': 'script', 'value': isActive ? 'super' : null};
+      case ToolBarStyle.subscript:
+        return {'format': 'script', 'value': isActive ? 'sub' : null};
       case ToolBarStyle.indentAdd:
         return {'format': 'indent', 'value': '+1'};
       case ToolBarStyle.indentMinus:
@@ -1288,7 +1310,9 @@ class ToolBarItem extends StatelessWidget {
       case ToolBarStyle.clearHistory:
         return _getIconWidget(Icons.layers_clear_sharp);
       case ToolBarStyle.superscript:
-        return _getAssetImageWidget(ImageConstant.kisuperscriptPng);
+        return _getAssetImageWidget(ImageConstant.kiSuperscriptPng);
+      case ToolBarStyle.subscript:
+        return _getAssetImageWidget(ImageConstant.kiSubscriptPng);
       case ToolBarStyle.link:
       case ToolBarStyle.video:
       case ToolBarStyle.size:
@@ -1446,6 +1470,9 @@ enum ToolBarStyle {
 
   ///[separator] to add divider between toolbar items
   separator("separator"),
+
+  ///[subscript] makes an item as an subscript
+  subscript("subscript"),
 
   ///[superscript] makes an item as an superscript
   superscript("superscript");

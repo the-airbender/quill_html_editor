@@ -61,6 +61,10 @@ class ImageConstant {
       'packages/quill_html_editor/assets/insert_column_right.png';
 
   ///superscript icon for toolbar
-  static const String kisuperscriptPng =
+  static const String kiSuperscriptPng =
       'packages/quill_html_editor/assets/superscript.png';
+
+    ///subscript icon for toolbar
+  static const String kiSubscriptPng =
+      'packages/quill_html_editor/assets/subscript.png';
 }
