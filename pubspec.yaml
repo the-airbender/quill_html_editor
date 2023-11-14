@@ -57,4 +57,5 @@ flutter:
       - packages/quill_html_editor/assets/insert_row_above.png
       - packages/quill_html_editor/assets/insert_row_below.png
       - packages/quill_html_editor/assets/insert_column_right.png
+      - packages/quill_html_editor/assets/superscript.png
       - packages/quill_html_editor/assets/scripts/quill_2.0.0_4_min.js

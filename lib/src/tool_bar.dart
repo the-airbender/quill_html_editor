@@ -428,6 +428,10 @@ class ToolBarState extends State<ToolBar> {
           _toolbarList[i] =
               _toolbarList[i].copyWith(isActive: formatMap['strike'] == true);
           break;
+        case ToolBarStyle.superscript:
+          _toolbarList[i] = _toolbarList[i]
+              .copyWith(isActive: formatMap['superscript'] == true);
+          break;
         case ToolBarStyle.blockQuote:
           _toolbarList[i] = _toolbarList[i]
               .copyWith(isActive: formatMap['blockquote'] == true);
@@ -463,6 +467,18 @@ class ToolBarState extends State<ToolBar> {
         case ToolBarStyle.headerTwo:
           _toolbarList[i] =
               _toolbarList[i].copyWith(isActive: formatMap['header'] == 2);
+          break;
+        case ToolBarStyle.headerThree:
+          _toolbarList[i] =
+              _toolbarList[i].copyWith(isActive: formatMap['header'] == 3);
+          break;
+        case ToolBarStyle.headerFour:
+          _toolbarList[i] =
+              _toolbarList[i].copyWith(isActive: formatMap['header'] == 4);
+          break;
+        case ToolBarStyle.headerFive:
+          _toolbarList[i] =
+              _toolbarList[i].copyWith(isActive: formatMap['header'] == 5);
           break;
         case ToolBarStyle.color:
           _toolbarList[i] =
@@ -723,6 +739,36 @@ class ToolBarState extends State<ToolBar> {
                   }
                   toolbarItem =
                       toolbarItem.copyWith(isActive: !toolbarItem.isActive);
+                } else if (toolbarItem.style == ToolBarStyle.headerThree) {
+                  for (var element in _toolbarList) {
+                    if (element.style == ToolBarStyle.headerOne ||
+                        element.style == ToolBarStyle.headerTwo) {
+                      element = element.copyWith(isActive: false);
+                    }
+                  }
+                  toolbarItem =
+                      toolbarItem.copyWith(isActive: !toolbarItem.isActive);
+                } else if (toolbarItem.style == ToolBarStyle.headerFour) {
+                  for (var element in _toolbarList) {
+                    if (element.style == ToolBarStyle.headerOne ||
+                        element.style == ToolBarStyle.headerTwo ||
+                        element.style == ToolBarStyle.headerThree) {
+                      element = element.copyWith(isActive: false);
+                    }
+                  }
+                  toolbarItem =
+                      toolbarItem.copyWith(isActive: !toolbarItem.isActive);
+                } else if (toolbarItem.style == ToolBarStyle.headerFive) {
+                  for (var element in _toolbarList) {
+                    if (element.style == ToolBarStyle.headerOne ||
+                        element.style == ToolBarStyle.headerTwo ||
+                        element.style == ToolBarStyle.headerThree ||
+                        element.style == ToolBarStyle.headerFour) {
+                      element = element.copyWith(isActive: false);
+                    }
+                  }
+                  toolbarItem =
+                      toolbarItem.copyWith(isActive: !toolbarItem.isActive);
                 } else {
                   toolbarItem =
                       toolbarItem.copyWith(isActive: !toolbarItem.isActive);
@@ -765,6 +811,8 @@ class ToolBarState extends State<ToolBar> {
         return {'format': 'blockquote', 'value': isActive};
       case ToolBarStyle.codeBlock:
         return {'format': 'code-block', 'value': isActive};
+      case ToolBarStyle.superscript:
+        return {'format': 'superscript', 'value': isActive};
       case ToolBarStyle.indentAdd:
         return {'format': 'indent', 'value': '+1'};
       case ToolBarStyle.indentMinus:
@@ -1239,6 +1287,8 @@ class ToolBarItem extends StatelessWidget {
         return _getIconWidget(Icons.redo_sharp);
       case ToolBarStyle.clearHistory:
         return _getIconWidget(Icons.layers_clear_sharp);
+      case ToolBarStyle.superscript:
+        return _getAssetImageWidget(ImageConstant.kisuperscriptPng);
       case ToolBarStyle.link:
       case ToolBarStyle.video:
       case ToolBarStyle.size:
@@ -1395,7 +1445,10 @@ enum ToolBarStyle {
   editTable("Edit table"),
 
   ///[separator] to add divider between toolbar items
-  separator("separator");
+  separator("separator"),
+
+  ///[superscript] makes an item as an superscript
+  superscript("superscript");
 
   ///font - later releases
 

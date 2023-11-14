@@ -19,6 +19,9 @@ class FormatConfig {
   /// [blockQuote] converts text to quote
   bool? blockQuote;
 
+  /// [superscript] makes selected text superscript
+  bool? superscript;
+
   /// [codeBlock] makes selected text code block
   bool? codeBlock;
 
@@ -66,6 +69,7 @@ class FormatConfig {
     this.indentAdd,
     this.indentMinus,
     this.fontSize,
+    this.superscript,
   });
 
   /// will add the following formats in future release
@@ -78,6 +82,7 @@ class FormatConfig {
       if (underline != null) 'underline': underline ?? false,
       if (strike != null) 'strike': strike ?? false,
       if (blockQuote != null) 'blockqoute': blockQuote ?? false,
+      if (superscript != null) 'superscript': superscript ?? false,
       if (codeBlock != null) 'code-block': codeBlock ?? false,
       if (indentAdd != null || indentMinus != null)
         'indent': indentAdd == true
@@ -129,5 +134,14 @@ enum HeaderType {
   headerOne,
 
   /// to set the H2 header,
-  headerTwo
+  headerTwo,
+
+  /// to set the H3 header,
+  headerThree,
+
+  /// to set the H4 header,
+  headerFour,
+
+  /// to set the H5 header,
+  headerFive,
 }
