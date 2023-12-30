@@ -2,6 +2,7 @@ import 'dart:core';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:quill_html_editor/quill_html_editor.dart';
 import 'package:quill_html_editor/src/constants/image_constants.dart';
 import 'package:quill_html_editor/src/utils/hex_color.dart';
@@ -588,6 +589,7 @@ class ToolBarState extends State<ToolBar> {
                   child: Image.asset(
                     ImageConstant.kiCameraRollPng,
                     color: widget.iconColor,
+                    package: 'quill_html_editor',
                   ),
                 ),
                 isActive: _formatMap['video'] != null,
@@ -605,10 +607,13 @@ class ToolBarState extends State<ToolBar> {
             child: Padding(
               padding: _buttonPadding,
               child: InputUrlWidget(
-                iconWidget: Icon(
-                  Icons.link,
-                  color: widget.iconColor,
-                  size: widget.iconSize,
+                iconWidget: SvgPicture.asset(
+                  'assets/svg/link_sharp.svg',
+                  colorFilter:
+                      ColorFilter.mode(widget.iconColor!, BlendMode.srcIn),
+                  width: widget.iconSize,
+                  height: widget.iconSize,
+                  package: 'quill_html_editor',
                 ),
                 isActive: _formatMap['link'] != null,
                 controller: widget.controller,
@@ -905,25 +910,28 @@ class ToolBarState extends State<ToolBar> {
   }
 
   DropdownMenuItem<String> _getAlignDDItem(String type) {
-    IconData icon = Icons.format_align_left;
+    String icon = "format_align_left_sharp";
     if (type == 'center') {
-      icon = Icons.format_align_center;
+      icon = "format_align_center";
     } else if (type == 'right') {
-      icon = Icons.format_align_right;
+      icon = "format_align_right";
     } else if (type == 'justify') {
-      icon = Icons.format_align_justify;
+      icon = "format_align_justify";
     }
     return DropdownMenuItem<String>(
       value: type,
       child: WebViewAware(
-        child: Icon(
-          icon,
-          color: _formatMap['align'] == type
-              ? widget.activeIconColor
-              : widget.iconColor,
-          size: widget.iconSize,
-        ),
-      ),
+          child: SvgPicture.asset(
+        'assets/svg/$icon.svg',
+        colorFilter: ColorFilter.mode(
+            (_formatMap['align'] == type
+                ? widget.activeIconColor
+                : widget.iconColor)!,
+            BlendMode.srcIn),
+        width: widget.iconSize,
+        height: widget.iconSize,
+        package: 'quill_html_editor',
+      )),
     );
   }
 
@@ -1065,6 +1073,7 @@ class ToolBarState extends State<ToolBar> {
         child: Image.asset(
           ImageConstant.kiInsertTablePng,
           color: widget.iconColor,
+          package: 'quill_html_editor',
         ),
       ),
     );
@@ -1182,51 +1191,51 @@ class ToolBarItem extends StatelessWidget {
   Widget _getIconByStyle(ToolBarStyle style) {
     switch (style) {
       case ToolBarStyle.bold:
-        return _getIconWidget(Icons.format_bold_sharp);
+        return _getSvgWidget("format_bold_sharp");
       case ToolBarStyle.italic:
-        return _getIconWidget(Icons.format_italic_sharp);
+        return _getSvgWidget("format_italic_sharp");
       case ToolBarStyle.underline:
-        return _getIconWidget(Icons.format_underline_sharp);
+        return _getSvgWidget("format_underline_sharp");
       case ToolBarStyle.strike:
-        return _getIconWidget(Icons.format_strikethrough_sharp);
+        return _getSvgWidget("format_strikethrough_sharp");
       case ToolBarStyle.blockQuote:
-        return _getIconWidget(Icons.format_quote_sharp);
+        return _getSvgWidget("format_quote_sharp");
       case ToolBarStyle.codeBlock:
-        return _getIconWidget(Icons.code_sharp);
+        return _getSvgWidget("code_sharp");
       case ToolBarStyle.indentAdd:
         //isActive = false;
-        return _getIconWidget(Icons.format_indent_increase_sharp);
+        return _getSvgWidget("format_indent_increase_sharp");
       case ToolBarStyle.indentMinus:
         //  isActive = false;
-        return _getIconWidget(Icons.format_indent_decrease_sharp);
+        return _getSvgWidget("format_indent_decrease_sharp");
       case ToolBarStyle.directionRtl:
-        return _getIconWidget(Icons.format_textdirection_r_to_l_sharp);
+        return _getSvgWidget("format_textdirection_r_to_l_sharp");
       case ToolBarStyle.directionLtr:
-        return _getIconWidget(Icons.format_textdirection_l_to_r_sharp);
+        return _getSvgWidget("format_textdirection_l_to_r_sharp");
       case ToolBarStyle.color:
-        return _getIconWidget(Icons.format_bold_sharp);
+        return _getSvgWidget("format_bold_sharp");
       case ToolBarStyle.align:
-        return _getIconWidget(Icons.format_align_left_sharp);
+        return _getSvgWidget("format_align_left_sharp");
       case ToolBarStyle.clean:
-        return _getIconWidget(Icons.format_clear_sharp);
+        return _getSvgWidget("format_clear_sharp");
       case ToolBarStyle.listOrdered:
-        return _getIconWidget(Icons.format_list_numbered_sharp);
+        return _getSvgWidget("format_list_numbered_sharp");
       case ToolBarStyle.listBullet:
-        return _getIconWidget(Icons.format_list_bulleted_sharp);
+        return _getSvgWidget("format_list_bulleted_sharp");
       case ToolBarStyle.headerOne:
-        return _getAssetImageWidget(ImageConstant.kiHeaderOneDarkPng);
+        return _getSvgWidget("format_h1_sharp");
       case ToolBarStyle.headerTwo:
-        return _getAssetImageWidget(ImageConstant.kiHeaderTwoDarkPng);
+        return _getSvgWidget("format_h2_sharp");
       case ToolBarStyle.background:
-        return _getIconWidget(Icons.font_download_sharp);
+        return _getSvgWidget("font_download_sharp");
       case ToolBarStyle.image:
-        return _getIconWidget(Icons.image);
+        return _getSvgWidget("image");
       case ToolBarStyle.undo:
-        return _getIconWidget(Icons.undo_sharp);
+        return _getSvgWidget("undo_sharp");
       case ToolBarStyle.redo:
-        return _getIconWidget(Icons.redo_sharp);
+        return _getSvgWidget("redo_sharp");
       case ToolBarStyle.clearHistory:
-        return _getIconWidget(Icons.layers_clear_sharp);
+        return _getSvgWidget("layers_clear_sharp");
       case ToolBarStyle.link:
       case ToolBarStyle.video:
       case ToolBarStyle.size:
@@ -1237,25 +1246,17 @@ class ToolBarItem extends StatelessWidget {
     }
   }
 
-  Icon _getIconWidget(IconData iconData) => Icon(
-        iconData,
-        color: isActive ? activeIconColor : iconColor,
-        size: iconSize,
-      );
-
-  Widget _getAssetImageWidget(String imagePath) => SizedBox(
+  Widget _getSvgWidget(String icon) => SvgPicture.asset(
+        'assets/svg/$icon.svg',
+        colorFilter: ColorFilter.mode(
+            (isActive ? activeIconColor : iconColor)!, BlendMode.srcIn),
         width: iconSize,
         height: iconSize,
-        child: Image.asset(
-          imagePath,
-          color: isActive ? activeIconColor : iconColor,
-        ),
+        package: 'quill_html_editor',
       );
 
   ///toolbar item copyWith function
-  ToolBarItem copyWith({
-    bool? isActive,
-  }) {
+  ToolBarItem copyWith({bool? isActive}) {
     return ToolBarItem(
         style: style,
         isActive: isActive ?? this.isActive,
