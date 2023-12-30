@@ -72,6 +72,7 @@ class _EditTableDropDownState extends State<EditTableDropDown> {
             child: Image.asset(
               ImageConstant.kiEditTablePng,
               color: widget.iconColor,
+              package: 'quill_html_editor',
             ),
           ),
         ),
@@ -132,6 +133,7 @@ class _EditTableDropDownState extends State<EditTableDropDown> {
                     child: Image.asset(
                       imagePath,
                       color: widget.iconColor,
+                      package: 'quill_html_editor',
                     )),
                 const SizedBox(
                   width: 8,

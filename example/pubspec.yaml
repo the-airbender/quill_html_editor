@@ -32,6 +32,7 @@ dependencies:
   flutter:
     sdk: flutter
 
+  flutter_svg: ^2.0.9
   quill_html_editor:
     path: ../
 
