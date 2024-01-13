@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:quill_html_editor/src/widgets/webviewx/src/utils/source_type.dart';
 
 /// A copy from the original webview's navigation delegate typedef
@@ -77,7 +76,7 @@ class NavigationContent {
 
   @override
   String toString() {
-    return 'NavigationContent(source: $source, sourceType: ${describeEnum(sourceType)})';
+    return 'NavigationContent(source: $source, sourceType: ${sourceType.name})';
   }
 }
 

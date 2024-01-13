@@ -519,8 +519,7 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
 
   /// a private method to add remove or delete table in the editor
   Future _modifyTable(EditTableEnum type) async {
-    return await _webviewController
-        .callJsMethod("modifyTable", [describeEnum(type)]);
+    return await _webviewController.callJsMethod("modifyTable", [type.name]);
   }
 
   /// a private method to replace selection text in the editor

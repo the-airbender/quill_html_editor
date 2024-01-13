@@ -1,3 +1,11 @@
+### 2.2.8
+
+- Updated all dependencies to their latest versions
+
+### 2.2.7
+
+- Updated all dependencies to their latest versions
+
 ### 2.2.6
 
 - Fixed the bug, `isEnabled` is not disabling the editor.

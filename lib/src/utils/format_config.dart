@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:quill_html_editor/src/utils/hex_color.dart';
 
@@ -101,7 +100,7 @@ class FormatConfig {
                 : 2,
       if (color != null) 'color': color?.toHex(),
       if (background != null) 'background': background?.toHex(),
-      if (align != null) 'align': describeEnum(align ?? AlignType.left),
+      if (align != null) 'align': (align ?? AlignType.left).name,
 
       /// 'list':, 'image':, 'video':, 'clean':, 'link':, 'size': size,
     };

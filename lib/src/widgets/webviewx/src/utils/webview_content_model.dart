@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:quill_html_editor/src/widgets/webviewx/src/utils/source_type.dart';
 
 /// Model class for webview's content
@@ -43,7 +42,7 @@ class WebViewContent {
   String toString() {
     return 'WebViewContent:\n'
         'Source: $source\n'
-        'SourceType: ${describeEnum(sourceType)}\n'
+        'SourceType: ${sourceType.name}\n'
         'Last request Headers: ${headers ?? 'none'}\n'
         'Last request Body: ${webPostRequestBody ?? 'none'}\n';
   }
