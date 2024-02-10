@@ -860,15 +860,15 @@ class ToolBarState extends State<ToolBar> {
       case ToolBarStyle.clean:
         return {'format': 'clean', 'value': ''};
       case ToolBarStyle.headerOne:
-        return {'format': 'header', 'value': isActive ? 1 : 4};
+        return {'format': 'header', 'value': isActive ? 1 : false};
       case ToolBarStyle.headerTwo:
-        return {'format': 'header', 'value': isActive ? 2 : 4};
+        return {'format': 'header', 'value': isActive ? 2 : false};
       case ToolBarStyle.headerThree:
-        return {'format': 'header', 'value': isActive ? 3 : 4};
+        return {'format': 'header', 'value': isActive ? 3 : false};
       case ToolBarStyle.headerFour:
-        return {'format': 'header', 'value': isActive ? 4 : 4};
+        return {'format': 'header', 'value': isActive ? 4 : false};
       case ToolBarStyle.headerFive:
-        return {'format': 'header', 'value': isActive ? 5 : 4};
+        return {'format': 'header', 'value': isActive ? 5 : false};
       case ToolBarStyle.background:
         return {'format': 'background', 'value': 'red'};
       case ToolBarStyle.link:
