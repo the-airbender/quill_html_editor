@@ -7,7 +7,7 @@ repository: https://github.com/the-airbender/quill_html_editor
 maintainer: Pavan Kumar Nagulavancha
 
 environment:
-  sdk: '>=2.18.1 <4.0.0'
+  sdk: ">=2.18.1 <4.0.0"
   flutter: ">=2.5.0"
 
 dependencies:
@@ -16,40 +16,36 @@ dependencies:
   flutter_web_plugins:
     sdk: flutter
   ##### For image picker widget
-  file_picker: ^6.1.1
+  file_picker: ^10.2.0
   ##### For webveiwx widget
   http: ^1.1.2
   path: ^1.9.0
   pointer_interceptor: ^0.10.1
   uuid: ^4.3.3
   webview_flutter: ^4.4.4
-  webview_flutter_android: ^3.13.2
+  webview_flutter_android: ^4.7.0
   webview_flutter_platform_interface: ^2.9.0
   webview_flutter_wkwebview: ^3.10.2
 
 dev_dependencies:
-  flutter_lints: ^2.0.0
+  flutter_lints: ^5.0.0
 
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
+# The following section is specific to Flutter.
 flutter:
-  plugin:
-    platforms:
-      android:
-        default_package: quill_html_editor
-      ios:
-        default_package: quill_html_editor
-      web:
-        default_package: quill_html_editor
+  # To add assets to your package, add an assets section, like this:
   assets:
-      - packages/quill_html_editor/assets/camera_roll_icon.png
-      - packages/quill_html_editor/assets/h1_dark.png
-      - packages/quill_html_editor/assets/h2_dark.png
-      - packages/quill_html_editor/assets/edit_table.png
-      - packages/quill_html_editor/assets/insert_table.png
-      - packages/quill_html_editor/assets/delete_column.png
-      - packages/quill_html_editor/assets/delete_row.png
-      - packages/quill_html_editor/assets/delete_table.png
-      - packages/quill_html_editor/assets/insert_column_left.png
-      - packages/quill_html_editor/assets/insert_row_above.png
-      - packages/quill_html_editor/assets/insert_row_below.png
-      - packages/quill_html_editor/assets/insert_column_right.png
-      - packages/quill_html_editor/assets/scripts/quill_2.0.0_4_min.js
+    - packages/quill_html_editor/assets/camera_roll_icon.png
+    - packages/quill_html_editor/assets/h1_dark.png
+    - packages/quill_html_editor/assets/h2_dark.png
+    - packages/quill_html_editor/assets/edit_table.png
+    - packages/quill_html_editor/assets/insert_table.png
+    - packages/quill_html_editor/assets/delete_column.png
+    - packages/quill_html_editor/assets/delete_row.png
+    - packages/quill_html_editor/assets/delete_table.png
+    - packages/quill_html_editor/assets/insert_column_left.png
+    - packages/quill_html_editor/assets/insert_row_above.png
+    - packages/quill_html_editor/assets/insert_row_below.png
+    - packages/quill_html_editor/assets/insert_column_right.png
+    - packages/quill_html_editor/assets/scripts/quill_2.0.0_4_min.js
